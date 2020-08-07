@@ -213,8 +213,8 @@ public class Constant {
     public static final String CHANNEL_MARK_WZYY= "WZYY";
     //正式展科新
 //    public static final String CHANNEL_MARK_ZKX= "HYWZKX";
-    //正式赛恒达通
-    public static final String CHANNEL_MARK_ZKX= "HYWSHDT";
+	//正式赛恒达通
+	public static final String CHANNEL_MARK_ZKX = "HYWSHDT";
 	//正式中智时代
 //    public static final String CHANNEL_MARK_ZKX= "HYWZZSD";
 	//正式聚合互娱
@@ -222,15 +222,26 @@ public class Constant {
 
 	public static final String CHANNEL_MARK_ZFBZKX = "ZFBZKX";
 
+	//正式
+	public static final String user_service = "https://h5.pay.mtianshitong.com/static/sdk/common/protocol.html";
+
 	public static class SdcardPath {
-		/** Easou根目录 */
+		/**
+		 * Easou根目录
+		 */
 		public static final String SAVE_ROOTPATH = Environment
 				.getExternalStorageDirectory() + "/.EasouSDK";
-		/** 图片缓存目录 */
+		/**
+		 * 图片缓存目录
+		 */
 		public static final String IMAGE_SAVEPATH = SAVE_ROOTPATH + "/images";
-		/** 缓存目录 */
+		/**
+		 * 缓存目录
+		 */
 		public static final String CACHE_SAVEPATH = SAVE_ROOTPATH + "/cache";
-		/** 应用更新目录 */
+		/**
+		 * 应用更新目录
+		 */
 		public static final String UPDATE_APK_SAVEPATH = SAVE_ROOTPATH + "/update";
 		/** 文件缓存目录 */
 		public static final String DOWNLOAD_TMP_SAVEPATH = SAVE_ROOTPATH + "/tmp";

@@ -15,6 +15,7 @@ import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
 import com.easou.androidsdk.dialog.UserCenterDialog;
+import com.easou.androidsdk.dialog.WebViewDialog;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.ui.ESToast;
@@ -33,7 +34,7 @@ import com.easou.espay_user_lib.R;
 import java.util.Map;
 
 public class StartESUserPlugin {
-	
+
 	/**
 	 * 登陆接口
 	 */
@@ -42,13 +43,13 @@ public class StartESUserPlugin {
 		StartOtherPlugin.getOaid(Starter.mActivity);
 
 		String channel = CommonUtils.readPropertiesValue(Starter.mActivity, Constant.CHANNEL_MARK);
-		if (channel.equals("DHT")){
+		if (channel.equals("DHT")) {
 			Constant.PAY_CHANNEl = 1;
-		} else if (channel.equals("YY")){
+		} else if (channel.equals("YY")) {
 			Constant.PAY_CHANNEl = 2;
-		} else if (channel.equals("ZKX")){
+		} else if (channel.equals("ZKX")) {
 			Constant.PAY_CHANNEl = 3;
-		} else if (channel.equals("WZYY")){
+		} else if (channel.equals("WZYY")) {
 			Constant.PAY_CHANNEl = 4;
 		} else {
 			Constant.PAY_CHANNEl = 3;
@@ -66,35 +67,35 @@ public class StartESUserPlugin {
 					startLogin();
 					startRequestHost(Starter.mActivity);
 				}*/
-				if (CommonUtils.getLoginInfo(Starter.mActivity) == null) {
-					startLogin();
-					startRequestHost(Starter.mActivity);
-				} else {
-					//账号密码登录
-					LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
-					StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
-						@Override
-						public void loginSuccess() {
+		if (CommonUtils.getLoginInfo(Starter.mActivity) == null) {
+			startLogin();
+			startRequestHost(Starter.mActivity);
+		} else {
+			//账号密码登录
+			LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
+			StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
+				@Override
+				public void loginSuccess() {
 
-						}
-
-						@Override
-						public void loginFail(final String msg) {
-							Starter.mActivity.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									ESToast.getInstance().ToastShow(Starter.mActivity,msg);
-								}
-							});
-
-						}
-					},info.getUser().getName(), info.getUser().getPasswd(), Starter.mActivity);
 				}
+
+				@Override
+				public void loginFail(final String msg) {
+					Starter.mActivity.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+						}
+					});
+
+				}
+			}, info.getUser().getName(), info.getUser().getPasswd(), Starter.mActivity);
+		}
 			/*	Looper.loop();
 			}
 		}).start();*/
 	}
-	
+
 	/**
 	 * 打开H5 SDK页面
 	 */
@@ -118,9 +119,10 @@ public class StartESUserPlugin {
 	 * 登录框
 	 */
 	public static LoginWayDialog mLoginDialog;
-	public static void showLoginDialog(){
-		if (mLoginDialog == null){
-			mLoginDialog = new LoginWayDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,0.8f,0);
+
+	public static void showLoginDialog() {
+		if (mLoginDialog == null) {
+			mLoginDialog = new LoginWayDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0);
 		}
 		mLoginDialog.show();
 	}
@@ -128,17 +130,18 @@ public class StartESUserPlugin {
 	/**
 	 * 公告提醒框
 	 */
-	public static void showNotiDialog(){
-		NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,0.8f,0,"","","");
+	public static void showNotiDialog() {
+		NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, "", "", "");
 		authenDialog.show();
 	}
 
 	public static UserCenterDialog mUserCenterDialog = null;
-	public static void showUserCenterDialog(){
-		if (mUserCenterDialog == null){
-			mUserCenterDialog = new UserCenterDialog(Starter.mActivity,R.style.easou_usercenterdialog,Gravity.LEFT,0.9f,1);
+
+	public static void showUserCenterDialog() {
+		if (mUserCenterDialog == null) {
+			mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 0.9f, 1);
 		}
-		if (mUserCenterDialog.isShowing()){
+		if (mUserCenterDialog.isShowing()) {
 			mUserCenterDialog.hide();
 		} else {
 			mUserCenterDialog.show();
@@ -148,38 +151,48 @@ public class StartESUserPlugin {
 	/**
 	 * 弹出实名认证对话框
 	 */
-	public static void showUserAuthenDialog(){
-		AuthenNotiDialog authenDialog = new AuthenNotiDialog(Starter.mActivity,R.style.easou_dialog,Gravity.CENTER,0.8f,0,0);
+	public static void showUserAuthenDialog() {
+		AuthenNotiDialog authenDialog = new AuthenNotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, 0);
 		authenDialog.show();
+	}
+
+	/**
+	 * 弹出webview页面
+	 *
+	 * @param url
+	 */
+	public static void showWebViewDialaog(String url) {
+		WebViewDialog dialog = new WebViewDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT | Gravity.BOTTOM, 0.9f, 0, url);
+		dialog.show();
 	}
 
 	/**
 	 * 进入H5 SDK页面
 	 */
 	public static void enterH5View() {
-			
+
 		Intent intent = new Intent();
 		intent.putExtra("params", getNewParam());
 		intent.setClass(Starter.mActivity, ESUserWebActivity.class);
 		Starter.mActivity.startActivity(intent);
 	}
-	
+
 
 	/**
 	 * 获取SDK用户信息
 	 */
 	public static void getH5UserInfo() {
-		StartESAccountCenter.getUserInfoById(Constant.ESDK_USERID,Starter.mActivity);
+		StartESAccountCenter.getUserInfoById(Constant.ESDK_USERID, Starter.mActivity);
 //		ESUserWebActivity.clientToJS(Constant.YSTOJS_GET_USERINFO, null);
 	}
 
 	/**
 	 * 每隔5分钟去请求服务器更新用户游玩时长
 	 */
-	public static void postTime(){
+	public static void postTime() {
 		ESUserWebActivity.clientToJS(Constant.YSTOJS_UPLOAD_TIME, null);
 	}
-	
+
 	/**
 	 * 判断用户是否实名认证
 	 */
@@ -188,16 +201,16 @@ public class StartESUserPlugin {
 	/*	ESUserWebActivity.clientToJS(Constant.YSTOJS_IS_CERTUSER, null);
 		enterH5View();*/
 	}
-	
+
 	/**
 	 * 打开实名认证页面
 	 */
 	public static void showUserCert() {
-		
+
 		ESUserWebActivity.clientToJS(Constant.YSTOJS_USERCERT, null);
 		enterH5View();
 	}
-	
+
 	/**
 	 * 显示SDK页面
 	 */
@@ -206,8 +219,8 @@ public class StartESUserPlugin {
 		/*ESUserWebActivity.clientToJS(Constant.YSTOJS_CLICK_FLOATVIEW, null);
 		enterH5View();*/
 	}
-	
-	
+
+
 	/**
 	 * 游戏登录日志
 	 */
@@ -233,14 +246,14 @@ public class StartESUserPlugin {
 
 		String appid = CommonUtils.readPropertiesValue(Starter.mActivity, Constant.APP_ID);
 		String token = CommonUtils.getH5Token(Starter.mActivity);
-		
+
 		if (TextUtils.isEmpty(token)) {
 			try {
 //				AuthBean bean = CommonUtils.getAuthBean(Starter.mActivity,appid);
 				String bean = CommonUtils.getTokenFromSD(appid);
 				if (bean != null) {
 //					token = bean.getToken().getToken();
-					token =bean;
+					token = bean;
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -249,7 +262,7 @@ public class StartESUserPlugin {
 		}
 
 		String param = "&appId=" + appid
-				+ "&qn=" +CommonUtils.readPropertiesValue(Starter.mActivity, Constant.QN)
+				+ "&qn=" + CommonUtils.readPropertiesValue(Starter.mActivity, Constant.QN)
 				+ "&partnerId=" + CommonUtils.readPropertiesValue(Starter.mActivity, Constant.PARTENER_ID)
 				+ "&secretKey=" + encryptKey
 				+ "&deviceId=" + Constant.IMEI
@@ -269,14 +282,14 @@ public class StartESUserPlugin {
 
 		return param;
 	}
-	
+
 	/**
 	 * 显示悬浮窗
 	 */
 	public static void showFloatView() {
 
 		if (Constant.IS_LOGINED) {
-				FloatView.show(Starter.mActivity);
+			FloatView.show(Starter.mActivity);
 		} /*else {
 			if (Constant.IS_ENTERED_SDK) {
 				// 未登陆显示用户中心
@@ -284,26 +297,26 @@ public class StartESUserPlugin {
 			}
 		}*/
 	}
-	
+
 	/**
 	 * 隐藏悬浮窗
 	 */
 	public static void hideFloatView() {
 		FloatView.close();
 	}
-	
+
 	/**
 	 * 请求host信息
 	 */
 	public static void startRequestHost(final Activity activity) {
-		
+
 		try {
 			// 读取存储的host信息
 			String jsonData = FileHelper.readFile(Constant.getHostInfoFile(activity));
 			if (jsonData == null) {
 				jsonData = FileHelper.readFile(Constant.getSDHostInfoFile());
 			}
-			
+
 			if (jsonData == null || jsonData.equals("")) {
 				HostRequestUtils.requestHostInfo(activity, false);
 			} else {
@@ -313,9 +326,10 @@ public class StartESUserPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 从Properties文件中读取配置信息
+	 *
 	 * @param key：参数名称
 	 */
 	public static String getPropValue(Context _context, String key) {

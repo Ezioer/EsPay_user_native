@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.ApiType;
+import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.data.FeeType;
 import com.easou.androidsdk.http.ApiAsyncImp;
@@ -70,6 +71,22 @@ public class LoginWayDialog extends BaseDialog {
     private void initView() {
         final LinearLayout llRoot = (LinearLayout) mView.findViewById(R.id.ll_root);
         final LinearLayout llHelp = (LinearLayout) mView.findViewById(R.id.ll_help);
+
+        TextView tvHelp = (TextView) mView.findViewById(R.id.tv_help);
+        TextView tvService = (TextView) mView.findViewById(R.id.tv_user_service);
+        tvHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StartESUserPlugin.showWebViewDialaog(Constant.user_service);
+            }
+        });
+
+        tvService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StartESUserPlugin.showWebViewDialaog(Constant.user_service);
+            }
+        });
         //账号登录或注册
         final View includeAccountLogin = mView.findViewById(R.id.include_accountlogin);
         final EditText editTextAccount = (EditText) includeAccountLogin.findViewById(R.id.et_login_account);
