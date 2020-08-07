@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">espay_user_lib</string>
+    <string name="chooseloginway">请选择登录方式</string>
+    <string name="guest_login">游客登录</string>
+    <string name="account_login">账号登录</string>
+    <string name="account_register">账号注册</string>
+    <string name="guest_noti">游客登录体验的游戏内容受到限制</string>
+    <string name="help">客服帮助</string>
+    <string name="look_password">找回密码</string>
+    <string name="user_service">用户协议</string>
+    <string name="account">账号</string>
+    <string name="password">密码</string>
+    <string name="back">返回</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+    <string name="phone">手机号</string>
+    <string name="vercode">验证码</string>
+    <string name="newpassword">新密码</string>
+    <string name="oldpassword">旧密码</string>
+    <string name="getvercode">获取</string>
+    <string name="submit">提交</string>
+    <string name="authentication">实名认证</string>
+    <string name="authen_now">马上认证</string>
+    <string name="inputname">请输入姓名</string>
+    <string name="inputidnumber">请输入身份证号码</string>
+    <string name="changeaccount">切换账号</string>
+    <string name="authen_noti">根据政策规定，通过实名认证的账号才能正常进入游戏</string>
+    <string name="authen_reason">根据政策规定，未实名认证的账户不允许充值，请及时进行实名认证</string>
+    <string name="account_info">账号信息</string>
+    <string name="account_info_noti">为避免账号丢失，请自行截图保存</string>
+    <string name="account_value">账号：</string>
+    <string name="password_value">密码：</string>
+    <string name="me">我的</string>
+    <string name="service">客服</string>
+    <string name="gift">礼包</string>
+    <string name="changepassword">修改密码</string>
+    <string name="bindphone">绑定手机</string>
+    <string name="logout">退出登录</string>
+
+</resources>

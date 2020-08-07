@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/icon_loginbg"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:id="@+id/tv_title_accountinfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/account_info"
+            android:textColor="@color/payeco_textColorWhite"
+            android:textSize="22sp" />
+        <ImageView
+            android:padding="10dp"
+            android:id="@+id/iv_clodedialog"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/icon_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_authen_noti"
+        android:text="@string/account_info_noti"
+        android:textColor="@color/easou_thin1_color"
+        android:layout_marginTop="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/tv_account_value"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/bg_edittext"
+        android:hint="@string/account_value"
+        android:paddingLeft="10dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textColorHint="@color/payeco_textColorWhite" />
+
+    <TextView
+        android:id="@+id/tv_passwordvalue"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_edittext"
+        android:hint="@string/password_value"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textColorHint="@color/payeco_textColorWhite" />
+</LinearLayout>

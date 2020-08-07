@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_bind_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+      android:padding="10dp"
+        android:src="@drawable/es_iconback" />
+
+    <TextView
+        android:id="@+id/tv_title_bind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/iv_bind_back"
+        android:gravity="center_horizontal"
+        android:text="@string/bindphone"
+        android:textColor="@color/easou_thin1_color"
+        android:textSize="18sp" />
+
+    <EditText
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp"
+        android:id="@+id/et_bind_phone"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:paddingLeft="10dp"
+        android:inputType="number"
+        android:layout_below="@id/tv_title_bind"
+        android:background="@drawable/bg_edittext"
+        android:gravity="center_vertical"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textColorHint="@color/payeco_textColorWhite"
+        android:hint="@string/phone"
+        android:textSize="18sp" />
+    <RelativeLayout
+        android:id="@+id/rl_getcode"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/et_bind_phone"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="46dp">
+        <EditText
+            android:id="@+id/et_bind_code"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bg_edittext"
+            android:gravity="center_vertical"
+            android:textColor="@color/payeco_textColorWhite"
+            android:textColorHint="@color/payeco_textColorWhite"
+            android:hint="@string/vercode"
+            android:textSize="18sp" />
+        <TextView
+            android:layout_alignParentRight="true"
+            android:id="@+id/tv_bind_getcode"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:background="@drawable/bg_getcode"
+            android:textColor="@color/payeco_textColorWhite"
+            android:text="@string/getvercode"
+            android:layout_width="60dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_height="match_parent"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_bind_submit"
+        android:text="@string/submit"
+        android:layout_marginTop="40dp"
+        android:textSize="18sp"
+        android:layout_below="@id/rl_getcode"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_submit"
+        android:textColor="@color/payeco_textColorBlack"
+        android:layout_width="80dp"
+        android:gravity="center"
+        android:layout_height="40dp"/>
+</RelativeLayout>

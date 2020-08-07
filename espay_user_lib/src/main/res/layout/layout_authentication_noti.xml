@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/icon_loginbg"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_title_authen_noti"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/authentication"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textSize="22sp" />
+    <ImageView
+        android:padding="10dp"
+        android:id="@+id/iv_close_authendialog"
+        android:src="@drawable/icon_close"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_noti"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/tv_title_authen_noti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_authen_noti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/authen_reason"
+            android:textColor="@color/easou_thin1_color" />
+
+        <TextView
+            android:id="@+id/tv_authen_now"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_submit"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/authen_now"
+            android:textColor="@color/payeco_textColorBlack"
+            android:textSize="18sp" />
+    </LinearLayout>
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_title_authen_noti"
+        android:layout_marginTop="10dp"
+        android:id="@+id/include_authen"
+        layout="@layout/layout_authentication"/>
+
+</RelativeLayout>
