@@ -190,15 +190,16 @@ public class Constant {
 	public static final String QN = "qn";
 	public static final String VERSION = "esVersion";
 	public static final String PHONEOS = "phoneOs";
-	
+
 	public static final String SDK_SHOWSTATUS = "status";
-	
-	
+
+
 	public static final String ES_DEVICE_ID = "EsDeviceID";
 	public static final String ES_DEV_ID = "devID";
 	public static final String ES_H5_TOKEN = "H5Token";
 	public static final String ES_TOKEN = "token";
 	public static final String LOGIN_INFO = "login_info";
+	public static final String LOGIN_NAME = "login_name";
 
 	public static final String SDK_PAY_STATUS = "payStatus";
 	public static final String SDK_USER_TYPE = "userType";
@@ -207,8 +208,8 @@ public class Constant {
 	public static final String SDK_S_PAY = "sPay"; // 单次最大能支付金额
 	public static final String SDK_C_PAY = "cPay"; // 单月最大能支付总额度
 
-    public static final String CHANNEL_MARK = "channelMark";
-    public static final String CHANNEL_MARK_DHT = "DHT";
+	public static final String CHANNEL_MARK = "channelMark";
+	public static final String CHANNEL_MARK_DHT = "DHT";
     public static final String CHANNEL_MARK_YY = "YY";
     public static final String CHANNEL_MARK_WZYY= "WZYY";
     //正式展科新

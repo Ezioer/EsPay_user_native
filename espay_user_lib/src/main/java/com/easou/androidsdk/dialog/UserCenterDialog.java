@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -73,7 +74,9 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_mehign);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     llContent.setVisibility(View.VISIBLE);
+                    llContent.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                     webView.setVisibility(View.GONE);
+                    webView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                 }
             }
         });
@@ -85,8 +88,10 @@ public class UserCenterDialog extends BaseDialog {
                     currentType = 1;
                     ivMe.setImageResource(R.drawable.icon_main_me);
                     ivService.setImageResource(R.drawable.icon_main_servicehign);
+                    llContent.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     llContent.setVisibility(View.GONE);
                     webView.setVisibility(View.VISIBLE);
+                    webView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                 }
             }
         });
@@ -140,14 +145,18 @@ public class UserCenterDialog extends BaseDialog {
         rlAuthen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                 includeMenu.setVisibility(View.GONE);
                 includeUserAuthen.setVisibility(View.VISIBLE);
+                includeUserAuthen.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                 ivAuthenBack.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Tools.hideKeyboard(ivAuthenBack);
                         includeMenu.setVisibility(View.VISIBLE);
+                        includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                         includeUserAuthen.setVisibility(View.GONE);
+                        includeUserAuthen.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                     }
                 });
                 authenSubmit.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +203,9 @@ public class UserCenterDialog extends BaseDialog {
                 etPhone.setText("");
                 etCode.setText("");
                 includeMenu.setVisibility(View.GONE);
+                includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                 includeBind.setVisibility(View.VISIBLE);
+                includeBind.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                 final CountDownTimer timer = new CountDownTimer(60*1000,1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
@@ -212,7 +223,9 @@ public class UserCenterDialog extends BaseDialog {
                     @Override
                     public void onClick(View v) {
                         includeMenu.setVisibility(View.VISIBLE);
+                        includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                         includeBind.setVisibility(View.GONE);
+                        includeBind.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                         Tools.hideKeyboard(ivBindBack);
                         if (timer != null){
                             timer.cancel();
@@ -303,13 +316,17 @@ public class UserCenterDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 includeMenu.setVisibility(View.GONE);
+                includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                 includeChangePw.setVisibility(View.VISIBLE);
+                includeChangePw.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                 ivBack.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Tools.hideKeyboard(ivBack);
                         includeMenu.setVisibility(View.VISIBLE);
+                        includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                         includeChangePw.setVisibility(View.GONE);
+                        includeChangePw.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                     }
                 });
 

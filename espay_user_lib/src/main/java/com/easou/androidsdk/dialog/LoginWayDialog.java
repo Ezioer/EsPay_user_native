@@ -9,6 +9,7 @@ import android.support.v7.view.menu.MenuView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -24,6 +25,7 @@ import com.easou.androidsdk.data.ApiType;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.data.FeeType;
+import com.easou.androidsdk.data.LoginNameInfo;
 import com.easou.androidsdk.http.ApiAsyncImp;
 import com.easou.androidsdk.http.HttpAsyncTaskImp;
 import com.easou.androidsdk.login.LoginCallBack;
@@ -33,6 +35,7 @@ import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
+import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
@@ -41,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -137,33 +141,40 @@ public class LoginWayDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 llRoot.setVisibility(View.GONE);
+                llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                 ivExpan.setVisibility(View.VISIBLE);
+                editTextAccount.setText("");
+                editTextPassword.setText("");
                 accountType.setText(R.string.account_login);
                 currentType = 1;
                 includeAccountLogin.setVisibility(View.VISIBLE);
+                includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                 mAccountBack.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Tools.hideKeyboard(mAccountBack);
                         llRoot.setVisibility(View.VISIBLE);
+                        llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                         currentType = 0;
                         includeAccountLogin.setVisibility(View.GONE);
+                        includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     }
                 });
                 final ListPopupWindow lpw = new ListPopupWindow(mContext);
-                final String[] list = new String[] { "item1", "item2", "item3", "item4" };
+                final List<LoginNameInfo> loginNameInfo = CommonUtils.getLoginNameInfo(mContext);
                 ivExpan.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        lpw.setAdapter(new ArrayAdapter<String>(mContext,
-                                android.R.layout.simple_list_item_1, list));
+                        lpw.setAdapter(new ArrayAdapter(mContext,
+                                android.R.layout.simple_list_item_1, loginNameInfo));
                         lpw.setAnchorView(editTextAccount);
                         lpw.setModal(true);
                         lpw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                String item = list[position];
-                                editTextAccount.setText(item);
+                                LoginNameInfo item = loginNameInfo.get(position);
+                                editTextAccount.setText(item.getName());
+                                editTextPassword.setText(item.getPassword());
                                 lpw.dismiss();
                             }
                         });
@@ -205,9 +216,13 @@ public class LoginWayDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 llRoot.setVisibility(View.GONE);
+                llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                 ivExpan.setVisibility(View.GONE);
                 accountType.setText(R.string.account_register);
+                editTextAccount.setText("");
+                editTextPassword.setText("");
                 includeAccountLogin.setVisibility(View.VISIBLE);
+                includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                 lookPassword.setVisibility(View.GONE);
                 mAccountLogin.setText(R.string.register);
                 mAccountBack.setOnClickListener(new View.OnClickListener() {
@@ -215,8 +230,10 @@ public class LoginWayDialog extends BaseDialog {
                     public void onClick(View v) {
                         Tools.hideKeyboard(mAccountBack);
                         llRoot.setVisibility(View.VISIBLE);
+                        llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                         lookPassword.setVisibility(View.VISIBLE);
                         includeAccountLogin.setVisibility(View.GONE);
+                        includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                         mAccountLogin.setText(R.string.login);
                     }
                 });
@@ -256,11 +273,14 @@ public class LoginWayDialog extends BaseDialog {
                 llHelp.setVisibility(View.GONE);
                 if (currentType == 0){
                     llRoot.setVisibility(View.GONE);
+                    llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     includeLookPassword.setVisibility(View.VISIBLE);
                 } else {
                     includeAccountLogin.setVisibility(View.GONE);
+                    includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     includeLookPassword.setVisibility(View.VISIBLE);
                 }
+                includeLookPassword.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
 
                 final CountDownTimer timer =  new CountDownTimer(60*1000,1000) {
                     @Override
@@ -316,11 +336,14 @@ public class LoginWayDialog extends BaseDialog {
                         timer.cancel();
                         if (currentType == 0){
                             llRoot.setVisibility(View.VISIBLE);
+                            llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                             includeLookPassword.setVisibility(View.GONE);
                         } else {
                             includeAccountLogin.setVisibility(View.VISIBLE);
+                            includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                             includeLookPassword.setVisibility(View.GONE);
                         }
+                        includeLookPassword.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     }
                 });
 

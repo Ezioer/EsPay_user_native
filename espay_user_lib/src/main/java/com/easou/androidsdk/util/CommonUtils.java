@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.easou.androidsdk.data.Constant;
+import com.easou.androidsdk.data.LoginNameInfo;
 import com.easou.androidsdk.login.service.AuthBean;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.ui.UIHelper;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -125,6 +127,22 @@ public class CommonUtils {
             return null;
         }
         return GsonUtil.fromJson(info, LoginBean.class);
+    }
+
+    public static void saveLoginNameInfo(String info, Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Constant.LOGIN_NAME, info);
+        editor.commit();
+    }
+
+    public static List<LoginNameInfo> getLoginNameInfo(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        String info = settings.getString(Constant.LOGIN_NAME, "");
+        if (info.isEmpty()) {
+            return null;
+        }
+        return GsonUtil.jsonToList(info, LoginNameInfo.class);
     }
 
     /**
