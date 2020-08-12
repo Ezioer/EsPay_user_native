@@ -12,6 +12,7 @@ import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.plugin.StartESPayPlugin;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
+import com.easou.androidsdk.util.CommonUtils;
 
 import java.util.Map;
 
@@ -84,7 +85,9 @@ public class Starter {
      * 显示SDK用户中心页面
      */
     public void showUserCenter() {
-        StartESUserPlugin.showSdkView();
+        StartESAccountCenter.logout(mActivity);
+
+//        StartESUserPlugin.showSdkView();
     }
 
     /**
@@ -164,7 +167,7 @@ public class Starter {
      */
     public void initGDTAction(Context mContext) {
         StartOtherPlugin.initGDTAction(mContext);
-        AppTimeWatcher.getInstance().registerWatcher((Application)mContext);
+//        AppTimeWatcher.getInstance().registerWatcher((Application)mContext);
     }
 
     /**

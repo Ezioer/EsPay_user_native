@@ -32,7 +32,7 @@ public class AppTimeWatcher {
 
     private Handler mHandler;
 
-    private static long TIME = 15 * 1000;
+    private static long TIME = 300 * 1000;
     private long mCurrentTime;
     private long mHasTime = 0;
     private boolean isCancel = false;

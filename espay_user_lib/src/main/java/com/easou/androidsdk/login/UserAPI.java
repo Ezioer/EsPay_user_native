@@ -11,6 +11,7 @@ import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.JBean;
 import com.easou.androidsdk.login.service.JBody;
 import com.easou.androidsdk.login.service.JUser;
+import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
 
@@ -189,23 +190,29 @@ public class UserAPI {
 		if (isBind) {
 			// 绑定操作
 			jbean = eucService.getResult("/api2/applyBindMobile.json", jbody,
-					authPara, info);
-		} else {
-			// 解绑操作
-			jbean = eucService.getResult("/api2/applyUnBindMobile.json", jbody,
-					authPara, info);
-		}
+                    authPara, info);
+        } else {
+            // 解绑操作
+            jbean = eucService.getResult("/api2/applyUnBindMobile.json", jbody,
+                    authPara, info);
+        }
 
-		return buildResult(jbean);
-	}
+        return buildResult(jbean);
+    }
 
-	private static EucApiResult<JUser> buildResult(JBean jbean)
-			throws EucAPIException {
-		EucApiResult<JUser> result = new EucApiResult<JUser>(jbean);
-		if (jbean.getBody() != null) {
-			JUser juser = jbean.getBody().getObject("user", JUser.class);
-			result.setResult(juser);
-		}
-		return result;
-	}
+    public static String getServiceUrl(Context activity) {
+        eucService = EucService.getInstance(activity);
+        String limitSwitch = eucService.getHelpUrl("https://egamec.eayou.com/customer/info?");
+        return limitSwitch + "?device=android";
+    }
+
+    private static EucApiResult<JUser> buildResult(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<JUser> result = new EucApiResult<JUser>(jbean);
+        if (jbean.getBody() != null) {
+            JUser juser = jbean.getBody().getObject("user", JUser.class);
+            result.setResult(juser);
+        }
+        return result;
+    }
 }

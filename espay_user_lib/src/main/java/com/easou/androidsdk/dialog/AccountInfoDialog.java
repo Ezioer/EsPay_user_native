@@ -8,13 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.easou.androidsdk.data.ApiType;
-import com.easou.androidsdk.http.ApiAsyncImp;
 import com.easou.espay_user_lib.R;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * created by xiaoqing.zhou

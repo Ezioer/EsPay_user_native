@@ -20,16 +20,20 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.easou.androidsdk.data.Constant;
-import com.easou.androidsdk.data.LoginNameInfo;
+import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.AuthBean;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.ui.UIHelper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,10 +144,43 @@ public class CommonUtils {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
         String info = settings.getString(Constant.LOGIN_NAME, "");
         if (info.isEmpty()) {
-            return null;
+            return new ArrayList<LoginNameInfo>();
         }
-        return GsonUtil.jsonToList(info, LoginNameInfo.class);
+
+        return new Gson().fromJson(info, new TypeToken<List<LoginNameInfo>>() {
+        }.getType());
     }
+
+    public static String getYMDfromIdNum(String id) {
+        String year = null;
+        String month = null;
+        String day = null;
+        //正则匹配身份证号是否是正确的，15位或者17位数字+数字/x/X
+        if (id.matches("^\\d{15}|\\d{17}[\\dxX]$")) {
+            year = id.substring(6, 10);
+            month = id.substring(10, 12);
+            day = id.substring(12, 14);
+        } else {
+            System.out.println("身份证号码不匹配！");
+            return "";
+        }
+        return year + "-" + month + "-" + day;
+    }
+
+    public static int getAge(String id) {
+        String year = "";
+        //正则匹配身份证号是否是正确的，15位或者17位数字+数字/x/X
+        if (id.matches("^\\d{15}|\\d{17}[\\dxX]$")) {
+            year = id.substring(6, 10);
+        } else {
+            System.out.println("身份证号码不匹配！");
+            return 0;
+        }
+        Calendar date = Calendar.getInstance();
+        String currentYear = String.valueOf(date.get(Calendar.YEAR));
+        return Integer.valueOf(currentYear) - Integer.valueOf(year);
+    }
+
 
     /**
      * 检测某个应用是否安装

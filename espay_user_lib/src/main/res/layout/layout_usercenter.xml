@@ -4,7 +4,7 @@
     android:background="@drawable/icon_bg_main"
     android:scaleType="centerCrop"
     android:layout_marginRight="40dp"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:background="@color/easou_black_alpha"
-        android:layout_width="60dp"
+        android:layout_width="40dp"
         android:layout_height="match_parent">
 
         <ImageView
@@ -42,34 +42,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
-    <LinearLayout
+
+    <RelativeLayout
         android:orientation="vertical"
         android:id="@+id/ll_content"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent">
-        <include
-            android:visibility="visible"
-            android:id="@+id/include_usermenu"
-            layout="@layout/layout_user_menu"/>
-        <include
-            android:id="@+id/include_changepassword"
-            android:visibility="gone"
-            layout="@layout/layout_changepassword"/>
-        <include
-            android:visibility="gone"
-            android:id="@+id/include_bind"
-            layout="@layout/layout_bindphone"/>
 
-        <include
-            android:visibility="gone"
-            android:id="@+id/include_user_authen"
-            layout="@layout/layout_usercenter_authen"/>
+        <LinearLayout
+            android:id="@+id/ll_user"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:visibility="visible"
+                android:id="@+id/include_usermenu"
+                layout="@layout/layout_user_menu" />
+
+            <include
+                android:id="@+id/include_changepassword"
+                android:visibility="gone"
+                layout="@layout/layout_changepassword" />
+
+            <include
+                android:visibility="gone"
+                android:id="@+id/include_bind"
+                layout="@layout/layout_bindphone" />
+
+            <include
+                android:visibility="gone"
+                android:id="@+id/include_user_authen"
+                layout="@layout/layout_usercenter_authen" />
+        </LinearLayout>
+
         <WebView
             android:visibility="gone"
             android:id="@+id/webview"
-            android:layout_margin="10dp"
+            android:layout_margin="4dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 </LinearLayout>

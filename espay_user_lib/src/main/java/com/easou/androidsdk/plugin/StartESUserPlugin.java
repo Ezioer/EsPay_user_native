@@ -151,8 +151,11 @@ public class StartESUserPlugin {
 	/**
 	 * 弹出实名认证对话框
 	 */
+	public static AuthenNotiDialog authenDialog = null;
 	public static void showUserAuthenDialog() {
-		AuthenNotiDialog authenDialog = new AuthenNotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, 0);
+		if (authenDialog == null) {
+			authenDialog = new AuthenNotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, 4);
+		}
 		authenDialog.show();
 	}
 
@@ -162,8 +165,8 @@ public class StartESUserPlugin {
 	 * @param url
 	 */
 	public static void showWebViewDialaog(String url) {
-		WebViewDialog dialog = new WebViewDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT | Gravity.BOTTOM, 0.9f, 0, url);
-		dialog.show();
+		WebViewDialog mHelpDialog = new WebViewDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT | Gravity.BOTTOM, 0.9f, 0, url);
+		mHelpDialog.show();
 	}
 
 	/**
@@ -176,7 +179,6 @@ public class StartESUserPlugin {
 		intent.setClass(Starter.mActivity, ESUserWebActivity.class);
 		Starter.mActivity.startActivity(intent);
 	}
-
 
 	/**
 	 * 获取SDK用户信息

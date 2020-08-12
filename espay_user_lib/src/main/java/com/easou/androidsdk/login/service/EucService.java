@@ -2,6 +2,8 @@ package com.easou.androidsdk.login.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -9,7 +11,6 @@ import java.util.Properties;
 import android.content.Context;
 
 import com.easou.androidsdk.data.Constant;
-import com.easou.androidsdk.http.ApiInterface;
 import com.easou.androidsdk.login.httpclient.EucHttpClient;
 import com.easou.androidsdk.login.para.AuthParametric;
 import com.easou.androidsdk.login.util.GsonUtil;
@@ -70,7 +71,7 @@ public class EucService {
             key = CommonUtils.readPropertiesValue(_context, "key");
             version = CommonUtils.readPropertiesValue(_context, "version");
             source = CommonUtils.readPropertiesValue(_context, "source");
-            apiServer = ApiInterface.apiTest;
+            apiServer = CommonUtils.readPropertiesValue(_context, "api");
             qn = CommonUtils.readPropertiesValue(_context, "qn");
             paymentUrl = CommonUtils.readPropertiesValue(_context, "paymentUrl");
         } catch (Exception e) {
@@ -121,6 +122,26 @@ public class EucService {
         return bean;
     }
 
+
+    public String getHelpUrl(String path) {
+        Map map = new HashMap();
+        map.put("appid", appId);
+        String result = EucHttpClient.httpGet(path, map);
+        if (result == null || "".equals(result)) {
+            return "";
+        }
+        HelpServiceInfo info = GsonUtil.fromJson(result, HelpServiceInfo.class);
+        if (info.getStatus() == 1) {
+            try {
+                return URLDecoder.decode(info.getMsg(), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
     public LimitStatusInfo getLimitSwitch(String path) {
         Map map = new HashMap();
         map.put("qn", qn);
@@ -129,6 +150,17 @@ public class EucService {
             return null;
         }
         LimitStatusInfo info = GsonUtil.fromJson(result, LimitStatusInfo.class);
+        return info;
+    }
+
+    public PayLimitInfo getPayLimit(String path, int age) {
+        Map map = new HashMap();
+        map.put("age", age);
+        String result = EucHttpClient.httpGet(path, map);
+        if (result == null || "".equals(result)) {
+            return null;
+        }
+        PayLimitInfo info = GsonUtil.fromJson(result, PayLimitInfo.class);
         return info;
     }
 

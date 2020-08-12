@@ -5,14 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
-import android.support.v7.view.menu.MenuView;
-import android.view.Gravity;
+import android.support.annotation.RestrictTo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,19 +18,10 @@ import android.widget.ListPopupWindow;
 import android.widget.TextView;
 
 import com.easou.androidsdk.StartESAccountCenter;
-import com.easou.androidsdk.Starter;
-import com.easou.androidsdk.data.ApiType;
 import com.easou.androidsdk.data.Constant;
-import com.easou.androidsdk.data.ESConstant;
-import com.easou.androidsdk.data.FeeType;
-import com.easou.androidsdk.data.LoginNameInfo;
-import com.easou.androidsdk.http.ApiAsyncImp;
-import com.easou.androidsdk.http.HttpAsyncTaskImp;
+import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.LoginCallBack;
-import com.easou.androidsdk.login.RegisterAPI;
-import com.easou.androidsdk.login.service.AuthBean;
-import com.easou.androidsdk.login.service.EucAPIException;
-import com.easou.androidsdk.login.service.EucApiResult;
+import com.easou.androidsdk.login.UserAPI;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
@@ -40,12 +29,9 @@ import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * created by xiaoqing.zhou
@@ -62,7 +48,7 @@ public class LoginWayDialog extends BaseDialog {
     private View mView;
     private Context mContext;
     //0为登录框，1为账号登录框
-    private int currentType =0;
+    private int currentType = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,16 +62,29 @@ public class LoginWayDialog extends BaseDialog {
         final LinearLayout llRoot = (LinearLayout) mView.findViewById(R.id.ll_root);
         final LinearLayout llHelp = (LinearLayout) mView.findViewById(R.id.ll_help);
 
-        TextView tvHelp = (TextView) mView.findViewById(R.id.tv_help);
-        TextView tvService = (TextView) mView.findViewById(R.id.tv_user_service);
-        tvHelp.setOnClickListener(new View.OnClickListener() {
+        TextView tvMainHelp = (TextView) mView.findViewById(R.id.tv_main_help);
+        TextView tvMainService = (TextView) mView.findViewById(R.id.tv_main_user_service);
+
+        tvMainHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StartESUserPlugin.showWebViewDialaog(Constant.user_service);
+                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String serviceUrl = UserAPI.getServiceUrl(mContext);
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                StartESUserPlugin.showWebViewDialaog(serviceUrl);
+                            }
+                        });
+                    }
+                });
+
             }
         });
 
-        tvService.setOnClickListener(new View.OnClickListener() {
+        tvMainService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 StartESUserPlugin.showWebViewDialaog(Constant.user_service);
@@ -107,7 +106,7 @@ public class LoginWayDialog extends BaseDialog {
         final TextView accountRegister = (TextView) mView.findViewById(R.id.tv_account_register);
 
         //找回密码
-        final View  includeLookPassword = mView.findViewById(R.id.include_lookpassword);
+        final View includeLookPassword = mView.findViewById(R.id.include_lookpassword);
         final ImageView ivCloseLook = (ImageView) includeLookPassword.findViewById(R.id.iv_close_dialog);
         final EditText mEtPhone = (EditText) includeLookPassword.findViewById(R.id.et_phone);
         final EditText mEtCode = (EditText) includeLookPassword.findViewById(R.id.et_code);
@@ -118,7 +117,7 @@ public class LoginWayDialog extends BaseDialog {
         guestLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StartESAccountCenter.handleAutoRegister(new LoginCallBack(){
+                StartESAccountCenter.handleAutoRegister(new LoginCallBack() {
                     @Override
                     public void loginSuccess() {
                         dismiss();
@@ -126,14 +125,14 @@ public class LoginWayDialog extends BaseDialog {
 
                     @Override
                     public void loginFail(final String msg) {
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ESToast.getInstance().ToastShow(mContext,msg);
+                                ESToast.getInstance().ToastShow(mContext, msg);
                             }
                         });
                     }
-                },mContext);
+                }, mContext);
             }
         });
 
@@ -161,12 +160,19 @@ public class LoginWayDialog extends BaseDialog {
                     }
                 });
                 final ListPopupWindow lpw = new ListPopupWindow(mContext);
-                final List<LoginNameInfo> loginNameInfo = CommonUtils.getLoginNameInfo(mContext);
                 ivExpan.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        lpw.setAdapter(new ArrayAdapter(mContext,
-                                android.R.layout.simple_list_item_1, loginNameInfo));
+                        final List<LoginNameInfo> loginNameInfo = CommonUtils.getLoginNameInfo(mContext);
+                        List<String> nameList = new ArrayList<String>();
+                        for (LoginNameInfo name : loginNameInfo) {
+                            nameList.add(name.getName());
+                        }
+                        if (loginNameInfo.isEmpty()) {
+                            return;
+                        }
+                        lpw.setAdapter(new ArrayAdapter<String>(mContext,
+                                android.R.layout.simple_list_item_1, nameList));
                         lpw.setAnchorView(editTextAccount);
                         lpw.setModal(true);
                         lpw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -186,11 +192,12 @@ public class LoginWayDialog extends BaseDialog {
                     public void onClick(View v) {
                         String name = editTextAccount.getText().toString();
                         String password = editTextPassword.getText().toString();
-                        if (name.isEmpty() || password.isEmpty()){
+                        if (name.isEmpty() || password.isEmpty()) {
+                            ESToast.getInstance().ToastShow(mContext, "账号和密码不能为空");
                             return;
                         }
                         Tools.hideKeyboard(mAccountLogin);
-                        StartESAccountCenter.handleAccountLogin(new LoginCallBack(){
+                        StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
 
                             @Override
                             public void loginSuccess() {
@@ -199,14 +206,14 @@ public class LoginWayDialog extends BaseDialog {
 
                             @Override
                             public void loginFail(final String msg) {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,msg);
+                                        ESToast.getInstance().ToastShow(mContext, msg);
                                     }
                                 });
                             }
-                        },name,password,mContext);
+                        }, name, password, mContext);
                     }
                 });
             }
@@ -242,7 +249,8 @@ public class LoginWayDialog extends BaseDialog {
                     public void onClick(View v) {
                         String name = editTextAccount.getText().toString();
                         String password = editTextPassword.getText().toString();
-                        if (name.isEmpty() || password.isEmpty()){
+                        if (name.isEmpty() || password.isEmpty()) {
+                            ESToast.getInstance().ToastShow(mContext, "账号和密码不能为空");
                             return;
                         }
                         Tools.hideKeyboard(mAccountLogin);
@@ -254,14 +262,14 @@ public class LoginWayDialog extends BaseDialog {
 
                             @Override
                             public void loginFail(final String msg) {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,msg);
+                                        ESToast.getInstance().ToastShow(mContext, msg);
                                     }
                                 });
                             }
-                        },name, password, mContext);
+                        }, name, password, mContext);
                     }
                 });
             }
@@ -271,7 +279,7 @@ public class LoginWayDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 llHelp.setVisibility(View.GONE);
-                if (currentType == 0){
+                if (currentType == 0) {
                     llRoot.setVisibility(View.GONE);
                     llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     includeLookPassword.setVisibility(View.VISIBLE);
@@ -282,10 +290,10 @@ public class LoginWayDialog extends BaseDialog {
                 }
                 includeLookPassword.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
 
-                final CountDownTimer timer =  new CountDownTimer(60*1000,1000) {
+                final CountDownTimer timer = new CountDownTimer(60 * 1000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        mTvGetCode.setText(millisUntilFinished/1000+"");
+                        mTvGetCode.setText(millisUntilFinished / 1000 + "");
                         mTvGetCode.setEnabled(false);
                     }
 
@@ -301,29 +309,31 @@ public class LoginWayDialog extends BaseDialog {
                     public void onClick(View v) {
                         String phone = mEtPhone.getText().toString();
                         Tools.hideKeyboard(mTvGetCode);
-                        if (!phone.isEmpty()){
+                        if (!phone.isEmpty()) {
                             timer.start();
                             StartESAccountCenter.requestResetPassword(new LoginCallBack() {
                                 @Override
                                 public void loginSuccess() {
-                                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ESToast.getInstance().ToastShow(mContext,"发送成功");
+                                            ESToast.getInstance().ToastShow(mContext, "发送成功");
                                         }
                                     });
                                 }
 
                                 @Override
                                 public void loginFail(final String msg) {
-                                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ESToast.getInstance().ToastShow(mContext,msg);
+                                            ESToast.getInstance().ToastShow(mContext, msg);
                                         }
                                     });
                                 }
-                            },phone, mContext);
+                            }, phone, mContext);
+                        } else {
+                            ESToast.getInstance().ToastShow(mContext, "请先输入手机号");
                         }
                     }
                 });
@@ -334,7 +344,7 @@ public class LoginWayDialog extends BaseDialog {
                         Tools.hideKeyboard(ivCloseLook);
                         llHelp.setVisibility(View.VISIBLE);
                         timer.cancel();
-                        if (currentType == 0){
+                        if (currentType == 0) {
                             llRoot.setVisibility(View.VISIBLE);
                             llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                             includeLookPassword.setVisibility(View.GONE);
@@ -353,7 +363,8 @@ public class LoginWayDialog extends BaseDialog {
                         String phone = mEtPhone.getText().toString();
                         String code = mEtCode.getText().toString();
                         String newPw = mEtNewPw.getText().toString();
-                        if (phone.isEmpty() || code.isEmpty() || newPw.isEmpty()){
+                        if (phone.isEmpty() || code.isEmpty() || newPw.isEmpty()) {
+                            ESToast.getInstance().ToastShow(mContext, "您有信息未填完哦");
                             return;
                         }
                         timer.cancel();
@@ -361,12 +372,12 @@ public class LoginWayDialog extends BaseDialog {
                         StartESAccountCenter.lookPassword(new LoginCallBack() {
                             @Override
                             public void loginSuccess() {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,"修改成功");
+                                        ESToast.getInstance().ToastShow(mContext, "修改成功");
                                         llHelp.setVisibility(View.VISIBLE);
-                                        if (currentType == 0){
+                                        if (currentType == 0) {
                                             llRoot.setVisibility(View.VISIBLE);
                                             includeLookPassword.setVisibility(View.GONE);
                                         } else {
@@ -379,18 +390,16 @@ public class LoginWayDialog extends BaseDialog {
 
                             @Override
                             public void loginFail(final String msg) {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,msg);
+                                        ESToast.getInstance().ToastShow(mContext, msg);
                                     }
                                 });
                             }
-                        },phone,newPw,code,mContext);
+                        }, phone, newPw, code, mContext);
                     }
                 });
-
-
             }
         });
     }

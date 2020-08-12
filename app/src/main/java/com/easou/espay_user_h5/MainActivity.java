@@ -25,16 +25,10 @@ import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.callback.ESdkCallback;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.util.ESdkLog;
-import com.iqiyi.qilin.trans.QiLinTrans;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -203,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onLogout() {
 
                 System.out.println("退出登录");
-                Starter.getInstance().getUserInfo();
+//                Starter.getInstance().getUserInfo();
                 // demo演示代码
                 enterGame(View.GONE);
             }

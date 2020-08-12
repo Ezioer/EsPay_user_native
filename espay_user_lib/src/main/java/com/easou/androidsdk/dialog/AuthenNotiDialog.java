@@ -1,5 +1,6 @@
 package com.easou.androidsdk.dialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.RegisterAPI;
@@ -19,6 +21,7 @@ import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
+import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.espay_user_lib.R;
 
@@ -29,7 +32,7 @@ import com.easou.espay_user_lib.R;
  */
 public class AuthenNotiDialog extends BaseDialog {
 
-    public AuthenNotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,int us) {
+    public AuthenNotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight, int us) {
         super(context, animation, gravity, mWidth, mHeight);
         mContext = context;
         this.us = us;
@@ -56,10 +59,15 @@ public class AuthenNotiDialog extends BaseDialog {
         TextView changeAccount = (TextView) includeAuthen.findViewById(R.id.tv__changeaccount);
         TextView submitAuthen = (TextView) includeAuthen.findViewById(R.id.tv_authen_submit_dialog);
         final LinearLayout llNoti = (LinearLayout) mView.findViewById(R.id.ll_noti);
-        if (us == 1){
+        if (us == 1 || us == 4) {
             closeDialog.setVisibility(View.VISIBLE);
         } else {
             closeDialog.setVisibility(View.GONE);
+        }
+        if (us == 4) {
+            changeAccount.setVisibility(View.GONE);
+        } else {
+            changeAccount.setVisibility(View.VISIBLE);
         }
         closeDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,22 +89,38 @@ public class AuthenNotiDialog extends BaseDialog {
                 //提交实名认证
                 final String name = editTextName.getText().toString();
                 final String idNum = editTextNum.getText().toString();
-                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(idNum)){
+                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(idNum)) {
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 EucApiResult<String> info = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
-                                if (info.getResultCode() == CodeConstant.OK){
-                                    dismiss();
+                                if (info.getResultCode().equals(CodeConstant.OK)) {
+                                    int age = CommonUtils.getAge(idNum);
+                                    StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age > 18 ? "1" : "0");
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ESToast.getInstance().ToastShow(mContext, "认证成功");
+                                            dismiss();
+                                            if (listener != null) {
+                                                listener.authenSuccess(CommonUtils.getYMDfromIdNum(idNum));
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    if (info.getDescList().size() > 0) {
+                                        ESToast.getInstance().ToastShow(mContext, info.getDescList().get(0).getD());
+                                    } else {
+                                        ESToast.getInstance().ToastShow(mContext, "认证失败");
+                                    }
                                 }
                             } catch (EucAPIException e) {
-                                e.printStackTrace();
                             }
                         }
                     });
                 } else {
-                    ESToast.getInstance().ToastShow(mContext,"姓名和身份证号必须不为空");
+                    ESToast.getInstance().ToastShow(mContext, "姓名和身份证号必须不为空");
                 }
             }
         });
@@ -109,5 +133,15 @@ public class AuthenNotiDialog extends BaseDialog {
                 StartESUserPlugin.showLoginDialog();
             }
         });
+    }
+
+    private authenResult listener = null;
+
+    public void setResult(authenResult result) {
+        listener = result;
+    }
+
+    public interface authenResult {
+        void authenSuccess(String ymd);
     }
 }
