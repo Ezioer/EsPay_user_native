@@ -89,12 +89,20 @@ public class AuthenNotiDialog extends BaseDialog {
                 //提交实名认证
                 final String name = editTextName.getText().toString();
                 final String idNum = editTextNum.getText().toString();
+                if (!CommonUtils.isIDNumber(idNum)) {
+                    ESToast.getInstance().ToastShow(mContext, "请输入正确的身份证号吗");
+                    return;
+                }
+                if (!CommonUtils.checkNameChinese(name)) {
+                    ESToast.getInstance().ToastShow(mContext, "请输入正确的名字");
+                    return;
+                }
                 if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(idNum)) {
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                EucApiResult<String> info = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                                final EucApiResult<String> info = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
                                 if (info.getResultCode().equals(CodeConstant.OK)) {
                                     int age = CommonUtils.getAge(idNum);
                                     StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age > 18 ? "1" : "0");
@@ -109,11 +117,16 @@ public class AuthenNotiDialog extends BaseDialog {
                                         }
                                     });
                                 } else {
-                                    if (info.getDescList().size() > 0) {
-                                        ESToast.getInstance().ToastShow(mContext, info.getDescList().get(0).getD());
-                                    } else {
-                                        ESToast.getInstance().ToastShow(mContext, "认证失败");
-                                    }
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (info.getDescList().size() > 0) {
+                                                ESToast.getInstance().ToastShow(mContext, info.getDescList().get(0).getD());
+                                            } else {
+                                                ESToast.getInstance().ToastShow(mContext, "认证失败");
+                                            }
+                                        }
+                                    });
                                 }
                             } catch (EucAPIException e) {
                             }

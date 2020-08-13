@@ -18,7 +18,7 @@
         android:layout_toRightOf="@id/iv_bind_back"
         android:gravity="center_horizontal"
         android:text="@string/bindphone"
-        android:textColor="@color/easou_thin1_color"
+        android:textColor="@color/payeco_textColorWhite"
         android:textSize="18sp" />
 
     <EditText

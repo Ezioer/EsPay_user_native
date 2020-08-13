@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginLeft="20dp"
+    android:layout_marginTop="30dp"
+    android:layout_marginRight="20dp"
+    android:background="@drawable/icon_bg">
+
+    <LinearLayout
+        android:id="@+id/ll_icongift"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@drawable/icon_gift_bg"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_gift" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_newgift"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/ll_icongift"
+        android:text="@string/newgift"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tv_giftinfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_newgift"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@id/ll_icongift"
+        android:ellipsize="end"
+        android:maxLines="4"
+        android:text=""
+        android:textColor="@color/payeco_textColorWhite"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_getGiftCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ll_icongift"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/ll_icongift"
+        android:background="@drawable/icon_getcode"
+        android:gravity="center"
+        android:text="@string/get_giftcode"
+        android:textColor="@color/easou_em7_color"
+        android:textSize="16sp" />
+</RelativeLayout>

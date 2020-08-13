@@ -2,6 +2,7 @@ package com.easou.androidsdk.dialog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -75,7 +76,9 @@ public class LoginWayDialog extends BaseDialog {
                         ((Activity) mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                StartESUserPlugin.showWebViewDialaog(serviceUrl);
+                                Intent intent = new Intent(mContext, WebViewActivity.class);
+                                intent.putExtra("url", serviceUrl);
+                                mContext.startActivity(intent);
                             }
                         });
                     }
@@ -87,7 +90,9 @@ public class LoginWayDialog extends BaseDialog {
         tvMainService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StartESUserPlugin.showWebViewDialaog(Constant.user_service);
+                Intent intent = new Intent(mContext, WebViewActivity.class);
+                intent.putExtra("url", Constant.user_service);
+                mContext.startActivity(intent);
             }
         });
         //账号登录或注册
@@ -257,7 +262,15 @@ public class LoginWayDialog extends BaseDialog {
                         StartESAccountCenter.handleAccountRegister(new LoginCallBack() {
                             @Override
                             public void loginSuccess() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        editTextAccount.setText("");
+                                        editTextPassword.setText("");
+                                    }
+                                });
                                 dismiss();
+
                             }
 
                             @Override
@@ -279,6 +292,10 @@ public class LoginWayDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 llHelp.setVisibility(View.GONE);
+                mTvGetCode.setText("获取");
+                mEtPhone.setText("");
+                mEtCode.setText("");
+                mEtNewPw.setText("");
                 if (currentType == 0) {
                     llRoot.setVisibility(View.GONE);
                     llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));

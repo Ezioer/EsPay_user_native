@@ -9,7 +9,7 @@
         android:text="您好，xxx"
         android:textSize="18sp"
         android:gravity="center_horizontal"
-        android:textColor="@color/easou_thin1_color"
+        android:textColor="@color/payeco_textColorWhite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <RelativeLayout
@@ -28,6 +28,7 @@
             android:drawablePadding="5dp"
             android:textSize="18sp"
             android:layout_centerVertical="true"
+            android:textColor="@color/payeco_textColorWhite"
             android:drawableLeft="@drawable/icon_user_editpw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -52,6 +53,7 @@
             android:drawablePadding="5dp"
             android:id="@+id/tv_bindphone"
             android:text="@string/bindphone"
+            android:textColor="@color/payeco_textColorWhite"
             android:gravity="center_vertical"
             android:layout_centerVertical="true"
             android:drawableLeft="@drawable/icon_user_bind"
@@ -79,6 +81,7 @@
             android:textSize="18sp"
             android:id="@+id/tv_user_authen"
             android:text="@string/authentication"
+            android:textColor="@color/payeco_textColorWhite"
             android:gravity="center_vertical"
             android:layout_centerVertical="true"
             android:drawableLeft="@drawable/icon_user_authen"
@@ -106,6 +109,7 @@
             android:drawablePadding="5dp"
             android:id="@+id/tv_logout"
             android:text="@string/logout"
+            android:textColor="@color/payeco_textColorWhite"
             android:gravity="center_vertical"
             android:layout_centerVertical="true"
             android:drawableLeft="@drawable/icon_user_logout"

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -15,6 +16,11 @@ import com.easou.androidsdk.login.httpclient.EucHttpClient;
 import com.easou.androidsdk.login.para.AuthParametric;
 import com.easou.androidsdk.login.util.GsonUtil;
 import com.easou.androidsdk.util.CommonUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class EucService {
 
@@ -140,6 +146,34 @@ public class EucService {
         } else {
             return "";
         }
+    }
+
+    public GiftBean getGifts(String path) {
+        Map map = new HashMap();
+        map.put("appid", appId);
+        map.put("userid", Constant.ESDK_USERID);
+        String result = EucHttpClient.httpGet(path, map);
+        if (result == null || "".equals(result)) {
+            return null;
+        }
+        GiftBean bean = new GiftBean();
+        try {
+            JSONObject object = new JSONObject(result);
+            int code = object.optInt("resultCode");
+            String msg = object.optString("msg");
+            bean.setMsg(msg);
+            bean.setResultCode(code);
+            if (code == 1) {
+                String list = object.optString("rows");
+                List<GiftInfo> info = new Gson().fromJson(list, new TypeToken<List<GiftInfo>>() {
+                }.getType());
+                bean.setRows(info);
+            }
+        } catch (JSONException e) {
+
+        }
+
+        return bean;
     }
 
     public LimitStatusInfo getLimitSwitch(String path) {

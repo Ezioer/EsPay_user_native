@@ -33,9 +33,8 @@
             android:layout_height="wrap_content"/>
 
         <ImageView
-            android:visibility="gone"
             android:layout_marginTop="10dp"
-            android:id="@+id/tv_gift"
+            android:id="@+id/iv_gift"
             android:gravity="center_horizontal"
             android:textColor="@color/payeco_textColorWhite"
             android:src="@drawable/icon_main_gift"
@@ -82,5 +81,67 @@
             android:layout_margin="4dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/ll_gift"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_giftcenter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:text="@string/gift_center"
+                android:textColor="@color/payeco_textColorWhite"
+                android:textSize="18sp" />
+
+            <ListView
+                android:id="@+id/listview"
+                android:layout_width="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_height="400dp" />
+
+            <RelativeLayout
+                android:visibility="gone"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/ll_giftcode"
+                android:background="@drawable/icon_giftcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_code"
+                    android:text="@string/gamecode"
+                    android:textSize="24sp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_giftcode"
+                    android:textSize="18sp"
+                    android:text=""
+                    android:textIsSelectable="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/tv_code"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/bg_giftcode"
+                    android:textColor="@color/easou_em7_color"
+                    android:layout_width="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

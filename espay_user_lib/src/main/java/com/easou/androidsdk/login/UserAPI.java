@@ -8,12 +8,16 @@ import com.easou.androidsdk.login.para.OAuthParametric;
 import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.login.service.EucService;
+import com.easou.androidsdk.login.service.GiftBean;
+import com.easou.androidsdk.login.service.GiftInfo;
 import com.easou.androidsdk.login.service.JBean;
 import com.easou.androidsdk.login.service.JBody;
 import com.easou.androidsdk.login.service.JUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
+
+import java.util.List;
 
 public class UserAPI {
 
@@ -23,14 +27,14 @@ public class UserAPI {
 
 	/**
 	 * 根据用户ID获取信息
-	 * 
+	 *
 	 * @param token
 	 * @param id
 	 * @return
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<JUser> getUserById(long id, RequestInfo info,
-			Context _activity) throws EucAPIException {
+												  Context _activity) throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
 		jbody.putContent("id", id);
@@ -195,24 +199,30 @@ public class UserAPI {
             // 解绑操作
             jbean = eucService.getResult("/api2/applyUnBindMobile.json", jbody,
                     authPara, info);
-        }
+		}
 
-        return buildResult(jbean);
-    }
+		return buildResult(jbean);
+	}
 
-    public static String getServiceUrl(Context activity) {
-        eucService = EucService.getInstance(activity);
-        String limitSwitch = eucService.getHelpUrl("https://egamec.eayou.com/customer/info?");
-        return limitSwitch + "?device=android";
-    }
+	public static String getServiceUrl(Context activity) {
+		eucService = EucService.getInstance(activity);
+		String limitSwitch = eucService.getHelpUrl("https://egamec.eayou.com/customer/info?");
+		return limitSwitch + "?device=android";
+	}
 
-    private static EucApiResult<JUser> buildResult(JBean jbean)
-            throws EucAPIException {
-        EucApiResult<JUser> result = new EucApiResult<JUser>(jbean);
-        if (jbean.getBody() != null) {
-            JUser juser = jbean.getBody().getObject("user", JUser.class);
-            result.setResult(juser);
-        }
-        return result;
-    }
+	public static GiftBean getUserGift(Context activity) {
+		eucService = EucService.getInstance(activity);
+		GiftBean info = eucService.getGifts("https://egift.eayou.com/gifts/list?");
+		return info;
+	}
+
+	private static EucApiResult<JUser> buildResult(JBean jbean)
+			throws EucAPIException {
+		EucApiResult<JUser> result = new EucApiResult<JUser>(jbean);
+		if (jbean.getBody() != null) {
+			JUser juser = jbean.getBody().getObject("user", JUser.class);
+			result.setResult(juser);
+		}
+		return result;
+	}
 }

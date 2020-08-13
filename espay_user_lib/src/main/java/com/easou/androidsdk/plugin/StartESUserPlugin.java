@@ -14,7 +14,7 @@ import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
-import com.easou.androidsdk.dialog.UserCenterDialog;
+import com.easou.androidsdk.dialog.UserCenterActivity;
 import com.easou.androidsdk.dialog.WebViewDialog;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.service.LoginBean;
@@ -135,17 +135,27 @@ public class StartESUserPlugin {
 		authenDialog.show();
 	}
 
-	public static UserCenterDialog mUserCenterDialog = null;
+//	public static UserCenterDialog mUserCenterDialog = null;
+
+	public static boolean isShowUser = false;
 
 	public static void showUserCenterDialog() {
-		if (mUserCenterDialog == null) {
+		if (isShowUser) {
+			UserCenterActivity.mContext.moveTaskToBack(true);
+			isShowUser = false;
+		} else {
+			Starter.mActivity.startActivity(new Intent(Starter.mActivity, UserCenterActivity.class));
+			isShowUser = true;
+		}
+
+		/*if (mUserCenterDialog == null) {
 			mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 0.9f, 1);
 		}
 		if (mUserCenterDialog.isShowing()) {
 			mUserCenterDialog.hide();
 		} else {
 			mUserCenterDialog.show();
-		}
+		}*/
 	}
 
 	/**
@@ -304,6 +314,8 @@ public class StartESUserPlugin {
 	 * 隐藏悬浮窗
 	 */
 	public static void hideFloatView() {
+		UserCenterActivity.mContext.moveTaskToBack(true);
+		isShowUser = false;
 		FloatView.close();
 	}
 

@@ -3,6 +3,10 @@
     <string name="chooseloginway">请选择登录方式</string>
     <string name="guest_login">游客登录</string>
     <string name="account_login">账号登录</string>
+    <string name="gift_center">福利中心</string>
+    <string name="newgift">新手礼包</string>
+    <string name="get_giftcode">领取礼包码</string>
+    <string name="gamecode">兑换码</string>
     <string name="account_register">账号注册</string>
     <string name="guest_noti">游客登录体验的游戏内容受到限制</string>
     <string name="help">客服帮助</string>

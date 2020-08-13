@@ -565,9 +565,6 @@ public class StartESAccountCenter {
                         }
                     });
                 } else {
-                    Map<String, String> result = new HashMap<String, String>();
-                    result.put(ESConstant.SDK_IS_IDENTITY_USER, "true");
-                    Starter.mCallback.onUserCert(result);
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
                             RomHelper.checkFloatWindowPermission(Starter.mActivity);
@@ -621,8 +618,9 @@ public class StartESAccountCenter {
                     break;
                 }
             }
+        } else {
+            loginNameInfo.add(info);
         }
-        loginNameInfo.add(info);
         CommonUtils.saveLoginNameInfo(GsonUtil.list2json(loginNameInfo), mContext);
     }
 
@@ -647,6 +645,7 @@ public class StartESAccountCenter {
 
     public static void logout(Context mContext) {
         StartESUserPlugin.hideFloatView();
+        StartESUserPlugin.isShowUser = false;
         CommonUtils.saveLoginInfo("", mContext);
         StartESUserPlugin.showLoginDialog();
         StartOtherPlugin.logTTActionLogin("");

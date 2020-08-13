@@ -123,8 +123,7 @@
             android:name="com.easou.androidsdk.ui.ESAccountCenterActivity"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:screenOrientation="behind" >
-        </activity>
+            android:screenOrientation="behind"></activity>
         <activity
             android:name="com.easou.androidsdk.ui.ESUserWebActivity"
             android:launchMode="singleInstance"
@@ -132,6 +131,18 @@
             android:excludeFromRecents="true"
             android:theme="@style/easou_translucent_notitle"
             android:screenOrientation="behind" />
+
+        <activity
+            android:name="com.easou.androidsdk.dialog.WebViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/easou_translucent_notitle" />
+
+        <activity
+            android:name="com.easou.androidsdk.dialog.UserCenterActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleInstance"
+            android:screenOrientation="behind"
+            android:theme="@style/easou_translucent_notitle" />
         <activity
             android:name="com.easou.androidsdk.ui.ESPayCenterActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

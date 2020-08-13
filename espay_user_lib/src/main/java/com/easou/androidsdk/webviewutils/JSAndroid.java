@@ -16,7 +16,7 @@ public  class JSAndroid extends  Object {
     private ConfigerManagner configerManagner;
     @JavascriptInterface
     public void openAndroid(String msg){
-        Toast.makeText(context,"返回按钮监控",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context,"返回按钮监控",Toast.LENGTH_SHORT).show();
     }
     @JavascriptInterface
     public void writeData(String msg) {

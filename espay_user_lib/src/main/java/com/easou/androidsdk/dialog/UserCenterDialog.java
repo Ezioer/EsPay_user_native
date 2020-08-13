@@ -80,6 +80,7 @@ public class UserCenterDialog extends BaseDialog {
     private void initView() {
         final View includeMenu = mView.findViewById(R.id.include_usermenu);
         final ImageView ivMe = (ImageView) mView.findViewById(R.id.iv_me);
+        final ImageView ivGift = (ImageView) mView.findViewById(R.id.iv_gift);
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
         final RelativeLayout llContent = (RelativeLayout) mView.findViewById(R.id.ll_content);
@@ -89,9 +90,6 @@ public class UserCenterDialog extends BaseDialog {
         webView.getSettings().setDefaultTextEncodingName("utf-8");
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
-//        webView.getSettings().setSupportZoom(true);
-//        webView.setInitialScale(30);
-//        webView.getSettings().setUseWideViewPort(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
@@ -103,16 +101,6 @@ public class UserCenterDialog extends BaseDialog {
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setLoadsImagesAutomatically(true);
         webView.addJavascriptInterface(new JSAndroid(mContext), "Android");
-        webView.setWebChromeClient(new ReWebChomeClient(new ReWebChomeClient.OpenFileChooserCallBack() {
-            @Override
-            public void openFileChooserCallBack(ValueCallback<Uri> uploadMsg, String acceptType) {
-            }
-
-            @Override
-            public boolean openFileChooserCallBackAndroid5(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
-                return true;
-            }
-        }));
         final ImageView ivService = (ImageView) mView.findViewById(R.id.iv_service);
         ivMe.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +110,7 @@ public class UserCenterDialog extends BaseDialog {
                     tvWelcome.setText("您好：" + Starter.loginBean.getUser().getName());
                     ivMe.setImageResource(R.drawable.icon_main_mehign);
                     ivService.setImageResource(R.drawable.icon_main_service);
+                    ivGift.setImageResource(R.drawable.icon_main_gift);
                     llUser.setVisibility(View.VISIBLE);
                     llUser.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                     webView.setVisibility(View.GONE);
@@ -130,6 +119,21 @@ public class UserCenterDialog extends BaseDialog {
             }
         });
 
+        /*ivGift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentType != 2){
+                    currentType = 2;
+                    ivMe.setImageResource(R.drawable.icon_main_me);
+                    ivService.setImageResource(R.drawable.icon_main_service);
+                    ivGift.setImageResource(R.drawable.icon_main_gifthign);
+                    llUser.setVisibility(View.GONE);
+                    webView.setVisibility(View.GONE);
+
+                }
+            }
+        });*/
+
         ivService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,6 +141,7 @@ public class UserCenterDialog extends BaseDialog {
                     currentType = 1;
                     ivMe.setImageResource(R.drawable.icon_main_me);
                     ivService.setImageResource(R.drawable.icon_main_servicehign);
+                    ivGift.setImageResource(R.drawable.icon_main_gift);
                     llUser.setVisibility(View.GONE);
                     llUser.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     webView.setVisibility(View.VISIBLE);
@@ -179,7 +184,7 @@ public class UserCenterDialog extends BaseDialog {
         RelativeLayout rlChangePw = (RelativeLayout) includeMenu.findViewById(R.id.rl_changepassword);
         RelativeLayout rlBind = (RelativeLayout) includeMenu.findViewById(R.id.rl_bindphone);
         final TextView mBindPhoneType = (TextView) includeMenu.findViewById(R.id.tv_bindphone);
-        RelativeLayout rlAuthen = (RelativeLayout) includeMenu.findViewById(R.id.rl_authen);
+        final RelativeLayout rlAuthen = (RelativeLayout) includeMenu.findViewById(R.id.rl_authen);
         final RelativeLayout rlLogout = (RelativeLayout) includeMenu.findViewById(R.id.rl_logout);
         //修改密码
         final ImageView ivBack = (ImageView) includeChangePw.findViewById(R.id.iv_back);
@@ -194,6 +199,7 @@ public class UserCenterDialog extends BaseDialog {
         } else {
             mBindPhoneType.setText("解绑手机");
         }
+
         final EditText etPhone = (EditText) includeBind.findViewById(R.id.et_bind_phone);
         final EditText etCode = (EditText) includeBind.findViewById(R.id.et_bind_code);
         final TextView tvGetCode = (TextView) includeBind.findViewById(R.id.tv_bind_getcode);
@@ -204,6 +210,11 @@ public class UserCenterDialog extends BaseDialog {
         final EditText etIdNum = (EditText) includeUserAuthen.findViewById(R.id.et_user_inputidnumber);
         final TextView authenSubmit = (TextView) includeUserAuthen.findViewById(R.id.tv_authen_submit);
 
+        if (TextUtils.isEmpty(Starter.loginBean.getUser().getIdentityNum())) {
+            rlAuthen.setVisibility(View.VISIBLE);
+        } else {
+            rlAuthen.setVisibility(View.GONE);
+        }
         rlLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,8 +245,12 @@ public class UserCenterDialog extends BaseDialog {
                     public void onClick(View v) {
                         String idName = etIdName.getText().toString();
                         final String idNum = etIdNum.getText().toString();
-                        if (idName.isEmpty() || idNum.isEmpty()){
+                        if (idName.isEmpty() || idNum.isEmpty()) {
                             ESToast.getInstance().ToastShow(mContext, "姓名和身份证号码不能为空");
+                            return;
+                        }
+                        if (!CommonUtils.isIDNumber(idNum)) {
+                            ESToast.getInstance().ToastShow(mContext, "请输入正确的身份证号吗");
                             return;
                         }
                         Tools.hideKeyboard(etIdName);
@@ -248,6 +263,7 @@ public class UserCenterDialog extends BaseDialog {
                                 ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        rlAuthen.setVisibility(View.GONE);
                                         Map<String, String> result = new HashMap<String, String>();
                                         result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
                                         result.put(ESConstant.SDK_USER_BIRTH_DATE, birthdate);
@@ -260,15 +276,15 @@ public class UserCenterDialog extends BaseDialog {
 
                             @Override
                             public void loginFail(final String msg) {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,msg);
+                                        ESToast.getInstance().ToastShow(mContext, msg);
                                     }
                                 });
 
                             }
-                        },idName, idNum, mContext);
+                        }, idName, idNum, mContext);
                     }
                 });
             }
@@ -283,10 +299,10 @@ public class UserCenterDialog extends BaseDialog {
                 includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                 includeBind.setVisibility(View.VISIBLE);
                 includeBind.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.guide_right_in));
-                final CountDownTimer timer = new CountDownTimer(60*1000,1000) {
+                final CountDownTimer timer = new CountDownTimer(60 * 1000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        tvGetCode.setText(millisUntilFinished/1000+"");
+                        tvGetCode.setText(millisUntilFinished / 1000 + "");
                         tvGetCode.setEnabled(false);
                     }
 
@@ -304,12 +320,12 @@ public class UserCenterDialog extends BaseDialog {
                         includeBind.setVisibility(View.GONE);
                         includeBind.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.guide_right_out));
                         Tools.hideKeyboard(ivBindBack);
-                        if (timer != null){
+                        if (timer != null) {
                             timer.cancel();
                         }
                     }
                 });
-                if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())){
+                if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())) {
                     mBindType.setText("绑定手机");
                     bindType = true;
                 } else {
@@ -321,16 +337,16 @@ public class UserCenterDialog extends BaseDialog {
                     public void onClick(View v) {
                         String phone = etPhone.getText().toString();
                         Tools.hideKeyboard(etPhone);
-                        if (!phone.isEmpty()){
+                        if (!phone.isEmpty()) {
                             //发送手机验证码
                             timer.start();
                             StartESAccountCenter.requestBindOrUnBind(new LoginCallBack() {
                                 @Override
                                 public void loginSuccess() {
-                                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            ESToast.getInstance().ToastShow(mContext,"发送成功");
+                                            ESToast.getInstance().ToastShow(mContext, "发送成功");
                                         }
                                     });
                                 }
@@ -356,11 +372,11 @@ public class UserCenterDialog extends BaseDialog {
                     public void onClick(View v) {
                         String phone = etPhone.getText().toString();
                         String code = etCode.getText().toString();
-                        if (phone.isEmpty() || code.isEmpty()){
+                        if (phone.isEmpty() || code.isEmpty()) {
                             ESToast.getInstance().ToastShow(mContext, "手机号和验证码不能为空");
                             return;
                         }
-                        if (timer != null){
+                        if (timer != null) {
                             timer.cancel();
                         }
                         Tools.hideKeyboard(etPhone);
@@ -368,7 +384,7 @@ public class UserCenterDialog extends BaseDialog {
                         StartESAccountCenter.applyBindOrUnBind(new LoginCallBack() {
                             @Override
                             public void loginSuccess() {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "操作成功");
@@ -384,14 +400,14 @@ public class UserCenterDialog extends BaseDialog {
 
                             @Override
                             public void loginFail(final String msg) {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,msg);
+                                        ESToast.getInstance().ToastShow(mContext, msg);
                                     }
                                 });
                             }
-                        },phone,code,bindType,mContext);
+                        }, phone, code, bindType, mContext);
                     }
                 });
             }
@@ -420,7 +436,7 @@ public class UserCenterDialog extends BaseDialog {
                     public void onClick(View v) {
                         String newPw = etNewPw.getText().toString();
                         String oldPw = etOldPw.getText().toString();
-                        if (newPw.isEmpty() || oldPw.isEmpty()){
+                        if (newPw.isEmpty() || oldPw.isEmpty()) {
                             ESToast.getInstance().ToastShow(mContext, "新密码和旧密码不能为空");
                             return;
                         }
@@ -429,7 +445,7 @@ public class UserCenterDialog extends BaseDialog {
                         StartESAccountCenter.updatePassword(new LoginCallBack() {
                             @Override
                             public void loginSuccess() {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "'修改成功");
@@ -437,21 +453,20 @@ public class UserCenterDialog extends BaseDialog {
                                         includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_in));
                                         includeChangePw.setVisibility(View.GONE);
                                         includeChangePw.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.guide_right_out));
-//                                        rlLogout.performClick();
                                     }
                                 });
                             }
 
                             @Override
                             public void loginFail(final String msg) {
-                                ((Activity)mContext).runOnUiThread(new Runnable() {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ESToast.getInstance().ToastShow(mContext,msg);
+                                        ESToast.getInstance().ToastShow(mContext, msg);
                                     }
                                 });
                             }
-                        },newPw,oldPw,mContext);
+                        }, newPw, oldPw, mContext);
                     }
                 });
             }
