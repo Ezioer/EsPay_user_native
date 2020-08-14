@@ -9,8 +9,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,8 +59,10 @@ public class UserCenterDialog extends BaseDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         mView = LayoutInflater.from(mContext).inflate(R.layout.layout_usercenter, null);
         setContentView(mView);
+        getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         initView();
     }
 
@@ -221,6 +224,7 @@ public class UserCenterDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 dismiss();
+                StartESUserPlugin.mUserCenterDialog = null;
                 StartESAccountCenter.logout(mContext);
                 Starter.mCallback.onLogout();
             }
@@ -482,11 +486,5 @@ public class UserCenterDialog extends BaseDialog {
                 });
             }
         });
-    }
-
-    private MainLeftClick click = null;
-
-    public interface MainLeftClick {
-        void onClickMain();
     }
 }

@@ -91,6 +91,14 @@ public class Starter {
     }
 
     /**
+     * 显示SDK用户中心页面
+     */
+    public void logout() {
+        StartESUserPlugin.hideUserCenter();
+        StartESAccountCenter.logout(mActivity);
+    }
+
+    /**
      * 显示SDK悬浮窗
      */
     public void showFloatView() {

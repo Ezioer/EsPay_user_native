@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.easou.espay_user_lib.R;
+
 /**
  * created by xiaoqing.zhou
  * on 2020/8/3
@@ -18,7 +20,7 @@ class BaseDialog extends Dialog {
     private float mWidth;
     private Context mContext;
     public BaseDialog(@NonNull Context context,int animation,int gravity,float mWidth,int mHeight) {
-        super(context);
+        super(context, R.style.CommentStyle);
         this.animation = animation;
         this.gravity = gravity;
         this.mHeight = mHeight;

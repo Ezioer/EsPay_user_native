@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
@@ -136,6 +138,11 @@ public class StartESUserPlugin {
 		authenDialog.show();
 	}
 
+	public static void hideUserCenter() {
+		mUserCenterDialog.hide();
+		mUserCenterDialog = null;
+	}
+
 	public static UserCenterDialog mUserCenterDialog = null;
 
 	public static boolean isShowUser = false;
@@ -158,6 +165,12 @@ public class StartESUserPlugin {
 			mUserCenterDialog.hide();
 		} else {
 			mUserCenterDialog.show();
+			Window window = mUserCenterDialog.getWindow();//必须在show之后设置dialog的宽高
+			WindowManager.LayoutParams layoutParams = window
+					.getAttributes();
+			layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+			layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+			window.setAttributes(layoutParams);
 		}
 	}
 
