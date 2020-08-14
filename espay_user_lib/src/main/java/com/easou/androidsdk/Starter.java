@@ -85,8 +85,8 @@ public class Starter {
      * 显示SDK用户中心页面
      */
     public void showUserCenter() {
-        StartESAccountCenter.logout(mActivity);
-
+//        StartESAccountCenter.logout(mActivity);
+        StartESUserPlugin.showSdkView();
 //        StartESUserPlugin.showSdkView();
     }
 

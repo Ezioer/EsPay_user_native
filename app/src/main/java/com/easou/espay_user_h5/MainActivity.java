@@ -25,6 +25,7 @@ import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.callback.ESdkCallback;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.util.ESdkLog;
+import com.easou.androidsdk.util.ThreadPoolManager;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -315,9 +316,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStop() {
+        Starter.getInstance().hideFloatView();
         super.onStop();
         /** 隐藏悬浮窗 */
-        Starter.getInstance().hideFloatView();
     }
 
     @Override

@@ -142,7 +142,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
             android:screenOrientation="behind"
-            android:taskAffinity=":com.easou.androidsdk"
+            android:taskAffinity=":com.easdk"
             android:excludeFromRecents="true"
             android:theme="@style/easou_translucent_notitle" />
         <activity

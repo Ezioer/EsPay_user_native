@@ -142,8 +142,10 @@ public class StartESUserPlugin {
 	public static void showUserCenterDialog() {
 		if (isShowUser) {
 			UserCenterActivity.mContext.moveTaskToBack(true);
+			ESdkLog.d("隐藏用户中心");
 			isShowUser = false;
 		} else {
+			ESdkLog.d("显示用户中心");
 			Starter.mActivity.startActivity(new Intent(Starter.mActivity, UserCenterActivity.class));
 			isShowUser = true;
 		}
@@ -299,8 +301,9 @@ public class StartESUserPlugin {
 	 * 显示悬浮窗
 	 */
 	public static void showFloatView() {
-
+		ESdkLog.d("进入悬浮窗开关");
 		if (Constant.IS_LOGINED) {
+			ESdkLog.d("显示悬浮窗");
 			FloatView.show(Starter.mActivity);
 		} /*else {
 			if (Constant.IS_ENTERED_SDK) {
@@ -316,6 +319,7 @@ public class StartESUserPlugin {
 	public static void hideFloatView() {
 //		UserCenterActivity.mContext.moveTaskToBack(true);
 		isShowUser = false;
+		ESdkLog.d("隐藏悬浮窗");
 		FloatView.close();
 	}
 

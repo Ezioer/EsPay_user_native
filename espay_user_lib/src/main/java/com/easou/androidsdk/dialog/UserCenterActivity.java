@@ -19,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
@@ -950,7 +951,6 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
     @Override
     protected void onResume() {
         super.onResume();
-
         StartESUserPlugin.showFloatView();
         StartESUserPlugin.isShowUser = true;
     }

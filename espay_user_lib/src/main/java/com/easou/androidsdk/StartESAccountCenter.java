@@ -404,7 +404,7 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_ID, userId);
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
-        result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+        result.put(ESConstant.SDK_USER_BIRTH_DATE, "0");
         result.put(ESConstant.SDK_IS_IDENTITY_USER, "0");
         result.put(ESConstant.SDK_IS_ADULT, "0");
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
@@ -645,6 +645,7 @@ public class StartESAccountCenter {
     }
 
     public static void logout(Context mContext) {
+        Constant.IS_LOGINED = false;
         StartESUserPlugin.hideFloatView();
         StartESUserPlugin.isShowUser = false;
         CommonUtils.saveLoginInfo("", mContext);
@@ -655,6 +656,6 @@ public class StartESAccountCenter {
         StartOtherPlugin.logoutAqyAction();
         Constant.ESDK_USERID = "";
         Constant.ESDK_TOKEN = "";
-        Constant.IS_LOGINED = false;
+        ESdkLog.d("退出登录");
     }
 }
