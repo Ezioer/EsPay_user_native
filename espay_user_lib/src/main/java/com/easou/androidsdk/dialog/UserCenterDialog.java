@@ -331,6 +331,7 @@ public class UserCenterDialog extends BaseDialog {
                         if (timer != null) {
                             timer.cancel();
                         }
+
                     }
                 });
                 if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())) {
