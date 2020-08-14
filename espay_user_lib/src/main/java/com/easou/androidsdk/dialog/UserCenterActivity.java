@@ -950,6 +950,7 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
     @Override
     protected void onResume() {
         super.onResume();
+
         StartESUserPlugin.showFloatView();
         StartESUserPlugin.isShowUser = true;
     }
