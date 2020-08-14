@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.parse_changeaccount:
                 /** 进入SDK用户中心界面 */
-                Starter.getInstance().showUserCenter();
+                Starter.getInstance().logout();
                 break;
 
             case R.id.parse_port:

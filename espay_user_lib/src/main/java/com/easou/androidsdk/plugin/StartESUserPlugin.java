@@ -138,8 +138,10 @@ public class StartESUserPlugin {
 	}
 
 	public static void hideUserCenter() {
-		mUserCenterDialog.dismiss();
-		mUserCenterDialog = null;
+		if (mUserCenterDialog != null) {
+			mUserCenterDialog.dismiss();
+			mUserCenterDialog = null;
+		}
 	}
 
 	public static UserCenterDialog mUserCenterDialog = null;
