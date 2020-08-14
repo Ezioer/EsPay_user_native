@@ -96,6 +96,7 @@ public class Starter {
     public void logout() {
         StartESUserPlugin.hideUserCenter();
         StartESAccountCenter.logout(mActivity);
+        StartESUserPlugin.showLoginDialog();
     }
 
     /**

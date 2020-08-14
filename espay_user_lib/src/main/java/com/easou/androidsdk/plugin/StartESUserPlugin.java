@@ -16,7 +16,6 @@ import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
-import com.easou.androidsdk.dialog.UserCenterActivity;
 import com.easou.androidsdk.dialog.UserCenterDialog;
 import com.easou.androidsdk.dialog.WebViewDialog;
 import com.easou.androidsdk.login.LoginCallBack;
@@ -139,7 +138,7 @@ public class StartESUserPlugin {
 	}
 
 	public static void hideUserCenter() {
-		mUserCenterDialog.hide();
+		mUserCenterDialog.dismiss();
 		mUserCenterDialog = null;
 	}
 
@@ -162,7 +161,7 @@ public class StartESUserPlugin {
 			mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 1f, 1);
 		}
 		if (mUserCenterDialog.isShowing()) {
-			mUserCenterDialog.hide();
+			mUserCenterDialog.dismiss();
 		} else {
 			mUserCenterDialog.show();
 			Window window = mUserCenterDialog.getWindow();//必须在show之后设置dialog的宽高
