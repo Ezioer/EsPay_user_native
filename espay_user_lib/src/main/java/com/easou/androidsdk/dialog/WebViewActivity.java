@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -31,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.easou.androidsdk.ESPlatform;
+import com.easou.androidsdk.webviewutils.ConfigerManagner;
 import com.easou.androidsdk.webviewutils.ImageUtil;
 import com.easou.androidsdk.webviewutils.JSAndroid;
 import com.easou.androidsdk.webviewutils.PermissionUtil;
@@ -108,7 +110,32 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
         mWebView.setVerticalScrollBarEnabled(true);// 取消VerticalScrollBar显示
         mWebView.getSettings().setDomStorageEnabled(true);// 设置html5离线缓存可用
 
-        mWebView.addJavascriptInterface(new JSAndroid(this), "Android");
+        mWebView.addJavascriptInterface(new Object() {
+            private ConfigerManagner configerManagner;
+
+            @JavascriptInterface
+            public void openAndroid(String msg) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
+            }
+
+            @JavascriptInterface
+            public void writeData(String msg) {
+                configerManagner = ConfigerManagner.getInstance(mActivity);
+                configerManagner.setString("js", msg);
+            }
+
+            @JavascriptInterface
+            public String giveInformation(String msg) {
+                configerManagner = ConfigerManagner.getInstance(mActivity);
+                String msg1 = configerManagner.getString("js");
+                return msg1;
+            }
+        }, "Android");
 
         fixDirPath();
         mWebView.setWebViewClient(new ReWebViewClient());

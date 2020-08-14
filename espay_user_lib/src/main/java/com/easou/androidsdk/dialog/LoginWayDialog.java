@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RestrictTo;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,10 +17,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListPopupWindow;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.data.Constant;
+import com.easou.androidsdk.login.AuthenCallBack;
 import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.UserAPI;
@@ -169,15 +172,23 @@ public class LoginWayDialog extends BaseDialog {
                     @Override
                     public void onClick(View v) {
                         final List<LoginNameInfo> loginNameInfo = CommonUtils.getLoginNameInfo(mContext);
-                        List<String> nameList = new ArrayList<String>();
+                        final List<String> nameList = new ArrayList<String>();
                         for (LoginNameInfo name : loginNameInfo) {
                             nameList.add(name.getName());
                         }
                         if (loginNameInfo.isEmpty()) {
                             return;
                         }
-                        lpw.setAdapter(new ArrayAdapter<String>(mContext,
-                                android.R.layout.simple_list_item_1, nameList));
+                        lpw.setAdapter(new ArrayAdapter(mContext,
+                                R.layout.item_loginname, nameList) {
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+                                View view = LayoutInflater.from(mContext).inflate(R.layout.item_loginname, null);
+                                TextView textView = (TextView) view.findViewById(R.id.tv_loginname);
+                                textView.setText(nameList.get(position));
+                                return view;
+                            }
+                        });
                         lpw.setAnchorView(editTextAccount);
                         lpw.setModal(true);
                         lpw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -292,6 +303,7 @@ public class LoginWayDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 llHelp.setVisibility(View.GONE);
+                mTvGetCode.setEnabled(true);
                 mTvGetCode.setText("获取");
                 mEtPhone.setText("");
                 mEtCode.setText("");
@@ -379,28 +391,31 @@ public class LoginWayDialog extends BaseDialog {
                     public void onClick(View v) {
                         String phone = mEtPhone.getText().toString();
                         String code = mEtCode.getText().toString();
-                        String newPw = mEtNewPw.getText().toString();
+                        final String newPw = mEtNewPw.getText().toString();
                         if (phone.isEmpty() || code.isEmpty() || newPw.isEmpty()) {
                             ESToast.getInstance().ToastShow(mContext, "您有信息未填完哦");
                             return;
                         }
-                        timer.cancel();
                         Tools.hideKeyboard(mChangeSubmit);
-                        StartESAccountCenter.lookPassword(new LoginCallBack() {
+                        StartESAccountCenter.lookPassword(new AuthenCallBack() {
                             @Override
-                            public void loginSuccess() {
+                            public void loginSuccess(final String name) {
                                 ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "修改成功");
                                         llHelp.setVisibility(View.VISIBLE);
-                                        if (currentType == 0) {
+                                      /*  if (currentType == 0) {
                                             llRoot.setVisibility(View.VISIBLE);
                                             includeLookPassword.setVisibility(View.GONE);
-                                        } else {
-                                            includeAccountLogin.setVisibility(View.VISIBLE);
-                                            includeLookPassword.setVisibility(View.GONE);
-                                        }
+                                        } else {*/
+                                        timer.cancel();
+                                        editTextAccount.setText(name);
+                                        editTextPassword.setText(newPw);
+                                        llRoot.setVisibility(View.GONE);
+                                        includeAccountLogin.setVisibility(View.VISIBLE);
+                                        includeLookPassword.setVisibility(View.GONE);
+//                                        }
                                     }
                                 });
                             }

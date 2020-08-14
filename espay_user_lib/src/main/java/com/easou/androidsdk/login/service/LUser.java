@@ -3,7 +3,7 @@ package com.easou.androidsdk.login.service;
 public class LUser implements java.io.Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3853138146789650522L;
 	private Long id; // id
@@ -15,7 +15,8 @@ public class LUser implements java.io.Serializable {
 	private Integer occuId; // 职业id
 	private Integer birthday; // 出生年月(数值)
 	private String city; // 城市
-	private String passwd;	// 用户密码
+	private int isAutoRegist;
+	private String passwd;    // 用户密码
 	private String identityName;
 	private String identityNum;
 
@@ -116,4 +117,11 @@ public class LUser implements java.io.Serializable {
 		this.city = city;
 	}
 
+	public int getIsAutoRegist() {
+		return isAutoRegist;
+	}
+
+	public void setIsAutoRegist(int isAutoRegist) {
+		this.isAutoRegist = isAutoRegist;
+	}
 }

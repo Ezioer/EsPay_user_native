@@ -1,147 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:background="@drawable/icon_bg_main"
-    android:scaleType="centerCrop"
-    android:layout_marginRight="40dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="40dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/icon_bg_main" />
+
     <LinearLayout
-        android:paddingTop="10dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:background="@color/easou_black_alpha"
-        android:layout_width="40dp"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:id="@+id/iv_me"
-            android:gravity="center_horizontal"
-            android:textColor="@color/payeco_textColorWhite"
-            android:src="@drawable/icon_main_mehign"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <ImageView
-            android:layout_marginTop="10dp"
-            android:id="@+id/iv_service"
-            android:gravity="center_horizontal"
-            android:textColor="@color/payeco_textColorWhite"
-            android:src="@drawable/icon_main_service"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <ImageView
-            android:layout_marginTop="10dp"
-            android:id="@+id/iv_gift"
-            android:gravity="center_horizontal"
-            android:textColor="@color/payeco_textColorWhite"
-            android:src="@drawable/icon_main_gift"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <RelativeLayout
-        android:orientation="vertical"
-        android:id="@+id/ll_content"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="40dp"
+        android:orientation="horizontal"
+        android:scaleType="centerCrop">
 
         <LinearLayout
-            android:id="@+id/ll_user"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <include
-                android:visibility="visible"
-                android:id="@+id/include_usermenu"
-                layout="@layout/layout_user_menu" />
-
-            <include
-                android:id="@+id/include_changepassword"
-                android:visibility="gone"
-                layout="@layout/layout_changepassword" />
-
-            <include
-                android:visibility="gone"
-                android:id="@+id/include_bind"
-                layout="@layout/layout_bindphone" />
-
-            <include
-                android:visibility="gone"
-                android:id="@+id/include_user_authen"
-                layout="@layout/layout_usercenter_authen" />
-        </LinearLayout>
-
-        <WebView
-            android:visibility="gone"
-            android:id="@+id/webview"
-            android:layout_margin="4dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/ll_gift"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:background="@color/easou_black_alpha"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:paddingTop="10dp">
 
-            <TextView
-                android:id="@+id/tv_giftcenter"
+            <ImageView
+                android:id="@+id/iv_me"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:src="@drawable/icon_main_mehign"
+                android:textColor="@color/payeco_textColorWhite" />
+
+            <ImageView
+                android:id="@+id/iv_service"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center_horizontal"
-                android:text="@string/gift_center"
-                android:textColor="@color/payeco_textColorWhite"
-                android:textSize="18sp" />
+                android:src="@drawable/icon_main_service"
+                android:textColor="@color/payeco_textColorWhite" />
 
-            <ListView
-                android:id="@+id/listview"
+            <ImageView
+                android:id="@+id/iv_gift"
                 android:layout_width="match_parent"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_height="400dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:src="@drawable/icon_main_gift"
+                android:textColor="@color/payeco_textColorWhite" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/ll_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_user"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <include
+                    android:id="@+id/include_usermenu"
+                    layout="@layout/layout_user_menu"
+                    android:visibility="visible" />
+
+                <include
+                    android:id="@+id/include_changepassword"
+                    layout="@layout/layout_changepassword"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/include_bind"
+                    layout="@layout/layout_bindphone"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/include_user_authen"
+                    layout="@layout/layout_usercenter_authen"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <WebView
+                android:id="@+id/webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:visibility="gone" />
 
             <RelativeLayout
-                android:visibility="gone"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:id="@+id/ll_giftcode"
-                android:background="@drawable/icon_giftcode"
+                android:id="@+id/ll_gift"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/tv_code"
-                    android:text="@string/gamecode"
-                    android:textSize="24sp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_centerVertical="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:id="@+id/tv_giftcenter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/gift_center"
+                    android:textColor="@color/payeco_textColorWhite"
+                    android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/tv_giftcode"
-                    android:textSize="18sp"
-                    android:text=""
-                    android:textIsSelectable="true"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/tv_code"
+                <ListView
+                    android:id="@+id/listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:layout_below="@id/tv_giftcenter"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/bg_giftcode"
-                    android:textColor="@color/easou_em7_color"
-                    android:layout_width="wrap_content"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp" />
+
+                <RelativeLayout
+                    android:id="@+id/ll_giftcode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/icon_giftcode"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/iv_closecode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:padding="10dp"
+                        android:src="@drawable/icon_closegiftcode" />
+
+                    <TextView
+                        android:id="@+id/tv_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        android:text="@string/gamecode"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/tv_giftcode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@id/tv_code"
+                        android:background="@drawable/bg_giftcode"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingRight="20dp"
+                        android:paddingBottom="5dp"
+                        android:text=""
+                        android:textColor="@color/easou_em7_color"
+                        android:textIsSelectable="true"
+                        android:textSize="18sp" />
+                </RelativeLayout>
             </RelativeLayout>
-        </LinearLayout>
-    </RelativeLayout>
-</LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

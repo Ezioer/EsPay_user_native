@@ -314,7 +314,7 @@ public class StartESUserPlugin {
 	 * 隐藏悬浮窗
 	 */
 	public static void hideFloatView() {
-		UserCenterActivity.mContext.moveTaskToBack(true);
+//		UserCenterActivity.mContext.moveTaskToBack(true);
 		isShowUser = false;
 		FloatView.close();
 	}

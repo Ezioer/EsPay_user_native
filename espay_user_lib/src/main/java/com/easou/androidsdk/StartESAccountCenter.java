@@ -217,14 +217,14 @@ public class StartESAccountCenter {
      * @param code
      * @param mContext
      */
-    public static void lookPassword(final LoginCallBack callBack, final String phone, final String newPw, final String code, final Context mContext) {
+    public static void lookPassword(final AuthenCallBack callBack, final String phone, final String newPw, final String code, final Context mContext) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
                 try {
                     EucApiResult<AuthBean> userInfo = AuthAPI.applyResetPass(phone, newPw, code, RegisterAPI.getRequestInfo(mContext), mContext);
                     if (userInfo.getResultCode().equals(CodeConstant.OK)) {
-                        callBack.loginSuccess();
+                        callBack.loginSuccess(userInfo.getResult().getUser().getName());
                     } else {
                         if (userInfo.getDescList().size() > 0) {
                             callBack.loginFail(userInfo.getDescList().get(0).getD());
@@ -486,7 +486,7 @@ public class StartESAccountCenter {
 
     public static void handleLoginBean(final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
         saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
-        String userId = String.valueOf(userInfo.getResult().getUser().getId());
+        final String userId = String.valueOf(userInfo.getResult().getUser().getId());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
         String userBirthdate = String.valueOf(userInfo.getResult().getUser().getBirthday());
@@ -508,7 +508,8 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_ID, userId);
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
-        result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+        result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
+                CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()) : "0");
         result.put(ESConstant.SDK_IS_IDENTITY_USER, TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ? "0" : "1");
         String isAdult = "0";
 
@@ -525,7 +526,7 @@ public class StartESAccountCenter {
             public void run() {
                 Starter.mCallback.onLogin(result);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-                if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum())) {
+                if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
                         public void run() {

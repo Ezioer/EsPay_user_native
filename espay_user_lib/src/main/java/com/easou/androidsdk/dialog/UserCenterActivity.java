@@ -22,6 +22,7 @@ import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -47,10 +48,12 @@ import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.UserAPI;
 import com.easou.androidsdk.login.service.GiftBean;
 import com.easou.androidsdk.login.service.GiftInfo;
+import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
+import com.easou.androidsdk.webviewutils.ConfigerManagner;
 import com.easou.androidsdk.webviewutils.ImageUtil;
 import com.easou.androidsdk.webviewutils.JSAndroid;
 import com.easou.androidsdk.webviewutils.PermissionUtil;
@@ -113,17 +116,18 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
     private void initView() {
         mWebView = (WebView) findViewById(getApplication().getResources().getIdentifier("webview", "id",
                 getApplication().getPackageName()));
-        initWebView();
-        initOtherView();
+        final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
+        initWebView(ivMe);
+        initOtherView(ivMe);
     }
 
-    private void initOtherView() {
+    private void initOtherView(final ImageView ivMe) {
         final View includeMenu = findViewById(R.id.include_usermenu);
-        final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
+
         final ImageView ivGift = (ImageView) findViewById(R.id.iv_gift);
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
-        final LinearLayout llGift = (LinearLayout) findViewById(R.id.ll_gift);
+        final RelativeLayout llGift = (RelativeLayout) findViewById(R.id.ll_gift);
         final RelativeLayout llGiftCode = (RelativeLayout) findViewById(R.id.ll_giftcode);
         final TextView tvGiftCode = (TextView) findViewById(R.id.tv_giftcode);
         final ListView giftList = (ListView) findViewById(R.id.listview);
@@ -165,7 +169,7 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
                             mContext.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (userGift.getResultCode() == 1) {
+                                    if (userGift != null && userGift.getResultCode() == 1) {
                                         initList(userGift.getRows());
                                     } else {
                                         ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
@@ -185,13 +189,6 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
                     public void onClick(int pos) {
                         llGiftCode.setVisibility(View.VISIBLE);
                         tvGiftCode.setText(rows.get(pos).getCode());
-                        llGiftCode.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-
-                                return true;
-                            }
-                        });
                     }
                 });
             }
@@ -261,6 +258,13 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
         final EditText etIdNum = (EditText) includeUserAuthen.findViewById(R.id.et_user_inputidnumber);
         final TextView authenSubmit = (TextView) includeUserAuthen.findViewById(R.id.tv_authen_submit);
 
+        ImageView mCloseCode = (ImageView) findViewById(R.id.iv_closecode);
+        mCloseCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                llGiftCode.setVisibility(View.GONE);
+            }
+        });
         if (TextUtils.isEmpty(Starter.loginBean.getUser().getIdentityNum())) {
             rlAuthen.setVisibility(View.VISIBLE);
         } else {
@@ -348,6 +352,8 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
         rlBind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tvGetCode.setEnabled(true);
+                tvGetCode.setText("获取");
                 etPhone.setText("");
                 etCode.setText("");
                 includeMenu.setVisibility(View.GONE);
@@ -431,9 +437,6 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
                             ESToast.getInstance().ToastShow(mContext, "手机号和验证码不能为空");
                             return;
                         }
-                        if (timer != null) {
-                            timer.cancel();
-                        }
                         Tools.hideKeyboard(etPhone);
                         //提交绑定或者解绑手机
                         StartESAccountCenter.applyBindOrUnBind(new LoginCallBack() {
@@ -443,6 +446,9 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
                                     @Override
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "操作成功");
+                                        if (timer != null) {
+                                            timer.cancel();
+                                        }
                                         if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())) {
                                             mBindPhoneType.setText("绑定手机");
                                         } else {
@@ -471,6 +477,8 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
         rlChangePw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                etNewPw.setText("");
+                etOldPw.setText("");
                 includeMenu.setVisibility(View.GONE);
                 includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                 includeChangePw.setVisibility(View.VISIBLE);
@@ -528,7 +536,7 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
         });
     }
 
-    private void initWebView() {
+    private void initWebView(final ImageView ivMe) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mWebView.setWebContentsDebuggingEnabled(true);
         }
@@ -538,7 +546,32 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
         mWebView.setVerticalScrollBarEnabled(true);// 取消VerticalScrollBar显示
         mWebView.getSettings().setDomStorageEnabled(true);// 设置html5离线缓存可用
 
-        mWebView.addJavascriptInterface(new JSAndroid(this), "Android");
+        mWebView.addJavascriptInterface(new Object() {
+            private ConfigerManagner configerManagner;
+
+            @JavascriptInterface
+            public void openAndroid(String msg) {
+                mContext.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ivMe.performClick();
+                    }
+                });
+            }
+
+            @JavascriptInterface
+            public void writeData(String msg) {
+                configerManagner = ConfigerManagner.getInstance(mContext);
+                configerManagner.setString("js", msg);
+            }
+
+            @JavascriptInterface
+            public String giveInformation(String msg) {
+                configerManagner = ConfigerManagner.getInstance(mContext);
+                String msg1 = configerManagner.getString("js");
+                return msg1;
+            }
+        }, "Android");
 
         fixDirPath();
         mWebView.setWebViewClient(new ReWebViewClient());
@@ -912,5 +945,12 @@ public class UserCenterActivity extends Activity implements ReWebChomeClient.Ope
         } else {
             return;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StartESUserPlugin.showFloatView();
+        StartESUserPlugin.isShowUser = true;
     }
 }
