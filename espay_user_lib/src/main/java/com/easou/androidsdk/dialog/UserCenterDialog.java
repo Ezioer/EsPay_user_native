@@ -2,9 +2,7 @@ package com.easou.androidsdk.dialog;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
-import android.net.http.SslError;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -12,43 +10,31 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.webkit.SslErrorHandler;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bun.miitmdid.core.Utils;
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
-import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
-import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.AuthenCallBack;
 import com.easou.androidsdk.login.LoginCallBack;
-import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.UserAPI;
-import com.easou.androidsdk.login.service.CodeConstant;
-import com.easou.androidsdk.login.service.EucAPIException;
-import com.easou.androidsdk.login.service.EucApiResult;
+import com.easou.androidsdk.login.service.GiftBean;
+import com.easou.androidsdk.login.service.GiftInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
-import com.easou.androidsdk.plugin.StartOtherPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
-import com.easou.androidsdk.webviewutils.JSAndroid;
-import com.easou.androidsdk.webviewutils.ReWebChomeClient;
 import com.easou.espay_user_lib.R;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,30 +64,20 @@ public class UserCenterDialog extends BaseDialog {
     }
 
     private void initView() {
-        final View includeMenu = mView.findViewById(R.id.include_usermenu);
-        final ImageView ivMe = (ImageView) mView.findViewById(R.id.iv_me);
-        final ImageView ivGift = (ImageView) mView.findViewById(R.id.iv_gift);
+        final View includeMenu = findViewById(R.id.include_usermenu);
+        final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
+        final ImageView ivGift = (ImageView) findViewById(R.id.iv_gift);
+        final RelativeLayout llContent = (RelativeLayout) findViewById(R.id.ll_content);
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
-        final RelativeLayout llContent = (RelativeLayout) mView.findViewById(R.id.ll_content);
-        final LinearLayout llUser = (LinearLayout) mView.findViewById(R.id.ll_user);
+        final RelativeLayout llGift = (RelativeLayout) findViewById(R.id.ll_gift);
+        final RelativeLayout llGiftCode = (RelativeLayout) findViewById(R.id.ll_giftcode);
+        final TextView tvGiftCode = (TextView) findViewById(R.id.tv_giftcode);
+        final ListView giftList = (ListView) findViewById(R.id.listview);
+        final LinearLayout llUser = (LinearLayout) findViewById(R.id.ll_user);
         tvWelcome.setText("您好：" + Starter.loginBean.getUser().getName());
-        final WebView webView = (WebView) mView.findViewById(R.id.webview);
-        webView.getSettings().setDefaultTextEncodingName("utf-8");
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);// WebView启用Javascript脚本执行
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            webView.setWebContentsDebuggingEnabled(true);
-        }
-        webView.getSettings().setBlockNetworkImage(false);//解决图片不显示
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webView.getSettings().setLoadsImagesAutomatically(true);
-        webView.addJavascriptInterface(new JSAndroid(mContext), "Android");
-        final ImageView ivService = (ImageView) mView.findViewById(R.id.iv_service);
+
+        final ImageView ivService = (ImageView) findViewById(R.id.iv_service);
         ivMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,74 +88,93 @@ public class UserCenterDialog extends BaseDialog {
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gift);
                     llUser.setVisibility(View.VISIBLE);
-                    llUser.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
-                    webView.setVisibility(View.GONE);
-                    webView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
-                }
-            }
-        });
-
-        /*ivGift.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentType != 2){
-                    currentType = 2;
-                    ivMe.setImageResource(R.drawable.icon_main_me);
-                    ivService.setImageResource(R.drawable.icon_main_service);
-                    ivGift.setImageResource(R.drawable.icon_main_gifthign);
-                    llUser.setVisibility(View.GONE);
-                    webView.setVisibility(View.GONE);
-
-                }
-            }
-        });*/
-
-        ivService.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentType != 1) {
-                    currentType = 1;
-                    ivMe.setImageResource(R.drawable.icon_main_me);
-                    ivService.setImageResource(R.drawable.icon_main_servicehign);
-                    ivGift.setImageResource(R.drawable.icon_main_gift);
-                    llUser.setVisibility(View.GONE);
-                    llUser.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
-                    webView.setVisibility(View.VISIBLE);
-                    webView.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
-                    if (TextUtils.isEmpty(helpUrl)) {
-                        ThreadPoolManager.getInstance().addTask(new Runnable() {
-                            @Override
-                            public void run() {
-                                final String serviceUrl = UserAPI.getServiceUrl(mContext);
-                                helpUrl = serviceUrl;
-                                ((Activity) mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        webView.setWebViewClient(new WebViewClient() {
-                                            @Override
-                                            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                                                return super.shouldOverrideUrlLoading(view, serviceUrl);
-                                            }
-
-                                            @Override
-                                            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                                                handler.proceed();
-                                            }
-                                        });
-                                        webView.loadUrl(serviceUrl);
-                                    }
-                                });
-                            }
-                        });
+                    llGift.setVisibility(View.GONE);
+                    if (WebViewActivity.mActivity != null) {
+                        WebViewActivity.mActivity.finish();
                     }
                 }
             }
         });
 
+        ivGift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentType != 2) {
+                    currentType = 2;
+                    ivMe.setImageResource(R.drawable.icon_main_me);
+                    ivService.setImageResource(R.drawable.icon_main_service);
+                    ivGift.setImageResource(R.drawable.icon_main_gifthign);
+                    llUser.setVisibility(View.GONE);
+                    llGift.setVisibility(View.VISIBLE);
+                    if (WebViewActivity.mActivity != null) {
+                        WebViewActivity.mActivity.finish();
+                    }
+                    ThreadPoolManager.getInstance().addTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            final GiftBean userGift = UserAPI.getUserGift(mContext);
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (userGift != null && userGift.getResultCode() == 1) {
+                                        initList(userGift.getRows());
+                                    } else {
+                                        ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
 
-        final View includeChangePw = mView.findViewById(R.id.include_changepassword);
-        final View includeBind = mView.findViewById(R.id.include_bind);
-        final View includeUserAuthen = mView.findViewById(R.id.include_user_authen);
+            private void initList(final List<GiftInfo> rows) {
+                GiftAdapter adapter = new GiftAdapter(mContext, rows);
+                giftList.setAdapter(adapter);
+                adapter.setCodeListener(new GiftAdapter.GetCodeClickListener() {
+                    @Override
+                    public void onClick(int pos) {
+                        llGiftCode.setVisibility(View.VISIBLE);
+                        tvGiftCode.setText(rows.get(pos).getCode());
+                    }
+                });
+            }
+        });
+
+        ivService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                if (currentType != 1) {
+                currentType = 1;
+//                    ivMe.setImageResource(R.drawable.icon_main_me);
+//                    ivService.setImageResource(R.drawable.icon_main_servicehign);
+//                    ivGift.setImageResource(R.drawable.icon_main_gift);
+//                    llUser.setVisibility(View.GONE);
+//                    llGift.setVisibility(View.GONE);
+//                    llUser.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
+
+                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String serviceUrl = UserAPI.getServiceUrl(mContext);
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(mContext, WebViewActivity.class);
+                                intent.putExtra("url", serviceUrl);
+                                mContext.startActivity(intent);
+                            }
+                        });
+                    }
+                });
+            }
+//            }
+        });
+
+
+        final View includeChangePw = findViewById(R.id.include_changepassword);
+        final View includeBind = findViewById(R.id.include_bind);
+        final View includeUserAuthen = findViewById(R.id.include_user_authen);
 
         RelativeLayout rlChangePw = (RelativeLayout) includeMenu.findViewById(R.id.rl_changepassword);
         RelativeLayout rlBind = (RelativeLayout) includeMenu.findViewById(R.id.rl_bindphone);
@@ -210,6 +205,13 @@ public class UserCenterDialog extends BaseDialog {
         final EditText etIdNum = (EditText) includeUserAuthen.findViewById(R.id.et_user_inputidnumber);
         final TextView authenSubmit = (TextView) includeUserAuthen.findViewById(R.id.tv_authen_submit);
 
+        ImageView mCloseCode = (ImageView) findViewById(R.id.iv_closecode);
+        mCloseCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                llGiftCode.setVisibility(View.GONE);
+            }
+        });
         if (TextUtils.isEmpty(Starter.loginBean.getUser().getIdentityNum())) {
             rlAuthen.setVisibility(View.VISIBLE);
         } else {
@@ -253,6 +255,10 @@ public class UserCenterDialog extends BaseDialog {
                             ESToast.getInstance().ToastShow(mContext, "请输入正确的身份证号吗");
                             return;
                         }
+                        if (!CommonUtils.checkNameChinese(idName)) {
+                            ESToast.getInstance().ToastShow(mContext, "请输入正确的名字");
+                            return;
+                        }
                         Tools.hideKeyboard(etIdName);
                         //开启实名认证
                         StartESAccountCenter.userCenterAuthen(new AuthenCallBack() {
@@ -293,6 +299,8 @@ public class UserCenterDialog extends BaseDialog {
         rlBind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tvGetCode.setEnabled(true);
+                tvGetCode.setText("获取");
                 etPhone.setText("");
                 etCode.setText("");
                 includeMenu.setVisibility(View.GONE);
@@ -376,9 +384,6 @@ public class UserCenterDialog extends BaseDialog {
                             ESToast.getInstance().ToastShow(mContext, "手机号和验证码不能为空");
                             return;
                         }
-                        if (timer != null) {
-                            timer.cancel();
-                        }
                         Tools.hideKeyboard(etPhone);
                         //提交绑定或者解绑手机
                         StartESAccountCenter.applyBindOrUnBind(new LoginCallBack() {
@@ -388,6 +393,9 @@ public class UserCenterDialog extends BaseDialog {
                                     @Override
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "操作成功");
+                                        if (timer != null) {
+                                            timer.cancel();
+                                        }
                                         if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())) {
                                             mBindPhoneType.setText("绑定手机");
                                         } else {
@@ -416,6 +424,8 @@ public class UserCenterDialog extends BaseDialog {
         rlChangePw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                etNewPw.setText("");
+                etOldPw.setText("");
                 includeMenu.setVisibility(View.GONE);
                 includeMenu.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.dialog_left_out));
                 includeChangePw.setVisibility(View.VISIBLE);
@@ -471,5 +481,11 @@ public class UserCenterDialog extends BaseDialog {
                 });
             }
         });
+    }
+
+    private MainLeftClick click = null;
+
+    public interface MainLeftClick {
+        void onClickMain();
     }
 }

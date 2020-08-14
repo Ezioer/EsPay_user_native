@@ -15,6 +15,7 @@ import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
 import com.easou.androidsdk.dialog.UserCenterActivity;
+import com.easou.androidsdk.dialog.UserCenterDialog;
 import com.easou.androidsdk.dialog.WebViewDialog;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.service.LoginBean;
@@ -135,12 +136,12 @@ public class StartESUserPlugin {
 		authenDialog.show();
 	}
 
-//	public static UserCenterDialog mUserCenterDialog = null;
+	public static UserCenterDialog mUserCenterDialog = null;
 
 	public static boolean isShowUser = false;
 
 	public static void showUserCenterDialog() {
-		if (isShowUser) {
+		/*if (isShowUser) {
 			UserCenterActivity.mContext.moveTaskToBack(true);
 			ESdkLog.d("隐藏用户中心");
 			isShowUser = false;
@@ -148,16 +149,16 @@ public class StartESUserPlugin {
 			ESdkLog.d("显示用户中心");
 			Starter.mActivity.startActivity(new Intent(Starter.mActivity, UserCenterActivity.class));
 			isShowUser = true;
-		}
+		}*/
 
-		/*if (mUserCenterDialog == null) {
-			mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 0.9f, 1);
+		if (mUserCenterDialog == null) {
+			mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 1f, 1);
 		}
 		if (mUserCenterDialog.isShowing()) {
 			mUserCenterDialog.hide();
 		} else {
 			mUserCenterDialog.show();
-		}*/
+		}
 	}
 
 	/**

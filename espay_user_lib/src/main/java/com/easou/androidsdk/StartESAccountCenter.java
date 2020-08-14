@@ -480,6 +480,8 @@ public class StartESAccountCenter {
         saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
         userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
+        String token = String.valueOf(userInfo.getResult().getToken().token);
+        Constant.ESDK_TOKEN = token;
         Starter.loginBean = userInfo.getResult();
         CommonUtils.saveLoginInfo(GsonUtil.toJson(userInfo.getResult()), mContext);
     }

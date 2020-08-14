@@ -14,6 +14,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +69,7 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
      * js跳转控制
      */
     private static WebViewClient mWebViewClient;
-    private WebViewActivity mActivity;
+    public static WebViewActivity mActivity;
 
     private static final int REQUEST_CODE_PICK_IMAGE = 0;
     private static final int REQUEST_CODE_IMAGE_CAPTURE = 1;
@@ -85,6 +87,13 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
                 getApplication().getPackageName()));
         mActivity = this;
         initView();
+       /* WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
+        android.view.WindowManager.LayoutParams p = getWindow().getAttributes();  //获取对话框当前的参数值
+        p.height = (int) (d.getHeight() * 0.7);   //高度设置为屏幕的0.7
+        p.width = (int) (d.getWidth() * 0.7);    //宽度设置为屏幕的0.7
+        p.gravity = Gravity.RIGHT;
+        getWindow().setAttributes(p);     //设置生效*/
     }
 
     private void initView() {

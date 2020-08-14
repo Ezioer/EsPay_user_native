@@ -316,8 +316,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStop() {
-        Starter.getInstance().hideFloatView();
         super.onStop();
+        Starter.getInstance().hideFloatView();
         /** 隐藏悬浮窗 */
     }
 
