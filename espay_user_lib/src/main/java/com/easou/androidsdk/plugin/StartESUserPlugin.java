@@ -29,6 +29,7 @@ import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.FileHelper;
 import com.easou.androidsdk.util.HostRequestUtils;
 import com.easou.androidsdk.util.NetworkUtils;
+import com.easou.androidsdk.util.SensorManagerHelper;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
@@ -56,7 +57,13 @@ public class StartESUserPlugin {
 		} else {
 			Constant.PAY_CHANNEl = 3;
 		}
-
+		SensorManagerHelper sensorManagerHelper = new SensorManagerHelper(Starter.mActivity);
+		sensorManagerHelper.setOnShakeListener(new SensorManagerHelper.OnShakeListener() {
+			@Override
+			public void onShake() {
+				ESToast.getInstance().ToastShow(Starter.mActivity, "dont shake me");
+			}
+		});
 
 	/*	new Thread(new Runnable() {
 			
