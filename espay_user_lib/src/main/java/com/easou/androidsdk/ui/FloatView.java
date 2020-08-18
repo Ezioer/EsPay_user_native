@@ -186,6 +186,8 @@ public class FloatView extends View {
 				}
 			}
 		} catch (Exception e) {
+			mWManager.updateViewLayout(floatViewLayout, mWMParams);
+			isViewadded = true;
 			e.printStackTrace();
 		}
 	}

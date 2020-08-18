@@ -40,8 +40,18 @@ public class AccountInfoDialog extends BaseDialog {
         ImageView close = (ImageView) mView.findViewById(R.id.iv_clodedialog);
         TextView accountValue = (TextView) mView.findViewById(R.id.tv_account_value);
         TextView passwordValue = (TextView) mView.findViewById(R.id.tv_passwordvalue);
-        accountValue.setText("账号："+account);
-        passwordValue.setText("密码："+password);
+        TextView mTvInfoOk = (TextView) mView.findViewById(R.id.tv_info_ok);
+        accountValue.setText("账号：" + account);
+        passwordValue.setText("密码：" + password);
+        mTvInfoOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+                if (listener != null) {
+                    listener.dialogClose();
+                }
+            }
+        });
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

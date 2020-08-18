@@ -23,6 +23,7 @@
     <string name="oldpassword">旧密码</string>
     <string name="getvercode">获取</string>
     <string name="submit">提交</string>
+    <string name="ok">确认</string>
     <string name="authentication">实名认证</string>
     <string name="authen_now">马上认证</string>
     <string name="inputname">请输入姓名</string>

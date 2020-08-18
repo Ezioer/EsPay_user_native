@@ -57,4 +57,18 @@
         android:paddingLeft="10dp"
         android:textColor="@color/payeco_textColorWhite"
         android:textColorHint="@color/payeco_textColorWhite" />
+
+    <TextView
+        android:id="@+id/tv_info_ok"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="@color/payeco_textColorBlack"
+        android:background="@drawable/bg_submit"
+        android:text="@string/ok"
+        android:layout_width="80dp"
+        android:layout_height="40dp" />
 </LinearLayout>
