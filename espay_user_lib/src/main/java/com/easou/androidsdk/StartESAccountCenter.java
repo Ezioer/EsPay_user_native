@@ -456,7 +456,6 @@ public class StartESAccountCenter {
                         }
                     });
                 } else {
-
                     AccountInfoDialog infoDialog = new AccountInfoDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, userName, password);
                     infoDialog.show();
                     infoDialog.setCloseListener(new AccountInfoDialog.OnCloseDialogListener() {
