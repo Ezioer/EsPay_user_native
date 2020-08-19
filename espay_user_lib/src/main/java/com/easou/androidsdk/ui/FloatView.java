@@ -65,11 +65,14 @@ public class FloatView extends View {
 					if (isClick(firstX, firstY, lastX, lastY)) {
 						if (isFullIcon) {
 							StartESUserPlugin.showSdkView();
+							if (isSetHalf) {
+								setHalfIcon();
+							}
 						} else {
 							setFullIcon();
+							setHalfIcon();
 						}
 
-						setHalfIcon();
 					} else {
 						if (mWMParams.x > 0) {
 //							imageview.setImageDrawable(drawable);
@@ -156,7 +159,7 @@ public class FloatView extends View {
 					isFullIcon = false;
 				}
 			}
-		}, 4000);
+		}, 2000);
 
 	}
 
