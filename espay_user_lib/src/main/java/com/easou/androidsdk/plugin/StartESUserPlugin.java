@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.MutableContextWrapper;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Window;
@@ -18,7 +20,10 @@ import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
 import com.easou.androidsdk.dialog.UserCenterDialog;
 import com.easou.androidsdk.dialog.WebViewDialog;
+import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.LoginCallBack;
+import com.easou.androidsdk.login.RegisterAPI;
+import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.ui.ESUserWebActivity;
@@ -57,13 +62,14 @@ public class StartESUserPlugin {
 		} else {
 			Constant.PAY_CHANNEl = 3;
 		}
-		SensorManagerHelper sensorManagerHelper = new SensorManagerHelper(Starter.mActivity);
+		//添加晃动手机检测
+		/*SensorManagerHelper sensorManagerHelper = new SensorManagerHelper(Starter.mActivity);
 		sensorManagerHelper.setOnShakeListener(new SensorManagerHelper.OnShakeListener() {
 			@Override
 			public void onShake() {
 				ESToast.getInstance().ToastShow(Starter.mActivity, "dont shake me");
 			}
-		});
+		});*/
 
 	/*	new Thread(new Runnable() {
 			
@@ -129,11 +135,41 @@ public class StartESUserPlugin {
 	 */
 	public static LoginWayDialog mLoginDialog;
 
+	public int isAutoRegister = 0;
+
 	public static void showLoginDialog() {
-		if (mLoginDialog == null) {
-			mLoginDialog = new LoginWayDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0);
+		ThreadPoolManager.getInstance().addTask(new Runnable() {
+			@Override
+			public void run() {
+				int status = 0;
+				try {
+					status = AuthAPI.identifyStatus(getOnlyId(), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
+				} catch (Exception e) {
+					status = 0;
+				}
+				final int isAutoRegister = status;
+				Starter.mActivity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (mLoginDialog == null) {
+							mLoginDialog = new LoginWayDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0);
+						}
+						mLoginDialog.show();
+						mLoginDialog.setGuestShow(isAutoRegister);
+					}
+				});
+			}
+		});
+
+	}
+
+	private static String getOnlyId() {
+		if (Constant.OAID.equals("0") || Constant.OAID.equals("1") || Constant.OAID.equals("UnSupportDevice")
+				|| Constant.OAID.equals("LoadSupplierConfigError") || Constant.OAID.equals("UnSupportDeviceBrand") || Constant.OAID.equals("CallFromReflectError")) {
+			return Settings.System.getString(Starter.mActivity.getContentResolver(), Settings.Secure.ANDROID_ID);
+		} else {
+			return Constant.OAID;
 		}
-		mLoginDialog.show();
 	}
 
 	/**
@@ -170,8 +206,10 @@ public class StartESUserPlugin {
 			mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 1f, 1);
 		}
 		if (mUserCenterDialog.isShowing()) {
+			FloatView.isSetHalf = true;
 			mUserCenterDialog.dismiss();
 		} else {
+			FloatView.isSetHalf = false;
 			mUserCenterDialog.show();
 			Window window = mUserCenterDialog.getWindow();//必须在show之后设置dialog的宽高
 			WindowManager.LayoutParams layoutParams = window

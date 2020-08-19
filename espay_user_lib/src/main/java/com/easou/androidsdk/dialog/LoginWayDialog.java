@@ -50,6 +50,7 @@ public class LoginWayDialog extends BaseDialog {
     }
 
     private View mView;
+    private TextView guestLogin;
     private Context mContext;
     //0为登录框，1为账号登录框
     private int currentType = 0;
@@ -60,6 +61,16 @@ public class LoginWayDialog extends BaseDialog {
         mView = LayoutInflater.from(mContext).inflate(R.layout.layout_loginway, null);
         setContentView(mView);
         initView();
+    }
+
+    public void setGuestShow(int status) {
+        if (guestLogin != null) {
+            if (status == 0) {
+                guestLogin.setVisibility(View.VISIBLE);
+            } else {
+                guestLogin.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void initView() {
@@ -109,7 +120,7 @@ public class LoginWayDialog extends BaseDialog {
 
 
         final TextView lookPassword = (TextView) mView.findViewById(R.id.tv_look_password_loginway);
-        TextView guestLogin = (TextView) mView.findViewById(R.id.tv_guest);
+        guestLogin = (TextView) mView.findViewById(R.id.tv_guest);
         final TextView accountLogin = (TextView) mView.findViewById(R.id.tv_account_login);
         final TextView accountRegister = (TextView) mView.findViewById(R.id.tv_account_register);
 
@@ -121,6 +132,7 @@ public class LoginWayDialog extends BaseDialog {
         final EditText mEtNewPw = (EditText) includeLookPassword.findViewById(R.id.et_newpassword);
         final TextView mTvGetCode = (TextView) includeLookPassword.findViewById(R.id.tv_getcode);
         final TextView mChangeSubmit = (TextView) includeLookPassword.findViewById(R.id.tv_submit);
+
 
         guestLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,17 +417,12 @@ public class LoginWayDialog extends BaseDialog {
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "修改成功");
                                         llHelp.setVisibility(View.VISIBLE);
-                                      /*  if (currentType == 0) {
-                                            llRoot.setVisibility(View.VISIBLE);
-                                            includeLookPassword.setVisibility(View.GONE);
-                                        } else {*/
                                         timer.cancel();
                                         editTextAccount.setText(name);
                                         editTextPassword.setText(newPw);
                                         llRoot.setVisibility(View.GONE);
                                         includeAccountLogin.setVisibility(View.VISIBLE);
                                         includeLookPassword.setVisibility(View.GONE);
-//                                        }
                                     }
                                 });
                             }

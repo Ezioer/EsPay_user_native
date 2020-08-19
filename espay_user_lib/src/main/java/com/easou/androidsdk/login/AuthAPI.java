@@ -39,7 +39,7 @@ public class AuthAPI {
      * @throws EucAPIException
      */
     public static EucApiResult<LoginBean> login(String username,
-                                               String password, boolean remember, RequestInfo info, Context _activity)
+                                                String password, boolean remember, RequestInfo info, Context _activity)
             throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
@@ -148,56 +148,58 @@ public class AuthAPI {
         return buildAuthResult(jbean);
     }
 
-	/**
-	 * 实名认证
-	 * @param name
-	 * @param idNum
-	 * @param userId
-	 * @param appId
-	 * @param info
-	 * @param _activity
-	 * @return
-	 * @throws EucAPIException
-	 */
+    /**
+     * 实名认证
+     *
+     * @param name
+     * @param idNum
+     * @param userId
+     * @param appId
+     * @param info
+     * @param _activity
+     * @return
+     * @throws EucAPIException
+     */
     public static EucApiResult<String> userIdentify(String name, String idNum, String userId, String appId, RequestInfo info, Context _activity) throws EucAPIException {
-		eucService = EucService.getInstance(_activity);
-		JBody jbody = new JBody();
-		jbody.put("userId", userId);
-		jbody.put("identityNum", idNum);
-		jbody.put("identityName", name);
-		jbody.put("appId", appId);
-		JBean jbean = eucService.getResult("/api2/saveUserIdentity.json",
-				jbody, oAuthPara, info);
-		EucApiResult<String> result = new EucApiResult<String>(jbean);
-		return result;
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userId);
+        jbody.put("identityNum", idNum);
+        jbody.put("identityName", name);
+        jbody.put("appId", appId);
+        JBean jbean = eucService.getResult("/api2/saveUserIdentity.json",
+                jbody, oAuthPara, info);
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        return result;
     }
 
-    public static LimitStatusInfo getLimitStatue(Context activity){
+    public static LimitStatusInfo getLimitStatue(Context activity) {
         eucService = EucService.getInstance(activity);
         LimitStatusInfo limitSwitch = eucService.getLimitSwitch("https://egamec.eayou.com/c3s/as?");
         return limitSwitch;
     }
 
-	/**
-	 * 实名认证状态
-	 *
-	 * @param info
-	 * @return
-	 * @throws EucAPIException
-	 */
-	public static EucApiResult<String> identifyStatus(String deviceId,RequestInfo info,Context _activity) throws EucAPIException {
-		eucService = EucService.getInstance(_activity);
-		JBody jbody = new JBody();
-		jbody.put("deviceId", deviceId);
-		JBean jbean = eucService.getResult("/api2/getUserIdentityStatus.json", jbody,oAuthPara,info);
-		EucApiResult<String> result = new EucApiResult<String>(jbean);
-		if (result.getResultCode() != null && result.getResultCode().equals(CodeConstant.OK) && jbean.getBody()!=null) {
-			int isHoliday = (int) jbean.getBody().get("isHoliday");
-			int autoRegist = (int) jbean.getBody().get("autoRegistLimitByDeviceId");
-			int identifyStatue = (int) jbean.getBody().get("userIdentityStatus");
-		}
-		return result;
-	}
+    /**
+     * 实名认证状态
+     *
+     * @param info
+     * @return
+     * @throws EucAPIException
+     */
+    public static int identifyStatus(String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.put("deviceId", deviceId);
+        JBean jbean = eucService.getResult("/api2/getUserIdentityStatus.json", jbody, oAuthPara, info);
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        if (result.getResultCode() != null && result.getResultCode().equals(CodeConstant.OK) && jbean.getBody() != null) {
+            int isHoliday = (int) jbean.getBody().get("isHoliday");
+            int autoRegist = (int) jbean.getBody().get("autoRegistLimitByDeviceId");
+            int identifyStatue = (int) jbean.getBody().get("userIdentityStatus");
+            return autoRegist;
+        }
+        return 0;
+    }
 
     private static EucApiResult<AuthBean> buildAuthResult(JBean jbean)
             throws EucAPIException {

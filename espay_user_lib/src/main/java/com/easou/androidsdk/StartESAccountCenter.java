@@ -412,10 +412,9 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 if (!isShowInfoDialog) {
-                    Map<String, String> result = new HashMap<String, String>();
+                    final Map<String, String> register = new HashMap<String, String>();
                     result.put(ESConstant.SDK_USER_ID, userId);
                     result.put(ESConstant.SDK_USER_NAME, userName);
-                    Starter.mCallback.onRegister(result);
                     postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
@@ -433,7 +432,7 @@ public class StartESAccountCenter {
                                                 Map<String, String> result = new HashMap<String, String>();
                                                 result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
                                                 result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
-
+                                                Starter.mCallback.onRegister(register);
                                                 Starter.mCallback.onUserCert(result);
                                                 new Handler().postDelayed(new Runnable() {
                                                     public void run() {
@@ -444,6 +443,7 @@ public class StartESAccountCenter {
                                             }
                                         });
                                     } else {
+                                        Starter.mCallback.onRegister(register);
                                         new Handler().postDelayed(new Runnable() {
                                             public void run() {
                                                 RomHelper.checkFloatWindowPermission(Starter.mActivity);
@@ -526,7 +526,6 @@ public class StartESAccountCenter {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Starter.mCallback.onLogin(result);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                 if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
@@ -545,7 +544,7 @@ public class StartESAccountCenter {
                                                 Map<String, String> result = new HashMap<String, String>();
                                                 result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
                                                 result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
-
+                                                Starter.mCallback.onLogin(result);
                                                 Starter.mCallback.onUserCert(result);
                                                 new Handler().postDelayed(new Runnable() {
                                                     public void run() {
@@ -556,6 +555,7 @@ public class StartESAccountCenter {
                                             }
                                         });
                                     } else {
+                                        Starter.mCallback.onLogin(result);
                                         new Handler().postDelayed(new Runnable() {
                                             public void run() {
                                                 RomHelper.checkFloatWindowPermission(Starter.mActivity);
@@ -568,6 +568,7 @@ public class StartESAccountCenter {
                         }
                     });
                 } else {
+                    Starter.mCallback.onLogin(result);
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
                             RomHelper.checkFloatWindowPermission(Starter.mActivity);
