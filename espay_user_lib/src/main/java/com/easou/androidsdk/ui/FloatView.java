@@ -23,10 +23,13 @@ public class FloatView extends View {
 
 	private DisplayMetrics displayMetrics;
 	private Drawable drawable;
+	private Drawable halfIcon;
 	private int firstX, firstY, lastX, lastY;
 	private View floatViewLayout;
 	private ImageView imageview;
 
+	private boolean isFullIcon = true;
+	public static boolean isSetHalf = true;
 	private int mPreviousPosition_x;
 	private int mPreviousPosition_y;
 	private boolean isViewadded = false;
@@ -60,9 +63,13 @@ public class FloatView extends View {
 					}
 				} else if (action == MotionEvent.ACTION_UP) {
 					if (isClick(firstX, firstY, lastX, lastY)) {
+						if (isFullIcon) {
+							StartESUserPlugin.showSdkView();
+						} else {
+							setFullIcon();
+						}
 
-						StartESUserPlugin.showSdkView();
-
+						setHalfIcon();
 					} else {
 						if (mWMParams.x > 0) {
 //							imageview.setImageDrawable(drawable);
@@ -73,6 +80,7 @@ public class FloatView extends View {
 							mWMParams.x = -displayMetrics.widthPixels / 2;
 							mWManager.updateViewLayout(floatViewLayout, mWMParams);
 						}
+						setHalfIcon();
 					}
 					firstX = firstY = lastX = lastY = 0;
 				}
@@ -111,11 +119,14 @@ public class FloatView extends View {
 		drawable = activity.getResources().getDrawable(activity.getApplication().getResources()
 				.getIdentifier("es_floaticon", "drawable", activity.getApplication().getPackageName()));
 
+		halfIcon = activity.getResources().getDrawable(activity.getApplication().getResources()
+				.getIdentifier("es_floaticonhalf", "drawable", activity.getApplication().getPackageName()));
+
 		mWMParams = new WindowManager.LayoutParams();
-		if (Build.VERSION.SDK_INT>=26) {//8.0新特性
-			mWMParams.type= 2038;
+		if (Build.VERSION.SDK_INT >= 26) {//8.0新特性
+			mWMParams.type = 2038;
 		} else {
-			mWMParams.type= 2003;
+			mWMParams.type = 2003;
 		}
 		mWMParams.flags = 40;
 		mWMParams.width = LayoutParams.WRAP_CONTENT;
@@ -133,6 +144,25 @@ public class FloatView extends View {
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 		int orientation = display.getOrientation();
 		return orientation;
+	}
+
+	private void setHalfIcon() {
+
+		imageview.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (isSetHalf) {
+					imageview.setImageDrawable(halfIcon);
+					isFullIcon = false;
+				}
+			}
+		}, 4000);
+
+	}
+
+	private void setFullIcon() {
+		isFullIcon = true;
+		imageview.setImageDrawable(drawable);
 	}
 
 	private boolean isClick(int firstX, int firstY, int lastX, int lastY) {
@@ -190,6 +220,8 @@ public class FloatView extends View {
 			isViewadded = true;
 			e.printStackTrace();
 		}
+
+		setHalfIcon();
 	}
 
 	public static void close() {
