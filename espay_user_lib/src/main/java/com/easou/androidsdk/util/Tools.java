@@ -5,11 +5,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
 
 import org.json.JSONException;
@@ -322,5 +324,18 @@ public class Tools {
         if (imm != null) {
             imm.hideSoftInputFromWindow(View.getWindowToken(), 0);
         }
+    }
+
+    /**
+     * 获取设备唯一标识
+     *
+     * @return
+     */
+    public static String getOnlyId() {
+        String androidId = Settings.System.getString(Starter.mActivity.getContentResolver(), Settings.Secure.ANDROID_ID);
+        if (TextUtils.isEmpty(androidId)) {
+            return Constant.OAID;
+        }
+        return androidId;
     }
 }

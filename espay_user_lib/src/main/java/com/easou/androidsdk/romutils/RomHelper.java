@@ -1,6 +1,7 @@
 package com.easou.androidsdk.romutils;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.util.CommonUtils;
+import com.easou.espay_user_lib.R;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -165,7 +167,7 @@ public class RomHelper {
 
 	public static void
 	showNormalDialog(final Context context) {
-		normalDialog = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_LIGHT)
+		normalDialog = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
 				.setTitle("温馨提示：")
 				.setMessage("需要您设置允许“显示悬浮窗”的权限，否则将无法使用账户中心功能！")
 				.setPositiveButton("去设置", new DialogInterface.OnClickListener() {
@@ -183,13 +185,13 @@ public class RomHelper {
 				.setNegativeButton("取消", null)
 				.create();
 		normalDialog.show();
-		normalDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+		normalDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE);
 		normalDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.GRAY);
 		normalDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(Color.GRAY);
 	}
 
 	public static void showConfirmDialog(final Context context) {
-		normalDialog = new AlertDialog.Builder(context, AlertDialog.THEME_HOLO_LIGHT)
+		normalDialog = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
 				.setTitle("温馨提示：")
 				.setMessage("您确定不使用账户中心功能吗？没有悬浮窗您将不能进行切换账号等操作哦！")
 				.setPositiveButton("马上去设置", new DialogInterface.OnClickListener() {
@@ -207,7 +209,7 @@ public class RomHelper {
 				.create();
 		// 显示
 		normalDialog.show();
-		normalDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+		normalDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE);
 		normalDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setTextColor(Color.GRAY);
 	}
 }

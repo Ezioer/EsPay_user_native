@@ -1,5 +1,6 @@
 package com.easou.androidsdk.ui;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -14,16 +15,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.util.ESdkLog;
+import com.easou.espay_user_lib.R;
 
 public class FloatView extends View {
 
 	private DisplayMetrics displayMetrics;
 	private Drawable drawable;
 	private Drawable halfIcon;
+	private Drawable halfIconLeft;
 	private int firstX, firstY, lastX, lastY;
 	private View floatViewLayout;
 	private ImageView imageview;
@@ -34,6 +39,7 @@ public class FloatView extends View {
 	private int mPreviousPosition_y;
 	private boolean isViewadded = false;
 	private static boolean isClosed = false;
+	private boolean isLeft = false;
 
 	private OnTouchListener mTouchListener = new OnTouchListener() {
 		@Override
@@ -49,6 +55,7 @@ public class FloatView extends View {
 					lastX = (int) event.getRawX();
 					lastY = (int) event.getRawY();
 				} else if (action == MotionEvent.ACTION_MOVE) {
+					isSetHalf = false;
 					lastX = (int) event.getRawX();
 					lastY = (int) event.getRawY();
 
@@ -62,6 +69,7 @@ public class FloatView extends View {
 						mWManager.updateViewLayout(floatViewLayout, mWMParams);
 					}
 				} else if (action == MotionEvent.ACTION_UP) {
+					isSetHalf = true;
 					if (isClick(firstX, firstY, lastX, lastY)) {
 						if (isFullIcon) {
 							StartESUserPlugin.showSdkView();
@@ -75,10 +83,14 @@ public class FloatView extends View {
 
 					} else {
 						if (mWMParams.x > 0) {
+							isLeft = false;
+//							imageview.setImageDrawable(halfIcon);
 //							imageview.setImageDrawable(drawable);
 							mWMParams.x = displayMetrics.widthPixels / 2;
 							mWManager.updateViewLayout(floatViewLayout, mWMParams);
 						} else {
+							isLeft = true;
+//							imageview.setImageDrawable(halfIconLeft);
 //							imageview.setImageDrawable(drawable);
 							mWMParams.x = -displayMetrics.widthPixels / 2;
 							mWManager.updateViewLayout(floatViewLayout, mWMParams);
@@ -125,6 +137,9 @@ public class FloatView extends View {
 		halfIcon = activity.getResources().getDrawable(activity.getApplication().getResources()
 				.getIdentifier("es_floaticonhalf", "drawable", activity.getApplication().getPackageName()));
 
+		halfIconLeft = activity.getResources().getDrawable(activity.getApplication().getResources()
+				.getIdentifier("es_floaticonhalf_left", "drawable", activity.getApplication().getPackageName()));
+
 		mWMParams = new WindowManager.LayoutParams();
 		if (Build.VERSION.SDK_INT >= 26) {//8.0新特性
 			mWMParams.type = 2038;
@@ -155,17 +170,30 @@ public class FloatView extends View {
 			@Override
 			public void run() {
 				if (isSetHalf) {
-					imageview.setImageDrawable(halfIcon);
+					if (isLeft) {
+						startLeftHide();
+//						imageview.setImageDrawable(halfIconLeft);
+//						imageview.startAnimation(AnimationUtils.loadAnimation(Starter.mActivity, R.anim.dialog_left_out));
+					} else {
+//						imageview.setImageDrawable(halfIcon);
+//						imageview.startAnimation(AnimationUtils.loadAnimation(Starter.mActivity, R.anim.logo_right_out));
+						startRightHide();
+					}
 					isFullIcon = false;
 				}
 			}
-		}, 2000);
+		}, 1000);
 
 	}
 
 	private void setFullIcon() {
 		isFullIcon = true;
-		imageview.setImageDrawable(drawable);
+//		imageview.setImageDrawable(drawable);
+		if (isLeft) {
+			startLeftShow();
+		} else {
+			startRightShow();
+		}
 	}
 
 	private boolean isClick(int firstX, int firstY, int lastX, int lastY) {
@@ -224,7 +252,9 @@ public class FloatView extends View {
 			e.printStackTrace();
 		}
 
-		setHalfIcon();
+		if (isFullIcon) {
+			setHalfIcon();
+		}
 	}
 
 	public static void close() {
@@ -241,4 +271,29 @@ public class FloatView extends View {
 		}
 		isViewadded = false;
 	}
+
+	private void startRightHide() {
+		ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageview, "translationX", 0, 80f);
+		objectAnimator.setDuration(200);
+		objectAnimator.start();
+	}
+
+	private void startRightShow() {
+		ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageview, "translationX", 80, 0f);
+		objectAnimator.setDuration(200);
+		objectAnimator.start();
+	}
+
+	private void startLeftHide() {
+		ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageview, "translationX", 0, -80f);
+		objectAnimator.setDuration(200);
+		objectAnimator.start();
+	}
+
+	private void startLeftShow() {
+		ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(imageview, "translationX", -80, 0f);
+		objectAnimator.setDuration(200);
+		objectAnimator.start();
+	}
+
 }

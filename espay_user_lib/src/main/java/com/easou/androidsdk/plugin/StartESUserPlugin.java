@@ -24,6 +24,7 @@ import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.service.EucAPIException;
+import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.ui.ESUserWebActivity;
@@ -143,7 +144,11 @@ public class StartESUserPlugin {
 			public void run() {
 				int status = 0;
 				try {
-					status = AuthAPI.identifyStatus(getOnlyId(), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
+					final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
+					status = AuthAPI.identifyStatus(Tools.getOnlyId(), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
+					if (limitStatue.getUs() == 0) {
+						status = 0;
+					}
 				} catch (Exception e) {
 					status = 0;
 				}
@@ -163,14 +168,6 @@ public class StartESUserPlugin {
 
 	}
 
-	private static String getOnlyId() {
-		if (Constant.OAID.equals("0") || Constant.OAID.equals("1") || Constant.OAID.equals("UnSupportDevice")
-				|| Constant.OAID.equals("LoadSupplierConfigError") || Constant.OAID.equals("UnSupportDeviceBrand") || Constant.OAID.equals("CallFromReflectError")) {
-			return Settings.System.getString(Starter.mActivity.getContentResolver(), Settings.Secure.ANDROID_ID);
-		} else {
-			return Constant.OAID;
-		}
-	}
 
 	/**
 	 * 公告提醒框

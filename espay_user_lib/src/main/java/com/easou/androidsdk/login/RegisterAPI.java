@@ -17,6 +17,7 @@ import com.easou.androidsdk.login.service.JBody;
 import com.easou.androidsdk.login.service.JUser;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.util.CommonUtils;
+import com.easou.androidsdk.util.Tools;
 
 public class RegisterAPI {
 
@@ -34,15 +35,16 @@ public class RegisterAPI {
 	 */
 	public static EucApiResult<AuthBean> autoRegist(boolean remember,
 			RequestInfo info,Context _context) throws EucAPIException {
-		eucService = EucService.getInstance(_context);
-		JBody jbody = new JBody();
-		if (remember) { // 为真传remember参数
-			jbody.putContent("remember", remember);
-		}
-		JBean jbean = eucService.getResult("/api2/autoRegist.json", jbody, oAuthPara,
-				info);
-		return buildAuthResult(jbean);
-	}
+        eucService = EucService.getInstance(_context);
+        JBody jbody = new JBody();
+        if (remember) { // 为真传remember参数
+            jbody.putContent("remember", remember);
+        }
+        jbody.putContent("deviceId", Tools.getOnlyId());
+        JBean jbean = eucService.getResult("/api2/autoRegist.json", jbody, oAuthPara,
+                info);
+        return buildAuthResult(jbean);
+    }
 
 	/**
 	 * 用户名注册
@@ -60,18 +62,19 @@ public class RegisterAPI {
 	public static EucApiResult<AuthBean> registByName(String username,
 			String password, boolean remember, String bookNum, RequestInfo info,Context _activity)
 			throws EucAPIException {
-		eucService = EucService.getInstance(_activity);
-		JBody jbody = new JBody();
-		jbody.putContent("username", username);
-		jbody.putContent("password", password);
-		if (remember) { // 为真传remember参数
-			jbody.putContent("remember", remember);
-		}
-		jbody.putContent("bookNum", bookNum);
-		JBean jbean = eucService.getResult("/api2/registByName.json", jbody, oAuthPara,
-				info);
-		return buildAuthResult(jbean);
-	}
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.putContent("username", username);
+        jbody.putContent("password", password);
+        if (remember) { // 为真传remember参数
+            jbody.putContent("remember", remember);
+        }
+        jbody.putContent("deviceId", Tools.getOnlyId());
+        jbody.putContent("bookNum", bookNum);
+        JBean jbean = eucService.getResult("/api2/registByName.json", jbody, oAuthPara,
+                info);
+        return buildAuthResult(jbean);
+    }
 
 	/**
 	 * 预约用户名，预约成功会返回一个预约名和预约号，用户名注册时可带上该预约号

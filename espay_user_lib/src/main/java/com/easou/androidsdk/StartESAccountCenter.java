@@ -30,6 +30,7 @@ import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
 import com.easou.androidsdk.romutils.RomHelper;
+import com.easou.androidsdk.ui.FloatView;
 import com.easou.androidsdk.ui.UIHelper;
 import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ESdkLog;
@@ -651,6 +652,7 @@ public class StartESAccountCenter {
         Constant.IS_LOGINED = false;
         StartESUserPlugin.hideFloatView();
         StartESUserPlugin.isShowUser = false;
+        FloatView.isSetHalf = true;
         CommonUtils.saveLoginInfo("", mContext);
         StartESUserPlugin.showLoginDialog();
         StartOtherPlugin.logTTActionLogin("");

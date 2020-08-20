@@ -20,6 +20,7 @@ import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
+import com.easou.androidsdk.util.Tools;
 
 public class AuthAPI {
 
@@ -43,6 +44,7 @@ public class AuthAPI {
             throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
+        jbody.putContent("deviceId", Tools.getOnlyId());
         jbody.putContent("username", username);
         jbody.putContent("password", password);
         jbody.putContent("remember", remember);
@@ -193,10 +195,10 @@ public class AuthAPI {
         JBean jbean = eucService.getResult("/api2/getUserIdentityStatus.json", jbody, oAuthPara, info);
         EucApiResult<String> result = new EucApiResult<String>(jbean);
         if (result.getResultCode() != null && result.getResultCode().equals(CodeConstant.OK) && jbean.getBody() != null) {
-            int isHoliday = (int) jbean.getBody().get("isHoliday");
-            int autoRegist = (int) jbean.getBody().get("autoRegistLimitByDeviceId");
-            int identifyStatue = (int) jbean.getBody().get("userIdentityStatus");
-            return autoRegist;
+            String isHoliday = jbean.getBody().getObject("isHoliday", String.class);
+            String autoRegist = (String) jbean.getBody().getObject("autoRegistLimitByDeviceId", String.class);
+            String identifyStatue = (String) jbean.getBody().getObject("userIdentityStatus", String.class);
+            return Integer.valueOf(autoRegist);
         }
         return 0;
     }

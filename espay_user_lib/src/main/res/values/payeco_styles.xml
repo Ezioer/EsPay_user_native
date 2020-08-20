@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-  
+
     <style name="payeco_datepPickDialog" parent="android:Theme.Holo.Light.Dialog">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">fill_parent</item>
@@ -48,9 +48,8 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    
-    
-	  <style name="easou_linear">
+
+    <style name="easou_linear">
         <item name="android:orientation">vertical</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -228,7 +227,7 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">40.0dip</item>
     </style>
-    
+
     <style name="easou_btn_b">
         <item name="android:textSize">20.0sp</item>
         <item name="android:textColor">#ffffffff</item>
@@ -237,7 +236,7 @@
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_height">40.0dip</item>
     </style>
-    
+
     <style name="easou_btn_g">
         <item name="android:textSize">20.0sp</item>
         <item name="android:textColor">#ffffffff</item>
@@ -247,8 +246,8 @@
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_height">40.0dip</item>
     </style>
-    
-        <style name="easou_btn_notice">
+
+    <style name="easou_btn_notice">
         <item name="android:textSize">19.0sp</item>
         <item name="android:textColor">#ffffffff</item>
         <item name="android:gravity">center</item>
