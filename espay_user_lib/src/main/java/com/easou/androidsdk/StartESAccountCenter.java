@@ -443,6 +443,18 @@ public class StartESAccountCenter {
                                                 }, 3000);
                                             }
                                         });
+                                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
+                                            @Override
+                                            public void dialogClose() {
+                                                Starter.mCallback.onRegister(register);
+                                                new Handler().postDelayed(new Runnable() {
+                                                    public void run() {
+                                                        RomHelper.checkFloatWindowPermission(Starter.mActivity);
+                                                        Starter.getInstance().showFloatView();
+                                                    }
+                                                }, 3000);
+                                            }
+                                        });
                                     } else {
                                         Starter.mCallback.onRegister(register);
                                         new Handler().postDelayed(new Runnable() {
@@ -547,6 +559,18 @@ public class StartESAccountCenter {
                                                 result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
                                                 Starter.mCallback.onLogin(result);
                                                 Starter.mCallback.onUserCert(result);
+                                                new Handler().postDelayed(new Runnable() {
+                                                    public void run() {
+                                                        RomHelper.checkFloatWindowPermission(Starter.mActivity);
+                                                        Starter.getInstance().showFloatView();
+                                                    }
+                                                }, 3000);
+                                            }
+                                        });
+                                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
+                                            @Override
+                                            public void dialogClose() {
+                                                Starter.mCallback.onLogin(result);
                                                 new Handler().postDelayed(new Runnable() {
                                                     public void run() {
                                                         RomHelper.checkFloatWindowPermission(Starter.mActivity);

@@ -72,6 +72,9 @@ public class AuthenNotiDialog extends BaseDialog {
         closeDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (closeListener != null) {
+                    closeListener.dialogClose();
+                }
                 dismiss();
             }
         });
@@ -156,5 +159,15 @@ public class AuthenNotiDialog extends BaseDialog {
 
     public interface authenResult {
         void authenSuccess(String ymd);
+    }
+
+    private setCloseListener closeListener = null;
+
+    public void setCloseListener(setCloseListener listener) {
+        closeListener = listener;
+    }
+
+    public interface setCloseListener {
+        void dialogClose();
     }
 }
