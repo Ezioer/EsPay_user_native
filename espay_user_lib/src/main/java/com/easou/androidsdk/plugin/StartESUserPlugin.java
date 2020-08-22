@@ -146,7 +146,7 @@ public class StartESUserPlugin {
 				try {
 					final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
 					status = AuthAPI.identifyStatus(Tools.getOnlyId(), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
-					if (limitStatue.getUs() == 0) {
+					if (limitStatue == null || limitStatue.getUs() == 0) {
 						status = 0;
 					}
 				} catch (Exception e) {
@@ -376,6 +376,10 @@ public class StartESUserPlugin {
 	public static void hideFloatView() {
 //		UserCenterActivity.mContext.moveTaskToBack(true);
 		isShowUser = false;
+		if (mUserCenterDialog != null && mUserCenterDialog.isShowing()) {
+			FloatView.isSetHalf = true;
+			mUserCenterDialog.dismiss();
+		}
 		ESdkLog.d("隐藏悬浮窗");
 		FloatView.close();
 	}
