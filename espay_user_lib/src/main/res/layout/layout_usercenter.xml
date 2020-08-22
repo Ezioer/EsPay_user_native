@@ -23,7 +23,7 @@
             android:background="@color/easou_black_alpha"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:paddingTop="10dp">
+            android:paddingTop="90dp">
 
             <ImageView
                 android:id="@+id/iv_me"

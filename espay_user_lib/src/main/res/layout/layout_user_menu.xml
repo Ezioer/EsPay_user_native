@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:id="@+id/tv_username"
         android:text="您好，xxx"
         android:textSize="18sp"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:textColor="@color/payeco_textColorWhite"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="30dp" />
     <RelativeLayout
         android:layout_marginTop="30dp"
         android:id="@+id/rl_changepassword"
