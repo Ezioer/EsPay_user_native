@@ -418,6 +418,7 @@ public class LoginWayDialog extends BaseDialog {
                                         ESToast.getInstance().ToastShow(mContext, "修改成功");
                                         llHelp.setVisibility(View.VISIBLE);
                                         timer.cancel();
+                                        accountLogin.performClick();
                                         editTextAccount.setText(name);
                                         editTextPassword.setText(newPw);
                                         llRoot.setVisibility(View.GONE);
