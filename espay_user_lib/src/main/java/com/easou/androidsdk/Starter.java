@@ -11,6 +11,7 @@ import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.plugin.StartESPayPlugin;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
+import com.easou.androidsdk.plugin.StartLogPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
 import com.easou.androidsdk.util.CommonUtils;
 
@@ -64,6 +65,7 @@ public class Starter {
     public void login(final Activity activity, ESdkCallback mCallback) {
         Starter.mCallback = mCallback;
         Starter.mActivity = activity;
+        startAppLog();
         StartESUserPlugin.loginSdk();
     }
 
@@ -219,14 +221,21 @@ public class Starter {
     /**
      * 爱奇艺SDK进入游戏界面
      */
-    public void logAQYActionPageResume(){
+    public void logAQYActionPageResume() {
         StartOtherPlugin.resumeAQY();
     }
 
     /**
      * 爱奇艺SDK退出游戏界面
      */
-    public void logAQYActionPageDestory(){
+    public void logAQYActionPageDestory() {
         StartOtherPlugin.destoryAQY();
+    }
+
+    /**
+     * 启动游戏日志
+     */
+    public void startAppLog() {
+        StartLogPlugin.startAppLoadLog();
     }
 }

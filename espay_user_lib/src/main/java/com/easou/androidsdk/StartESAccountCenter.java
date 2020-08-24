@@ -28,6 +28,7 @@ import com.easou.androidsdk.login.service.LUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
+import com.easou.androidsdk.plugin.StartLogPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
 import com.easou.androidsdk.romutils.RomHelper;
 import com.easou.androidsdk.ui.FloatView;
@@ -412,6 +413,7 @@ public class StartESAccountCenter {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                StartLogPlugin.startSdkLoginLog(userId, userName);
                 if (!isShowInfoDialog) {
                     final Map<String, String> register = new HashMap<String, String>();
                     result.put(ESConstant.SDK_USER_ID, userId);
@@ -539,6 +541,7 @@ public class StartESAccountCenter {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                 if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
