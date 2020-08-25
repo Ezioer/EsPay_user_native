@@ -61,9 +61,17 @@ public class StartLogPlugin {
     public static void startSdkLoginLog(String esId, String userName) {
 
         HttpLogHelper.sendHttpRequest(Constant.MAIN_URL + Tools.getHostName() + Constant.SDK_LOGIN_URL,
-                getSendParam(4, null, null));
+                getLoginParam(esId, userName));
     }
 
+    private static String getLoginParam(String id, String name) {
+        String param = "appId=" + CommonUtils.readPropertiesValue(Starter.mActivity, Constant.APP_ID)
+                + "&qn=" + CommonUtils.readPropertiesValue(Starter.mActivity, Constant.QN)
+                + "&imei=" + Constant.IMEI + "&imsi=" + Tools.getDeviceImsi(Starter.mActivity);
+        param = param + "&deviceId=" + Constant.IMEI + "&oaid=" + Constant.OAID + "&accountId=" + id +
+                "&userName=" + name;
+        return param;
+    }
 
     /**
      * 设置日志所需参数
@@ -76,9 +84,9 @@ public class StartLogPlugin {
 
         if (type == 1) {
             // 应用启动日志所需参数
-//            param = param + "&deviceId=" + Constant.IMEI + "&oaid=" + Constant.OAID + "&ipAddr=" + clientIp +
-//                    "&ipAddr1=" + Constant.NET_IP + "&userAgent=" + userAgent + "&phoneBrand=" + toURLEncoded(Tools.getDeviceBrand()) +
-//                    "&phoneModel=" + toURLEncoded(Tools.getSystemModel()) + "&phoneVersion=" + Tools.getSystemVersion();
+            param = param + "&deviceId=" + Constant.IMEI + "&oaid=" + Constant.OAID + "&ipAddr=" + Constant.NET_IP +
+                    "&ipAddr1=" + Constant.NET_IP + "&userAgent=" + "" + "&phoneBrand=" + toURLEncoded(Tools.getDeviceBrand()) +
+                    "&phoneModel=" + toURLEncoded(Tools.getSystemModel()) + "&phoneVersion=" + Tools.getSystemVersion();
 
         } else if (type == 2) {
 
