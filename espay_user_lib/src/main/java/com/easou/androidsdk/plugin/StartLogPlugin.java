@@ -83,6 +83,7 @@ public class StartLogPlugin {
                 + "&imei=" + Constant.IMEI + "&imsi=" + Tools.getDeviceImsi(Starter.mActivity);
 
         if (type == 1) {
+
             // 应用启动日志所需参数
             param = param + "&deviceId=" + Constant.IMEI + "&oaid=" + Constant.OAID + "&ipAddr=" + Constant.NET_IP +
                     "&ipAddr1=" + Constant.NET_IP + "&userAgent=" + "" + "&phoneBrand=" + toURLEncoded(Tools.getDeviceBrand()) +
