@@ -65,7 +65,6 @@ public class Starter {
     public void login(final Activity activity, ESdkCallback mCallback) {
         Starter.mCallback = mCallback;
         Starter.mActivity = activity;
-        startAppLog();
         StartESUserPlugin.loginSdk();
     }
 

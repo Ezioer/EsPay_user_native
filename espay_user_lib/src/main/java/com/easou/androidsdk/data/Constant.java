@@ -12,8 +12,10 @@ public class Constant {
 
 	public static Context context;
 
-	/** SDK版本号 */
-	public static final String SDK_VERSION = "2.4.4";
+	/**
+	 * SDK版本号
+	 */
+	public static final String SDK_VERSION = "2.4.5";
 	public static final String SDK_PHONEOS = "Android";
 	
 	public static final String API_SOURCE = "30";
@@ -30,11 +32,17 @@ public class Constant {
 	public static boolean IS_LOGINED;
 	/** 记录是否进入用户中心webview */
 	public static boolean IS_ENTERED_SDK;
-	/** 记录设备号 */
+	/**
+	 * 记录设备号
+	 */
 	public static String IMEI = "0";
-	/** 记录外网ip */
-	public static String NET_IP = "0";
-	/** 记录oaid */
+	/**
+	 * 记录外网ip
+	 */
+	public static String NET_IP = "";
+	/**
+	 * 记录oaid
+	 */
 	public static String OAID = "0";
 	/** 记录是否为模拟器 0为真机，1为模拟器*/
 	public static int IS_SIMULATOR = 0;
@@ -59,27 +67,35 @@ public class Constant {
 	
 //	public static final String DOMAIN = "http://lab.pay.appeasou.com";
 	public static final String DOMAIN = "https://service.pay.";
-	
-	public static final String [] DOMAIN_HOST = {"domain.game.eayou.com",
-												 "domain.game.love778.com",
-												 "domain.game.74mo.com"};
 
-	/** 热云日志URL */
+	public static final String[] DOMAIN_HOST = {"domain.game.eayou.com",
+			"domain.game.love778.com",
+			"domain.game.74mo.com"};
+
+	/**
+	 * 热云日志URL
+	 */
 	public static final String MAIN_URL = "https://reyun.game.";
 
-	/** 上传日志URL */
-	public static final String APP_LOAD_URL=  "/androidGameLog/addStepLog.e";
-	public static final String GAME_LOGIN_URL= "/androidGameLog/addGameLoginLog.e";
-	public static final String GAME_ORDER_URL= "/androidGaQmeLog/addOrderLog.e";
-	public static final String SDK_LOGIN_URL= "/androidGameLog/addLoginLog.e";
+	/**
+	 * 上传日志URL
+	 */
+	public static final String APP_LOAD_URL = "/androidGameLog/addStepLog.e";
+	public static final String GAME_LOGIN_URL = "/androidGameLog/addGameLoginLog.e";
+	public static final String GAME_ORDER_URL = "/androidGameLog/addOrderLog.e";
+	public static final String SDK_LOGIN_URL = "/androidGameLog/addLoginLog.e";
 
-	/** H5 SDK url */
+	/**
+	 * H5 SDK url
+	 */
 //	public static final String SSO_URL = "http://lab.pay.appeasou.com:7500/static/sdk/2.0.0/es_sdk2_original.html?1=1&sdkSource=Android-SDK&payHostName=http://lab.pay.appeasou.com&ssoHostName=http://lab.sso.mtianshitong.com";
 	public static final String SSO_URL = "https://h5.pay.mtianshitong.com/static/sdk/2.0.0/es_sdk2_original.html?1=1&sdkSource=Android-SDK&";
 
-	/** 支付 url */
-	public static final String SERVER_URL= "/basePay/charge.e";
-	public static final String CHANNELCONFIG_URL= "/basePay/channelConfig.e";
+	/**
+	 * 支付 url
+	 */
+	public static final String SERVER_URL = "/basePay/charge.e";
+	public static final String CHANNELCONFIG_URL = "/basePay/channelConfig.e";
 	public static final String WEB_SERVER_URL= "/basePay/chargePage.e?";
 	public static final String UNIPAY_PAYECO_ENVIRONMENT="01";
 	public static final String INCLUDECHANNELS_ALL = "WFTQQWALLET,ALIPAY2,UNIONPAY2,CARD_PHONE,CARD_GAME,CARD_QQCARD,WECHAT,WFTESWECHAT,ZWXESWECHAT";

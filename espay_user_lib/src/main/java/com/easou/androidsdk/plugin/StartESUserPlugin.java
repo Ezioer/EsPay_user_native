@@ -83,9 +83,10 @@ public class StartESUserPlugin {
 					startLogin();
 					startRequestHost(Starter.mActivity);
 				}*/
+		startLogin();
+		startRequestHost(Starter.mActivity);
 		if (CommonUtils.getLoginInfo(Starter.mActivity) == null) {
-			startLogin();
-			startRequestHost(Starter.mActivity);
+			showLoginDialog();
 		} else {
 			//账号密码登录
 			LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
@@ -126,9 +127,9 @@ public class StartESUserPlugin {
 			@Override
 			public void run() {
 				Constant.NET_IP = Tools.getNetIp();
+				Starter.getInstance().startAppLog();
 			}
 		});
-		showLoginDialog();
 	}
 
 	/**
