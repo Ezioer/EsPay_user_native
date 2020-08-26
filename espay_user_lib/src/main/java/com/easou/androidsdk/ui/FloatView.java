@@ -193,7 +193,7 @@ public class FloatView extends View {
                     isFullIcon = false;
                 }
             }
-        }, 1000);
+        }, 1400);
 
     }
 

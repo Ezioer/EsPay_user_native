@@ -161,24 +161,27 @@ public class CommonUtils {
             month = id.substring(10, 12);
             day = id.substring(12, 14);
         } else {
-            System.out.println("身份证号码不匹配！");
             return "";
         }
         return year + "-" + month + "-" + day;
     }
 
     public static int getAge(String id) {
-        String year = "";
-        //正则匹配身份证号是否是正确的，15位或者17位数字+数字/x/X
-        if (id.matches("^\\d{15}|\\d{17}[\\dxX]$")) {
-            year = id.substring(6, 10);
-        } else {
-            System.out.println("身份证号码不匹配！");
+        try {
+            String year = "";
+            //正则匹配身份证号是否是正确的，15位或者17位数字+数字/x/X
+            if (id.matches("^\\d{15}|\\d{17}[\\dxX]$")) {
+                year = id.substring(6, 10);
+            } else {
+                System.out.println("身份证号码不匹配！");
+                return 0;
+            }
+            Calendar date = Calendar.getInstance();
+            String currentYear = String.valueOf(date.get(Calendar.YEAR));
+            return Integer.valueOf(currentYear) - Integer.valueOf(year);
+        } catch (Exception e) {
             return 0;
         }
-        Calendar date = Calendar.getInstance();
-        String currentYear = String.valueOf(date.get(Calendar.YEAR));
-        return Integer.valueOf(currentYear) - Integer.valueOf(year);
     }
 
 

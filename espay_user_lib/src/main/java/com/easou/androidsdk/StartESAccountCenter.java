@@ -1,5 +1,6 @@
 package com.easou.androidsdk;
 
+import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import com.easou.androidsdk.ui.UIHelper;
 import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.GsonUtil;
+import com.easou.androidsdk.util.NetworkUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.espay_user_lib.R;
 
@@ -70,28 +72,32 @@ public class StartESAccountCenter {
      * @param mContext
      */
     public static void handleAccountLogin(final LoginCallBack callBack, final String name, final String password, final Context mContext) {
-        ThreadPoolManager.getInstance().addTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    EucApiResult<LoginBean> login = AuthAPI.login(name, password, true, RegisterAPI.getRequestInfo(mContext), mContext);
-                    if (login.getResultCode().equals(CodeConstant.OK)) {
-                        callBack.loginSuccess();
-                        handleLoginBean(login, mContext, password);
-                    } else {
-                        if (login.getDescList().size() > 0) {
-                            callBack.loginFail(login.getDescList().get(0).getD());
+        if (NetworkUtils.isNetConnected(mContext)) {
+            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        EucApiResult<LoginBean> login = AuthAPI.login(name, password, true, RegisterAPI.getRequestInfo(mContext), mContext);
+                        if (login.getResultCode().equals(CodeConstant.OK)) {
+                            callBack.loginSuccess();
+                            handleLoginBean(login, mContext, password);
                         } else {
-                            callBack.loginFail("登录失败");
+                            if (login.getDescList().size() > 0) {
+                                callBack.loginFail(login.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("登录失败");
+                            }
                         }
-                    }
 
-                } catch (Exception e) {
-                    ESdkLog.d("账号登录失败" + e.toString());
-                    callBack.loginFail("登录失败");
+                    } catch (Exception e) {
+                        ESdkLog.d("账号登录失败" + e.toString());
+                        callBack.loginFail("登陆中,请稍后");
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            callBack.loginFail("网络连接错误，请检查您的网络");
+        }
     }
 
     /**
@@ -125,27 +131,31 @@ public class StartESAccountCenter {
      * @param mContext
      */
     public static void handleAccountRegister(final LoginCallBack callBack, final String name, final String password, final Context mContext) {
-        ThreadPoolManager.getInstance().addTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    EucApiResult<AuthBean> login = RegisterAPI.registByName(name, password, true, "", RegisterAPI.getRequestInfo(mContext), mContext);
-                    if (login.getResultCode().equals(CodeConstant.OK)) {
-                        callBack.loginSuccess();
-                        handleRegister(login, mContext, false, password);
-                    } else {
-                        if (login.getDescList().size() > 0) {
-                            callBack.loginFail(login.getDescList().get(0).getD());
+        if (NetworkUtils.isNetConnected(mContext)) {
+            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        EucApiResult<AuthBean> login = RegisterAPI.registByName(name, password, true, "", RegisterAPI.getRequestInfo(mContext), mContext);
+                        if (login.getResultCode().equals(CodeConstant.OK)) {
+                            callBack.loginSuccess();
+                            handleRegister(login, mContext, false, password);
                         } else {
-                            callBack.loginFail("账号注册失败");
+                            if (login.getDescList().size() > 0) {
+                                callBack.loginFail(login.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("账号注册失败");
+                            }
                         }
+                    } catch (Exception e) {
+                        ESdkLog.d("账号注册失败" + e.toString());
+                        callBack.loginFail("账号注册失败");
                     }
-                } catch (Exception e) {
-                    ESdkLog.d("账号注册失败" + e.toString());
-                    callBack.loginFail("账号注册失败");
                 }
-            }
-        });
+            });
+        } else {
+            callBack.loginFail("网络连接错误，请检查您的网络");
+        }
     }
 
     /**
@@ -348,27 +358,31 @@ public class StartESAccountCenter {
      * @param mContext
      */
     public static void handleAutoRegister(final LoginCallBack callBack, final Context mContext) {
-        ThreadPoolManager.getInstance().addTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    EucApiResult<AuthBean> userInfo = RegisterAPI.autoRegist(true, RegisterAPI.getRequestInfo(mContext), mContext);
-                    if (userInfo.getResultCode().equals(CodeConstant.OK)) {
-                        callBack.loginSuccess();
-                        handleRegister(userInfo, mContext, true, "");
-                    } else {
-                        if (userInfo.getDescList().size() > 0) {
-                            callBack.loginFail(userInfo.getDescList().get(0).getD());
+        if (NetworkUtils.isNetConnected(mContext)) {
+            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        EucApiResult<AuthBean> userInfo = RegisterAPI.autoRegist(true, RegisterAPI.getRequestInfo(mContext), mContext);
+                        if (userInfo.getResultCode().equals(CodeConstant.OK)) {
+                            callBack.loginSuccess();
+                            handleRegister(userInfo, mContext, true, "");
                         } else {
-                            callBack.loginFail("登录失败");
+                            if (userInfo.getDescList().size() > 0) {
+                                callBack.loginFail(userInfo.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("登录失败");
+                            }
                         }
+                    } catch (Exception e) {
+                        ESdkLog.d("游客登录失败" + e.toString());
+                        callBack.loginFail("登陆中,请稍后");
                     }
-                } catch (Exception e) {
-                    ESdkLog.d("游客登录失败" + e.toString());
-                    callBack.loginFail("登录失败");
                 }
-            }
-        });
+            });
+        } else {
+            callBack.loginFail("网络连接错误，请检查您的网络");
+        }
     }
 
     /**
@@ -384,7 +398,6 @@ public class StartESAccountCenter {
         final String userId = String.valueOf(userInfo.getResult().getUser().getId());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
-        String userBirthdate = String.valueOf(userInfo.getResult().getUser().getBirthday());
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
 
         LUser user = generateLuser(userInfo.getResult().getUser());
@@ -506,7 +519,6 @@ public class StartESAccountCenter {
         final String userId = String.valueOf(userInfo.getResult().getUser().getId());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
-        String userBirthdate = String.valueOf(userInfo.getResult().getUser().getBirthday());
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
         userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
         Starter.loginBean = userInfo.getResult();
@@ -660,7 +672,12 @@ public class StartESAccountCenter {
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         Map<String, String> limitInfo = new HashMap<String, String>();
         PayLimitInfo payLimitInfo = PayAPI.getPayLimitInfo(mContext, age);
-        limitInfo.put(Constant.SDK_PAY_STATUS, String.valueOf(limitStatue.getPs()));
+        if (payLimitInfo == null) {
+            return;
+        }
+        if (limitStatue != null) {
+            limitInfo.put(Constant.SDK_PAY_STATUS, String.valueOf(limitStatue.getPs()));
+        }
         limitInfo.put(Constant.SDK_MIN_AGE, String.valueOf(payLimitInfo.getMinAge()));
         limitInfo.put(Constant.SDK_MAX_AGE, String.valueOf(payLimitInfo.getMaxAge()));
         limitInfo.put(Constant.SDK_S_PAY, String.valueOf(payLimitInfo.getsPay()));
