@@ -164,15 +164,7 @@ public class UserCenterDialog extends BaseDialog {
         ivService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (currentType != 1) {
                 currentType = 1;
-//                    ivMe.setImageResource(R.drawable.icon_main_me);
-//                    ivService.setImageResource(R.drawable.icon_main_servicehign);
-//                    ivGift.setImageResource(R.drawable.icon_main_gift);
-//                    llUser.setVisibility(View.GONE);
-//                    llGift.setVisibility(View.GONE);
-//                    llUser.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
-
                 ThreadPoolManager.getInstance().addTask(new Runnable() {
                     @Override
                     public void run() {

@@ -184,6 +184,7 @@ public class Starter {
      * 广点通SDK上报app启动
      */
     public void logGDTAction() {
+        //此处应为app启动时调用，放在application中，而不是activity的resume中，后面有需求可以更改
         if (Constant.IS_LOGINED) {
             StartOtherPlugin.logGDTAction();
         }

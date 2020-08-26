@@ -60,11 +60,13 @@ public class AuthenNotiDialog extends BaseDialog {
         TextView submitAuthen = (TextView) includeAuthen.findViewById(R.id.tv_authen_submit_dialog);
         final LinearLayout llNoti = (LinearLayout) mView.findViewById(R.id.ll_noti);
         if (us == 1 || us == 4) {
+            //弱实名认证或者cp主动调用实名认证时可以关闭
             closeDialog.setVisibility(View.VISIBLE);
         } else {
             closeDialog.setVisibility(View.GONE);
         }
         if (us == 4) {
+            //cp调用主动认证时只能关闭，不能切换账号
             changeAccount.setVisibility(View.GONE);
         } else {
             changeAccount.setVisibility(View.VISIBLE);

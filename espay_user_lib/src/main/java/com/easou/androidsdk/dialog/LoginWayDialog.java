@@ -321,10 +321,12 @@ public class LoginWayDialog extends BaseDialog {
                 mEtCode.setText("");
                 mEtNewPw.setText("");
                 if (currentType == 0) {
+                    //首页点击找回密码
                     llRoot.setVisibility(View.GONE);
                     llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     includeLookPassword.setVisibility(View.VISIBLE);
                 } else {
+                    //账号登陆页点击找回密码
                     includeAccountLogin.setVisibility(View.GONE);
                     includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
                     includeLookPassword.setVisibility(View.VISIBLE);
@@ -386,10 +388,12 @@ public class LoginWayDialog extends BaseDialog {
                         llHelp.setVisibility(View.VISIBLE);
                         timer.cancel();
                         if (currentType == 0) {
+                            //首页点击找回密码，返回则显示首页
                             llRoot.setVisibility(View.VISIBLE);
                             llRoot.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                             includeLookPassword.setVisibility(View.GONE);
                         } else {
+                            //账号登陆页找回密码，返回则显示账号登陆页
                             includeAccountLogin.setVisibility(View.VISIBLE);
                             includeAccountLogin.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
                             includeLookPassword.setVisibility(View.GONE);
@@ -418,6 +422,7 @@ public class LoginWayDialog extends BaseDialog {
                                         ESToast.getInstance().ToastShow(mContext, "修改成功");
                                         llHelp.setVisibility(View.VISIBLE);
                                         timer.cancel();
+                                        //首页找回密码成功后，会自动跳转到账号登陆页，这时应该初始化账号登陆页的相关数据
                                         accountLogin.performClick();
                                         editTextAccount.setText(name);
                                         editTextPassword.setText(newPw);

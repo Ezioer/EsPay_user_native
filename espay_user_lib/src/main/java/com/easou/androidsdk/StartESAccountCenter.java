@@ -1,6 +1,5 @@
 package com.easou.androidsdk;
 
-import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -55,7 +54,12 @@ public class StartESAccountCenter {
 
     }
 
-    public static void getUserInfoById(final String id, final Context mContext) {
+    /**
+     * 获取用户信息
+     *
+     * @param id
+     */
+    public static void getUserInfoById(final String id) {
         Map<String, String> result = new HashMap<String, String>();
         result.put(ESConstant.SDK_LOGIN_STATUS, "true");
         result.put(ESConstant.SDK_USER_ID, id);
@@ -101,7 +105,7 @@ public class StartESAccountCenter {
     }
 
     /**
-     * 账号登录
+     * 修改密码后静默登陆
      *
      * @param name
      * @param password
@@ -428,9 +432,10 @@ public class StartESAccountCenter {
             public void run() {
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 if (!isShowInfoDialog) {
+                    //注册成功
                     final Map<String, String> register = new HashMap<String, String>();
-                    result.put(ESConstant.SDK_USER_ID, userId);
-                    result.put(ESConstant.SDK_USER_NAME, userName);
+                    register.put(ESConstant.SDK_USER_ID, userId);
+                    register.put(ESConstant.SDK_USER_NAME, userName);
                     postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
@@ -440,50 +445,37 @@ public class StartESAccountCenter {
                                 @Override
                                 public void run() {
                                     if (limitStatue != null && limitStatue.getUs() != 0) {
+                                        //需要实名认证
                                         AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
                                         authenNotiDialog.show();
                                         authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
                                             @Override
                                             public void authenSuccess(String userBirthdate) {
-                                                Map<String, String> result = new HashMap<String, String>();
-                                                result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
-                                                result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+                                                Map<String, String> cert = new HashMap<String, String>();
+                                                cert.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
+                                                cert.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
                                                 Starter.mCallback.onRegister(register);
-                                                Starter.mCallback.onUserCert(result);
-                                                new Handler().postDelayed(new Runnable() {
-                                                    public void run() {
-                                                        RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                                        Starter.getInstance().showFloatView();
-                                                    }
-                                                }, 3000);
+                                                Starter.mCallback.onUserCert(cert);
+                                                popFloatView();
                                             }
                                         });
                                         authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
                                             @Override
                                             public void dialogClose() {
                                                 Starter.mCallback.onRegister(register);
-                                                new Handler().postDelayed(new Runnable() {
-                                                    public void run() {
-                                                        RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                                        Starter.getInstance().showFloatView();
-                                                    }
-                                                }, 3000);
+                                                popFloatView();
                                             }
                                         });
                                     } else {
                                         Starter.mCallback.onRegister(register);
-                                        new Handler().postDelayed(new Runnable() {
-                                            public void run() {
-                                                RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                                Starter.getInstance().showFloatView();
-                                            }
-                                        }, 3000);
+                                        popFloatView();
                                     }
                                 }
                             });
                         }
                     });
                 } else {
+                    //自动注册用户需要弹出账号信息框
                     AccountInfoDialog infoDialog = new AccountInfoDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, userName, password);
                     infoDialog.show();
                     infoDialog.setCloseListener(new AccountInfoDialog.OnCloseDialogListener() {
@@ -491,12 +483,7 @@ public class StartESAccountCenter {
                         public void dialogClose() {
                             Starter.mCallback.onLogin(result);
                             postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-                            new Handler().postDelayed(new Runnable() {
-                                public void run() {
-                                    RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                    Starter.getInstance().showFloatView();
-                                }
-                            }, 3000);
+                            popFloatView();
                         }
                     });
                 }
@@ -504,6 +491,7 @@ public class StartESAccountCenter {
         });
     }
 
+    //修改密码后静默登陆
     public static void reLogin(final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
         saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
@@ -543,6 +531,7 @@ public class StartESAccountCenter {
         String isAdult = "0";
 
         if (!TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum())) {
+            //实名认证过的用户才会去做支付限制
             int age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
             isAdult = age > 18 ? "1" : "0";
             getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
@@ -556,6 +545,7 @@ public class StartESAccountCenter {
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                 if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
+                    //没有认证过的及不是自动注册的用户都需要去检查是否需要弹出实名验证框
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
                         public void run() {
@@ -564,44 +554,32 @@ public class StartESAccountCenter {
                                 @Override
                                 public void run() {
                                     if (limitStatue != null && limitStatue.getUs() != 0) {
+                                        //需要登陆验证时弹出验证框
                                         AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
                                         authenNotiDialog.show();
                                         authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
                                             @Override
                                             public void authenSuccess(String userBirthdate) {
+                                                //手动验证成功回调
                                                 Map<String, String> result = new HashMap<String, String>();
                                                 result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
                                                 result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
                                                 Starter.mCallback.onLogin(result);
                                                 Starter.mCallback.onUserCert(result);
-                                                new Handler().postDelayed(new Runnable() {
-                                                    public void run() {
-                                                        RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                                        Starter.getInstance().showFloatView();
-                                                    }
-                                                }, 3000);
+                                                popFloatView();
                                             }
                                         });
                                         authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
                                             @Override
                                             public void dialogClose() {
+                                                //关闭认证回调
                                                 Starter.mCallback.onLogin(result);
-                                                new Handler().postDelayed(new Runnable() {
-                                                    public void run() {
-                                                        RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                                        Starter.getInstance().showFloatView();
-                                                    }
-                                                }, 3000);
+                                                popFloatView();
                                             }
                                         });
                                     } else {
                                         Starter.mCallback.onLogin(result);
-                                        new Handler().postDelayed(new Runnable() {
-                                            public void run() {
-                                                RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                                                Starter.getInstance().showFloatView();
-                                            }
-                                        }, 3000);
+                                        popFloatView();
                                     }
                                 }
                             });
@@ -609,12 +587,7 @@ public class StartESAccountCenter {
                     });
                 } else {
                     Starter.mCallback.onLogin(result);
-                    new Handler().postDelayed(new Runnable() {
-                        public void run() {
-                            RomHelper.checkFloatWindowPermission(Starter.mActivity);
-                            Starter.getInstance().showFloatView();
-                        }
-                    }, 3000);
+                    popFloatView();
                 }
             }
         });
@@ -650,11 +623,19 @@ public class StartESAccountCenter {
         return lUser;
     }
 
+    /**
+     * 保存所有登陆用户名和密码信息
+     *
+     * @param name
+     * @param pw
+     * @param mContext
+     */
     private static void saveLoginInfo(String name, String pw, Context mContext) {
         List<LoginNameInfo> loginNameInfo = CommonUtils.getLoginNameInfo(mContext);
         LoginNameInfo info = new LoginNameInfo();
         info.setName(name);
         info.setPassword(pw);
+        //如果存在相同的用户名，则更新密码，否则添加新的用户信息
         if (loginNameInfo.contains(info)) {
             for (LoginNameInfo saveInfo : loginNameInfo) {
                 if (saveInfo.getName().equals(name)) {
@@ -668,6 +649,14 @@ public class StartESAccountCenter {
         CommonUtils.saveLoginNameInfo(GsonUtil.list2json(loginNameInfo), mContext);
     }
 
+    /**
+     * 获取支付限制信息
+     *
+     * @param mContext
+     * @param age
+     * @param idNum
+     * @param isAdult
+     */
     public static void getPayLimitInfo(Context mContext, int age, String idNum, String isAdult) {
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         Map<String, String> limitInfo = new HashMap<String, String>();
@@ -692,6 +681,11 @@ public class StartESAccountCenter {
         Constant.PAY_LIMIT_INFO_MAP = limitInfo;
     }
 
+    /**
+     * 登出操作
+     *
+     * @param mContext
+     */
     public static void logout(Context mContext) {
         Constant.IS_LOGINED = false;
         StartESUserPlugin.hideFloatView();
@@ -706,5 +700,17 @@ public class StartESAccountCenter {
         Constant.ESDK_USERID = "";
         Constant.ESDK_TOKEN = "";
         ESdkLog.d("退出登录");
+    }
+
+    /**
+     * 检查悬浮窗权限，显示悬浮窗
+     */
+    private static void popFloatView() {
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                RomHelper.checkFloatWindowPermission(Starter.mActivity);
+                Starter.getInstance().showFloatView();
+            }
+        }, 3000);
     }
 }
