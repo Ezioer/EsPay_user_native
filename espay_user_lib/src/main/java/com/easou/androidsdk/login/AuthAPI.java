@@ -32,7 +32,6 @@ public class AuthAPI {
     /**
      * 用户名密码登录
      *
-     * @param userName
      * @param password
      * @param remember
      * @param info
@@ -95,8 +94,6 @@ public class AuthAPI {
     /**
      * 验证SERVICE TICKET
      *
-     * @param request
-     * @param response
      * @return
      * @throws EucAPIException
      */
@@ -176,9 +173,13 @@ public class AuthAPI {
     }
 
     public static LimitStatusInfo getLimitStatue(Context activity) {
-        eucService = EucService.getInstance(activity);
-        LimitStatusInfo limitSwitch = eucService.getLimitSwitch("https://egamec.eayou.com/c3s/as?");
-        return limitSwitch;
+        try {
+            eucService = EucService.getInstance(activity);
+            LimitStatusInfo limitSwitch = eucService.getLimitSwitch("https://egamec.eayou.com/c3s/as?");
+            return limitSwitch;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**

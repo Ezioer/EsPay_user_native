@@ -139,7 +139,9 @@ public class UserCenterDialog extends BaseDialog {
                                     if (userGift != null && userGift.getResultCode() == 1) {
                                         initList(userGift.getRows());
                                     } else {
-                                        ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
+                                        if (userGift != null && !TextUtils.isEmpty(userGift.getMsg())) {
+                                            ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
+                                        }
                                     }
                                 }
                             });
@@ -165,22 +167,29 @@ public class UserCenterDialog extends BaseDialog {
             @Override
             public void onClick(View v) {
                 currentType = 1;
-                ThreadPoolManager.getInstance().addTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        final String serviceUrl = UserAPI.getServiceUrl(mContext);
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(mContext, WebViewActivity.class);
-                                intent.putExtra("url", serviceUrl);
-                                mContext.startActivity(intent);
-                            }
-                        });
-                    }
-                });
+                String url = CommonUtils.getServiceUrl(mContext);
+                if (TextUtils.isEmpty(url)) {
+                    ThreadPoolManager.getInstance().addTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            final String serviceUrl = UserAPI.getServiceUrl(mContext);
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    CommonUtils.saveServiceUrl(mContext, serviceUrl);
+                                    Intent intent = new Intent(mContext, WebViewActivity.class);
+                                    intent.putExtra("url", serviceUrl);
+                                    mContext.startActivity(intent);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(mContext, WebViewActivity.class);
+                    intent.putExtra("url", url);
+                    mContext.startActivity(intent);
+                }
             }
-//            }
         });
 
 

@@ -6,9 +6,9 @@ package com.easou.androidsdk.login.service;
  * fun
  */
 public class LimitStatusInfo {
-    private int us;
-    private int ps;
-    private int ls;
+    private int us = 0;
+    private int ps = 0;
+    private int ls = 0;
 
     public int getUs() {
         return us;

@@ -432,7 +432,7 @@ public class StartESAccountCenter {
             public void run() {
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 if (!isShowInfoDialog) {
-                    //注册成功
+                    //注册成功，不需要显示账号密码信息框
                     final Map<String, String> register = new HashMap<String, String>();
                     register.put(ESConstant.SDK_USER_ID, userId);
                     register.put(ESConstant.SDK_USER_NAME, userName);

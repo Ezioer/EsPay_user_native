@@ -28,7 +28,6 @@ public class UserAPI {
 	/**
 	 * 根据用户ID获取信息
 	 *
-	 * @param token
 	 * @param id
 	 * @return
 	 * @throws EucAPIException
@@ -45,14 +44,14 @@ public class UserAPI {
 
 	/**
 	 * 更新用户信息
-	 * 
+	 *
 	 * @param token
 	 * @param jUser
 	 * @return
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<JUser> updateUser(String token, JUser jUser,
-			RequestInfo info, Activity _activity) throws EucAPIException {
+												 RequestInfo info, Activity _activity) throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
 		jbody.put(CookieUtil.COOKIE_TOKEN, token);
@@ -80,14 +79,13 @@ public class UserAPI {
 
 	/**
 	 * 更改密码
-	 * 
+	 *
 	 * @param token
-	 * @param jUser
 	 * @return
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<String> updatePasswd(String token,
-			String oldPass, String newPass, RequestInfo info, Context _activity)
+													String oldPass, String newPass, RequestInfo info, Context _activity)
 			throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
@@ -102,14 +100,13 @@ public class UserAPI {
 
 	/**
 	 * 更改密码
-	 * 
+	 *
 	 * @param token
-	 * @param jUser
 	 * @return
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<String> updatePasswd(String token,
-			String newPass, RequestInfo info, Activity _activity)
+													String newPass, RequestInfo info, Activity _activity)
 			throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
@@ -123,7 +120,7 @@ public class UserAPI {
 
 	/**
 	 * 获取解绑手机验证码
-	 * 
+	 *
 	 * @param token
 	 * @param mobile
 	 * @param info
@@ -132,7 +129,7 @@ public class UserAPI {
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<String> requesNuBindMobile(String token,
-			RequestInfo info, Activity _activity) throws EucAPIException {
+														  RequestInfo info, Activity _activity) throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
 		jbody.put(CookieUtil.COOKIE_TOKEN, token);
@@ -144,7 +141,7 @@ public class UserAPI {
 
 	/**
 	 * 获得绑定手机验证码
-	 * 
+	 *
 	 * @param token
 	 * @param mobile
 	 * @param info
@@ -152,7 +149,7 @@ public class UserAPI {
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<String> requestBindMobile(String token,
-			String mobile, RequestInfo info, Context _activity, boolean isBind)
+														 String mobile, RequestInfo info, Context _activity, boolean isBind)
 			throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
@@ -174,7 +171,7 @@ public class UserAPI {
 
 	/**
 	 * 提交手机绑定
-	 * 
+	 *
 	 * @param token
 	 * @param mobile
 	 * @param veriCode
@@ -183,8 +180,8 @@ public class UserAPI {
 	 * @throws EucAPIException
 	 */
 	public static EucApiResult<JUser> applyBindMobile(String token,
-			String mobile, String veriCode, RequestInfo info,
-			Context _activity, boolean isBind) throws EucAPIException {
+													  String mobile, String veriCode, RequestInfo info,
+													  Context _activity, boolean isBind) throws EucAPIException {
 		eucService = EucService.getInstance(_activity);
 		JBody jbody = new JBody();
 		jbody.put(CookieUtil.COOKIE_TOKEN, token);
@@ -194,26 +191,34 @@ public class UserAPI {
 		if (isBind) {
 			// 绑定操作
 			jbean = eucService.getResult("/api2/applyBindMobile.json", jbody,
-                    authPara, info);
-        } else {
-            // 解绑操作
-            jbean = eucService.getResult("/api2/applyUnBindMobile.json", jbody,
-                    authPara, info);
+					authPara, info);
+		} else {
+			// 解绑操作
+			jbean = eucService.getResult("/api2/applyUnBindMobile.json", jbody,
+					authPara, info);
 		}
 
 		return buildResult(jbean);
 	}
 
 	public static String getServiceUrl(Context activity) {
-		eucService = EucService.getInstance(activity);
-		String limitSwitch = eucService.getHelpUrl("https://egamec.eayou.com/customer/info?");
-		return limitSwitch + "?device=android";
+		try {
+			eucService = EucService.getInstance(activity);
+			String limitSwitch = eucService.getHelpUrl("https://egamec.eayou.com/customer/info?");
+			return limitSwitch + "?device=android";
+		} catch (Exception e) {
+			return "";
+		}
 	}
 
 	public static GiftBean getUserGift(Context activity) {
-		eucService = EucService.getInstance(activity);
-		GiftBean info = eucService.getGifts("https://egift.eayou.com/gifts/list?");
-		return info;
+		try {
+			eucService = EucService.getInstance(activity);
+			GiftBean info = eucService.getGifts("https://egift.eayou.com/gifts/list?");
+			return info;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	private static EucApiResult<JUser> buildResult(JBean jbean)

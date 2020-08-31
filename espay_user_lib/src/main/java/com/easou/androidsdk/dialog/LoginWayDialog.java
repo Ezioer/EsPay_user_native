@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.RestrictTo;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,20 +84,28 @@ public class LoginWayDialog extends BaseDialog {
         tvMainHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadPoolManager.getInstance().addTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        final String serviceUrl = UserAPI.getServiceUrl(mContext);
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(mContext, WebViewActivity.class);
-                                intent.putExtra("url", serviceUrl);
-                                mContext.startActivity(intent);
-                            }
-                        });
-                    }
-                });
+                String url = CommonUtils.getServiceUrl(mContext);
+                if (TextUtils.isEmpty(url)) {
+                    ThreadPoolManager.getInstance().addTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            final String serviceUrl = UserAPI.getServiceUrl(mContext);
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    CommonUtils.saveServiceUrl(mContext, serviceUrl);
+                                    Intent intent = new Intent(mContext, WebViewActivity.class);
+                                    intent.putExtra("url", serviceUrl);
+                                    mContext.startActivity(intent);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(mContext, WebViewActivity.class);
+                    intent.putExtra("url", url);
+                    mContext.startActivity(intent);
+                }
 
             }
         });

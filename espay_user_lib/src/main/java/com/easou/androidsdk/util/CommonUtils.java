@@ -133,6 +133,19 @@ public class CommonUtils {
         return GsonUtil.fromJson(info, LoginBean.class);
     }
 
+    public static String getServiceUrl(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        String info = settings.getString("serviceurl", "");
+        return info;
+    }
+
+    public static void saveServiceUrl(Context mContext, String info) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("serviceurl", info);
+        editor.commit();
+    }
+
     public static void saveLoginNameInfo(String info, Context mContext) {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -152,9 +165,9 @@ public class CommonUtils {
     }
 
     public static String getYMDfromIdNum(String id) {
-        String year = null;
-        String month = null;
-        String day = null;
+        String year = "";
+        String month = "";
+        String day = "";
         //正则匹配身份证号是否是正确的，15位或者17位数字+数字/x/X
         if (id.matches("^\\d{15}|\\d{17}[\\dxX]$")) {
             year = id.substring(6, 10);
@@ -292,7 +305,7 @@ public class CommonUtils {
      * 检测某个应用是否安装
      *
      * @param context
-     * @param pkgName
+     * @param packageName
      * @return
      */
     public static boolean isAppInstalled(Context context, String packageName) {
@@ -407,7 +420,6 @@ public class CommonUtils {
     /**
      * 根据字段名得到QN参数
      *
-     * @param type
      * @param context
      * @return
      */
