@@ -136,7 +136,7 @@ public class UserCenterDialog extends BaseDialog {
                             ((Activity) mContext).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (userGift != null && userGift.getResultCode() == 1) {
+                                    if (userGift != null && userGift.getResultCode() == 1 && userGift.getRows() != null) {
                                         initList(userGift.getRows());
                                     } else {
                                         if (userGift != null && !TextUtils.isEmpty(userGift.getMsg())) {
