@@ -54,7 +54,6 @@ public class UserCenterDialog extends BaseDialog {
     private Context mContext;
     private boolean bindType = true;
     private int currentType = 0;
-    private String helpUrl = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,6 @@ public class UserCenterDialog extends BaseDialog {
         final View includeMenu = findViewById(R.id.include_usermenu);
         final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
         final ImageView ivGift = (ImageView) findViewById(R.id.iv_gift);
-        final RelativeLayout llContent = (RelativeLayout) findViewById(R.id.ll_content);
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
         final RelativeLayout llGift = (RelativeLayout) findViewById(R.id.ll_gift);
@@ -141,6 +139,8 @@ public class UserCenterDialog extends BaseDialog {
                                     } else {
                                         if (userGift != null && !TextUtils.isEmpty(userGift.getMsg())) {
                                             ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
+                                        } else {
+                                            ESToast.getInstance().ToastShow(mContext, "暂无礼包信息!");
                                         }
                                     }
                                 }
