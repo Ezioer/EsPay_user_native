@@ -34,6 +34,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.easou.androidsdk.ESPlatform;
+import com.easou.androidsdk.util.NotchUtil;
+import com.easou.androidsdk.util.StatusBarUtils;
 import com.easou.androidsdk.webviewutils.ConfigerManagner;
 import com.easou.androidsdk.webviewutils.ImageUtil;
 import com.easou.androidsdk.webviewutils.JSAndroid;
@@ -85,15 +87,10 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
         hideBottomUIMenu();
         setContentView(getApplication().getResources().getIdentifier("layout_webview", "layout",
                 getApplication().getPackageName()));
+        StatusBarUtils.showOrHide(true, this);
+        NotchUtil.fullscreenUseStatus(this);
         mActivity = this;
         initView();
-       /* WindowManager m = getWindowManager();
-        Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
-        android.view.WindowManager.LayoutParams p = getWindow().getAttributes();  //获取对话框当前的参数值
-        p.height = (int) (d.getHeight() * 0.7);   //高度设置为屏幕的0.7
-        p.width = (int) (d.getWidth() * 0.7);    //宽度设置为屏幕的0.7
-        p.gravity = Gravity.RIGHT;
-        getWindow().setAttributes(p);     //设置生效*/
     }
 
     private void initView() {
@@ -225,10 +222,11 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
     }
 
     protected void hideBottomUIMenu() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window _window = getWindow();
         WindowManager.LayoutParams params = _window.getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         _window.setAttributes(params);
     }
 

@@ -711,6 +711,6 @@ public class StartESAccountCenter {
                 RomHelper.checkFloatWindowPermission(Starter.mActivity);
                 Starter.getInstance().showFloatView();
             }
-        }, 3000);
+        }, 800);
     }
 }

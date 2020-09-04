@@ -135,7 +135,7 @@
         <activity
             android:name="com.easou.androidsdk.dialog.WebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@style/easou_translucent_notitle" />
+            android:theme="@style/easou_translucent_notitle"></activity>
 
         <activity
             android:name="com.easou.androidsdk.dialog.UserCenterActivity"

@@ -19,7 +19,8 @@ class BaseDialog extends Dialog {
     private int mHeight;
     private float mWidth;
     private Context mContext;
-    public BaseDialog(@NonNull Context context,int animation,int gravity,float mWidth,int mHeight) {
+
+    public BaseDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight) {
         super(context, R.style.CommentStyle);
         this.animation = animation;
         this.gravity = gravity;
@@ -31,12 +32,12 @@ class BaseDialog extends Dialog {
     @Override
     protected void onStart() {
         super.onStart();
-       Window window = getWindow();
-       window.setWindowAnimations(animation);
-       window.setGravity(gravity);
-       window.setBackgroundDrawableResource(android.R.color.transparent);
+        Window window = getWindow();
+        window.setWindowAnimations(animation);
+        window.setGravity(gravity);
+        window.setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams windowparams = window.getAttributes();
-        windowparams.height =mHeight == 1? WindowManager.LayoutParams.MATCH_PARENT : WindowManager.LayoutParams.WRAP_CONTENT;
+        windowparams.height = mHeight == 1 ? WindowManager.LayoutParams.MATCH_PARENT : WindowManager.LayoutParams.WRAP_CONTENT;
         windowparams.width = (int) (mContext.getResources().getDisplayMetrics().widthPixels * mWidth);
         window.setAttributes(windowparams);
         setCanceledOnTouchOutside(false);

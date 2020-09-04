@@ -9,7 +9,10 @@
     <ImageView
         android:id="@+id/iv_close_webview"
         android:src="@drawable/icon_close"
-        android:padding="10dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

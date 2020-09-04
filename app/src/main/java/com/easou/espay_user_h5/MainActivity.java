@@ -25,6 +25,7 @@ import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.callback.ESdkCallback;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.util.ESdkLog;
+import com.easou.androidsdk.util.StatusBarUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 
 import java.lang.reflect.Method;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().hide();
+//        StatusBarUtils.showOrHide(true,this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //		hideBottomUIMenu();
         /** 初始化头条SDK */
