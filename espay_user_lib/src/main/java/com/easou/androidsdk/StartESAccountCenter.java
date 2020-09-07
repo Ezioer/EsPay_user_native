@@ -561,11 +561,11 @@ public class StartESAccountCenter {
                                             @Override
                                             public void authenSuccess(String userBirthdate) {
                                                 //手动验证成功回调
-                                                Map<String, String> result = new HashMap<String, String>();
-                                                result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
-                                                result.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+                                                Map<String, String> authenResult = new HashMap<String, String>();
+                                                authenResult.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
+                                                authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
                                                 Starter.mCallback.onLogin(result);
-                                                Starter.mCallback.onUserCert(result);
+                                                Starter.mCallback.onUserCert(authenResult);
                                                 popFloatView();
                                             }
                                         });
@@ -711,6 +711,6 @@ public class StartESAccountCenter {
                 RomHelper.checkFloatWindowPermission(Starter.mActivity);
                 Starter.getInstance().showFloatView();
             }
-        }, 800);
+        }, 300);
     }
 }
