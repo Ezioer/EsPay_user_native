@@ -73,11 +73,11 @@ public class StartESUserPlugin {
 		});*/
 
         startLogin();
-        startRequestHost(Starter.mActivity);
         if (CommonUtils.getLoginInfo(Starter.mActivity) == null) {
+            //未登陆显示登陆框
             showLoginDialog();
         } else {
-            //账号密码登录
+            //已登陆用户直接账号密码登录
             LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
             StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
                 @Override
@@ -113,6 +113,7 @@ public class StartESUserPlugin {
             @Override
             public void run() {
                 Constant.NET_IP = Tools.getNetIp();
+                startRequestHost(Starter.mActivity);
                 Starter.getInstance().startAppLog();
             }
         });
@@ -129,6 +130,7 @@ public class StartESUserPlugin {
             public void run() {
                 int status = 0;
                 try {
+                    //获取登陆限制信息
                     final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
                     status = AuthAPI.identifyStatus(Tools.getOnlyId(), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
                     if (limitStatue == null || limitStatue.getUs() == 0) {
@@ -189,14 +191,17 @@ public class StartESUserPlugin {
             mUserCenterDialog = new UserCenterDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT, 1f, 1);
         }
         if (mUserCenterDialog.isShowing()) {
+            //正在展示则隐藏用户中心并将图标设置显示一半
             FloatView.isSetHalf = true;
             mUserCenterDialog.dismiss();
         } else {
+            //显示正常图标并显示用户中心
             FloatView.isSetHalf = false;
             mUserCenterDialog.show();
-            Window window = mUserCenterDialog.getWindow();//必须在show之后设置dialog的宽高
-            WindowManager.LayoutParams layoutParams = window
-                    .getAttributes();
+            //设置用户中心的dialog为全屏显示
+            Window window = mUserCenterDialog.getWindow();
+            //必须在show之后设置dialog的宽高
+            WindowManager.LayoutParams layoutParams = window.getAttributes();
             layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
             layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
             window.setAttributes(layoutParams);

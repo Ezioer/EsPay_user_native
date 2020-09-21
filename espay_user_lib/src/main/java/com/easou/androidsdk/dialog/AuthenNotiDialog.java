@@ -115,10 +115,10 @@ public class AuthenNotiDialog extends BaseDialog {
                                         @Override
                                         public void run() {
                                             ESToast.getInstance().ToastShow(mContext, "认证成功");
-                                            dismiss();
                                             if (listener != null) {
                                                 listener.authenSuccess(CommonUtils.getYMDfromIdNum(idNum));
                                             }
+                                            dismiss();
                                         }
                                     });
                                 } else {
@@ -133,7 +133,7 @@ public class AuthenNotiDialog extends BaseDialog {
                                         }
                                     });
                                 }
-                            } catch (EucAPIException e) {
+                            } catch (Exception e) {
                             }
                         }
                     });

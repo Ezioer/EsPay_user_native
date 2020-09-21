@@ -109,7 +109,8 @@ public class StartESPayPlugin {
                     intent.setClass(mActivity, ESCertAlertActivity.class);
                     mActivity.startActivity(intent);
                 } else {
-                    StartESPayPlugin.startPayCenterActivity(mActivity, intent.getExtras());
+                    StartESPayPlugin.
+                            startPayCenterActivity(mActivity, intent.getExtras());
                 }
             } else if (payStatus.equals("2")) {
                 if (userType.equals("1")) {

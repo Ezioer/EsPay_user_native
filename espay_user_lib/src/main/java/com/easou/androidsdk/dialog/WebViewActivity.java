@@ -58,19 +58,19 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
     /**
      * 网页加载提示
      */
-    private static ProgressDialog progressDialog = null;
+    private ProgressDialog progressDialog = null;
     /**
      * 需要包装网页的控件
      */
-    public static WebView mWebView;
+    public WebView mWebView;
     /**
      * 使用的浏览器对象
      */
-    private static WebChromeClient mWebChromeClient;
+    private WebChromeClient mWebChromeClient;
     /**
      * js跳转控制
      */
-    private static WebViewClient mWebViewClient;
+    private WebViewClient mWebViewClient;
     public static WebViewActivity mActivity;
 
     private static final int REQUEST_CODE_PICK_IMAGE = 0;
@@ -231,14 +231,22 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
     }
 
     public void clearData() {
-
         mWebView.clearFormData();
         mWebView.clearHistory();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mWebView != null) {
+            mWebView.destroy();
+            mWebView = null;
+        }
+    }
+
     private void showAlert() {
 
-        final AlertDialog.Builder exitDialog = new AlertDialog.Builder(mActivity, AlertDialog.THEME_HOLO_LIGHT);
+        final AlertDialog.Builder exitDialog = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
         exitDialog.setTitle("温馨提示")
                 .setMessage("网络连接错误，请检查网络后重启游戏！")
                 .setPositiveButton("确 定", new DialogInterface.OnClickListener() {
@@ -257,18 +265,25 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
     private void showDialog() {
         try {
             if (progressDialog == null) {
-                progressDialog = new ProgressDialog(mActivity, ProgressDialog.THEME_HOLO_LIGHT);
+                progressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
             }
-            progressDialog.setMessage("数据加载中，请稍候...");
-            progressDialog.show();
+            if (!progressDialog.isShowing()) {
+                progressDialog.setMessage("数据加载中，请稍候...");
+                progressDialog.show();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     private void hideDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+        try {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        } catch (Exception e) {
+            if (progressDialog != null) {
+                progressDialog = null;
+            }
         }
     }
 

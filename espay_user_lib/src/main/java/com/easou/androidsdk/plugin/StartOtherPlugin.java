@@ -160,7 +160,7 @@ public class StartOtherPlugin {
             JLibrary.InitEntry(mContext);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -175,7 +175,7 @@ public class StartOtherPlugin {
             MiitHelper.getOaid(mContext);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
     }
@@ -195,7 +195,7 @@ public class StartOtherPlugin {
             ESdkLog.d("调用了是否为模拟器接口");
             SimulatorUtils.checkSimulator(mContext);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 

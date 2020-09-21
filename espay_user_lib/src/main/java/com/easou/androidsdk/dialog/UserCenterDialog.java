@@ -109,6 +109,7 @@ public class UserCenterDialog extends BaseDialog {
                     llGift.setVisibility(View.GONE);
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
+                        WebViewActivity.mActivity = null;
                     }
                 }
             }
@@ -126,6 +127,7 @@ public class UserCenterDialog extends BaseDialog {
                     llGift.setVisibility(View.VISIBLE);
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
+                        WebViewActivity.mActivity = null;
                     }
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override

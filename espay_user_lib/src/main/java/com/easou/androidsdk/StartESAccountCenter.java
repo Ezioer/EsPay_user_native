@@ -279,8 +279,7 @@ public class StartESAccountCenter {
                             callBack.loginFail("操作失败");
                         }
                     }
-                } catch (EucAPIException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
                     callBack.loginFail("操作失败");
                 }
             }
@@ -316,8 +315,7 @@ public class StartESAccountCenter {
                             callBack.loginFail("操作失败");
                         }
                     }
-                } catch (EucAPIException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
                     callBack.loginFail("操作失败");
                 }
             }
@@ -403,7 +401,7 @@ public class StartESAccountCenter {
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
-
+        //注册成功后的用户实体类和登陆返回的用户实体类不同，需要转换成一样的
         LUser user = generateLuser(userInfo.getResult().getUser());
         user.setPasswd(pw.isEmpty() ? password : pw);
         LoginBean login = new LoginBean(userInfo.getResult().getToken(), user, userInfo.getResult().getEsid(), true);
@@ -419,6 +417,7 @@ public class StartESAccountCenter {
         Constant.IS_LOGINED = true;
         Constant.ESDK_USERID = userId;
         Constant.ESDK_TOKEN = token;
+        //登陆成功回调给cp
         final Map<String, String> result = new HashMap<String, String>();
         result.put(ESConstant.SDK_USER_ID, userId);
         result.put(ESConstant.SDK_USER_NAME, userName);
@@ -493,9 +492,9 @@ public class StartESAccountCenter {
 
     //修改密码后静默登陆
     public static void reLogin(final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
-        saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
         userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
+        saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
         String token = String.valueOf(userInfo.getResult().getToken().token);
         Constant.ESDK_TOKEN = token;
         Starter.loginBean = userInfo.getResult();
@@ -521,10 +520,12 @@ public class StartESAccountCenter {
         Constant.IS_LOGINED = true;
         Constant.ESDK_USERID = userId;
         Constant.ESDK_TOKEN = token;
+        //登陆成功回调给cp
         final Map<String, String> result = new HashMap<String, String>();
         result.put(ESConstant.SDK_USER_ID, userId);
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
+        //身份证号为null则生日为0，未实名认证
         result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
                 CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()) : "0");
         result.put(ESConstant.SDK_IS_IDENTITY_USER, TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ? "0" : "1");
@@ -607,6 +608,7 @@ public class StartESAccountCenter {
         t.show();
     }
 
+    //注册用户返回的实体类转成统一的实体类
     private static LUser generateLuser(JUser user) {
         LUser lUser = new LUser();
         lUser.setBirthday(user.getBirthday());

@@ -43,8 +43,12 @@ public class PayAPI {
      * @return
      */
     public static PayLimitInfo getPayLimitInfo(Context _activity, int age) {
-        eucService = EucService.getInstance(_activity);
-        PayLimitInfo payLimit = eucService.getPayLimit("https://egamec.eayou.com/pl/info?", age);
-        return payLimit;
+        try {
+            eucService = EucService.getInstance(_activity);
+            PayLimitInfo payLimit = eucService.getPayLimit("https://egamec.eayou.com/pl/info?", age);
+            return payLimit;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
