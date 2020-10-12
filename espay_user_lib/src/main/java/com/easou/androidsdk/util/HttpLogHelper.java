@@ -9,11 +9,9 @@ public class HttpLogHelper {
 
     public static void sendHttpRequest(final String url, final String parma) {
 
-        new Thread(new Runnable() {
-
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
-
                 try {
 
                     String result = HttpGroupUtils.sendGet(url, parma, null);
@@ -44,6 +42,14 @@ public class HttpLogHelper {
                     // TODO: handle exception
                 }
             }
-        }).start();
+        });
+        /*new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+
+            }
+        }).start();*/
     }
 }
