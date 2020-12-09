@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
+import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.login.AuthenCallBack;
 import com.easou.androidsdk.login.LoginCallBack;
@@ -54,6 +55,7 @@ public class UserCenterDialog extends BaseDialog {
     private Context mContext;
     private boolean bindType = true;
     private int currentType = 0;
+    private RelativeLayout rlChangePw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,16 @@ public class UserCenterDialog extends BaseDialog {
         });
         getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         initView();
+    }
+
+    public void setUpdatePwHide() {
+        if (rlChangePw != null) {
+            if (Constant.isTaptapLogin == 1) {
+                rlChangePw.setVisibility(View.GONE);
+            } else {
+                rlChangePw.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void initView() {
@@ -199,7 +211,7 @@ public class UserCenterDialog extends BaseDialog {
         final View includeBind = findViewById(R.id.include_bind);
         final View includeUserAuthen = findViewById(R.id.include_user_authen);
 
-        RelativeLayout rlChangePw = (RelativeLayout) includeMenu.findViewById(R.id.rl_changepassword);
+        rlChangePw = (RelativeLayout) includeMenu.findViewById(R.id.rl_changepassword);
         RelativeLayout rlBind = (RelativeLayout) includeMenu.findViewById(R.id.rl_bindphone);
         final TextView mBindPhoneType = (TextView) includeMenu.findViewById(R.id.tv_bindphone);
         final RelativeLayout rlAuthen = (RelativeLayout) includeMenu.findViewById(R.id.rl_authen);

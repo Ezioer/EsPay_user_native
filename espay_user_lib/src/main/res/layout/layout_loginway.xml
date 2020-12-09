@@ -56,16 +56,19 @@
                 android:textColor="@color/payeco_textColorWhite"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
-        <TextView
-            android:id="@+id/tv_guest_noti"
-            android:text="@string/guest_noti"
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/iv_taptaplogin"
+            android:src="@drawable/icon_taptap"
             android:textColor="@color/easou_thin1_color"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
     </LinearLayout>
     <include
         android:visibility="gone"

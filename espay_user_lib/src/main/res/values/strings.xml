@@ -3,6 +3,7 @@
     <string name="chooseloginway">请选择登录方式</string>
     <string name="guest_login">游客登录</string>
     <string name="account_login">账号登录</string>
+    <string name="taptap_login">taptap登录</string>
     <string name="gift_center">福利中心</string>
     <string name="newgift">新手礼包</string>
     <string name="get_giftcode">领取礼包码</string>
@@ -41,5 +42,5 @@
     <string name="changepassword">修改密码</string>
     <string name="bindphone">绑定手机</string>
     <string name="logout">退出登录</string>
-
+    <color name="primary_color">#FF14B9C8</color>
 </resources>

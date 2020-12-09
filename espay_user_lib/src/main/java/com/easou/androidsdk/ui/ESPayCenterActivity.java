@@ -590,6 +590,7 @@ public class ESPayCenterActivity extends BaseActivity {
                 StartOtherPlugin.logGDTActionOrder(money);
                 StartOtherPlugin.orderAqyAction(money);
                 StartOtherPlugin.logKSActionOrderSubmit(money);
+                StartOtherPlugin.logBDActionOrder(money);
             }
         });
         /*new Thread(new Runnable() {
@@ -1114,11 +1115,12 @@ public class ESPayCenterActivity extends BaseActivity {
         // e币支付
 //		refreshUI();
 
-        StartOtherPlugin.logTTActionPurchase(money, productName, payType, true);
+        StartOtherPlugin.logTTActionPurchase(money, productName, payType, true, appId, Constant.ESDK_USERID);
         StartOtherPlugin.logGismActionPurchase(money, productName, payType, true);
         StartOtherPlugin.logGDTActionPurchase(money, productName, true);
         StartOtherPlugin.logKSActionPerchase(money);
         StartOtherPlugin.purchaseAqyAction(money);
+        StartOtherPlugin.logBDActionPerchase(money);
 
         Message msg = new Message();
         msg.what = ESConstant.ESPAY_SUC;

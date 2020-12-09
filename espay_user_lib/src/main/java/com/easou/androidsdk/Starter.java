@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 
 import com.easou.androidsdk.callback.AppTimeWatcher;
 import com.easou.androidsdk.callback.ESdkCallback;
@@ -14,6 +15,13 @@ import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.plugin.StartLogPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
 import com.easou.androidsdk.util.CommonUtils;
+import com.easou.androidsdk.util.ESdkLog;
+import com.taptap.sdk.AccessToken;
+import com.taptap.sdk.CallBackManager;
+import com.taptap.sdk.Profile;
+import com.taptap.sdk.RegionType;
+import com.taptap.sdk.TapTapSdk;
+import com.taptap.sdk.net.Api;
 
 import java.util.Map;
 
@@ -26,6 +34,7 @@ public class Starter {
     public static Activity mActivity;
     public static LoginBean loginBean = null;
 
+    public static CallBackManager callBackManager;
     public volatile static Starter mSingleton = null;
 
     private Starter() {
@@ -65,6 +74,16 @@ public class Starter {
     public void login(final Activity activity, ESdkCallback mCallback) {
         Starter.mCallback = mCallback;
         Starter.mActivity = activity;
+        StartOtherPlugin.onLaunchApp();
+        StartOtherPlugin.initKSSDK(activity);
+        StartOtherPlugin.initTTSDK(activity);
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ESdkLog.d("快手sdk激活");
+                StartOtherPlugin.logKSActionAppActive();
+            }
+        }, 3000);
         StartESUserPlugin.loginSdk();
     }
 
@@ -128,13 +147,28 @@ public class Starter {
      * 初始化今日头条SDK
      */
     public void initTTSDK(Context context) {
-        StartOtherPlugin.initTTSDK(context);
+//        StartOtherPlugin.initTTSDK(context);
+    }
+
+
+    /**
+     * 头条进入页面统计
+     */
+    public void logTTPageResume(Activity context) {
+//        StartOtherPlugin.onTTResume(context);
+    }
+
+    /**
+     * 头条离开页面统计
+     */
+    public void logTTPagePause(Activity context) {
+//        StartOtherPlugin.onTTPause(context);
     }
 
     /**
      * 初始化爱奇艺SDK
      */
-    public void initAQY(Context mContext){
+    public void initAQY(Context mContext) {
         StartOtherPlugin.initAQY(mContext);
     }
 
@@ -194,7 +228,18 @@ public class Starter {
      * 快手SDK初始化
      */
     public void initKSSDK(Context mContext) {
-        StartOtherPlugin.initKSSDK(mContext);
+        StartOtherPlugin.initBD(mContext);
+        initTaptap(mContext);
+//        StartOtherPlugin.initKSSDK(mContext);
+    }
+
+    private void initTaptap(Context mContext) {
+        TapTapSdk.LoginSdkConfig config = new TapTapSdk.LoginSdkConfig();
+        config.roundCorner = false;
+        config.regionType = RegionType.CN;//标识为国际版，从2.5版本才开始支持
+        TapTapSdk.sdkInitialize(mContext.getApplicationContext(), Constant.CLIENTID, config);
+        callBackManager = CallBackManager.Factory.create();
+
     }
 
     /**
@@ -237,5 +282,29 @@ public class Starter {
      */
     public void startAppLog() {
         StartLogPlugin.startAppLoadLog();
+    }
+
+    /**
+     * baidu进入页面统计
+     */
+    public void logBDPageResume() {
+        StartOtherPlugin.logBDPage();
+    }
+
+    /**
+     * 获取taptap登录用户信息
+     */
+    public void getTapUserInfo() {
+        Profile.fetchProfileForCurrentAccessToken(new Api.ApiCallback<Profile>() {
+            @Override
+            public void onSuccess(Profile data) {
+                ESdkLog.d(data.getUnionid());
+            }
+
+            @Override
+            public void onError(Throwable error) {
+
+            }
+        });
     }
 }

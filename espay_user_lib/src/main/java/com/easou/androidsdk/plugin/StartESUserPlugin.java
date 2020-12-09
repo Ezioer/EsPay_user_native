@@ -39,6 +39,7 @@ import com.easou.androidsdk.util.SensorManagerHelper;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
+import com.taptap.sdk.Profile;
 
 import java.util.Map;
 
@@ -73,34 +74,88 @@ public class StartESUserPlugin {
 		});*/
 
         startLogin();
-        if (CommonUtils.getLoginInfo(Starter.mActivity) == null) {
-            //未登陆显示登陆框
+        LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
+        Profile currentProfile = Profile.getCurrentProfile();
+        if (info == null && currentProfile == null) {
+            //宜搜账号和tap账号都未登陆显示登陆框
             showLoginDialog();
         } else {
             //已登陆用户直接账号密码登录
-            LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
-            StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
-                @Override
-                public void loginSuccess() {
+            if (currentProfile != null) {
+                //tap登录
+                StartESAccountCenter.handleTapLogin(currentProfile.getOpenid(), new LoginCallBack() {
+                    @Override
+                    public void loginSuccess() {
+                        //登陆成功回调
+                        Constant.isTaptapLogin = 1;
+                        ESdkLog.d("login success");
+                    }
 
-                }
+                    @Override
+                    public void loginFail(final String msg) {
+                        Starter.mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showLoginDialog();
+                                ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                            }
+                        });
+                    }
+                }, Starter.mActivity);
+            } else {
+                //宜搜登录
+                final String u = CommonUtils.getUInfo(Starter.mActivity);
+                if (TextUtils.isEmpty(u)) {
+                    StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
+                        @Override
+                        public void loginSuccess() {
+                            //登陆成功回调
+                            ESdkLog.d("login success");
+                        }
 
-                @Override
-                public void loginFail(final String msg) {
-                    Starter.mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void loginFail(final String msg) {
+                            Starter.mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showLoginDialog();
+                                    ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                                }
+                            });
+                        }
+                    }, info.getUser().getName(), info.getUser().getPasswd(), Starter.mActivity);
+                } else {
+                    ThreadPoolManager.getInstance().addTask(new Runnable() {
                         @Override
                         public void run() {
-                            showLoginDialog();
-                            ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                            StartESAccountCenter.loginByTokenUser(true, new LoginCallBack() {
+                                @Override
+                                public void loginSuccess() {
+                                    //登陆成功回调
+                                    ESdkLog.d("login success");
+                                }
+
+                                @Override
+                                public void loginFail(final String msg) {
+                                    Starter.mActivity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showLoginDialog();
+                                            ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                                        }
+                                    });
+                                }
+                            }, u, Starter.mActivity);
                         }
                     });
+
                 }
-            }, info.getUser().getName(), info.getUser().getPasswd(), Starter.mActivity);
+            }
         }
     }
 
     /**
-     * 打开H5 SDK页面
+     * 登陆前操作
      */
     public static void startLogin() {
 
@@ -198,6 +253,7 @@ public class StartESUserPlugin {
             //显示正常图标并显示用户中心
             FloatView.isSetHalf = false;
             mUserCenterDialog.show();
+            mUserCenterDialog.setUpdatePwHide();
             //设置用户中心的dialog为全屏显示
             Window window = mUserCenterDialog.getWindow();
             //必须在show之后设置dialog的宽高

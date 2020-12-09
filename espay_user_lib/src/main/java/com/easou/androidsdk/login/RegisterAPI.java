@@ -183,14 +183,31 @@ public class RegisterAPI {
 	 * @return
 	 */
 	public static RequestInfo getRequestInfo(Context context) {
-		RequestInfo requestInfo = null;
-		if (null == requestInfo) {
-			requestInfo = new RequestInfo();
-			requestInfo.setAgent("SDK_Android_Client");
-			requestInfo.setQn(CommonUtils.readPropertiesValue(context, "qn"));
-			requestInfo.setAppId(CommonUtils.readPropertiesValue(context, "appId"));
-			requestInfo.setSource(CommonUtils.readPropertiesValue(context, "source"));
-		}
-		return requestInfo;
-	}
+        RequestInfo requestInfo = null;
+        if (null == requestInfo) {
+            requestInfo = new RequestInfo();
+            requestInfo.setAgent("SDK_Android_Client");
+            requestInfo.setQn(CommonUtils.readPropertiesValue(context, "qn"));
+            requestInfo.setAppId(CommonUtils.readPropertiesValue(context, "appId"));
+            requestInfo.setSource(CommonUtils.readPropertiesValue(context, "source"));
+        }
+        return requestInfo;
+    }
+
+    /**
+     * 获取用于登录的RequestInfo信息
+     *
+     * @return
+     */
+    public static RequestInfo getTapRequestInfo(Context context) {
+        RequestInfo requestInfo = null;
+        if (null == requestInfo) {
+            requestInfo = new RequestInfo();
+            requestInfo.setAgent("SDK_Android_Client");
+            requestInfo.setQn(CommonUtils.readPropertiesValue(context, "qn"));
+            requestInfo.setAppId(CommonUtils.readPropertiesValue(context, "appId"));
+            requestInfo.setSource("TSSO");
+        }
+        return requestInfo;
+    }
 }

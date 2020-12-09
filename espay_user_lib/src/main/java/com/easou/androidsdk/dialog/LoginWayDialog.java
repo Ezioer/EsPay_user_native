@@ -22,6 +22,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.easou.androidsdk.StartESAccountCenter;
+import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.login.AuthenCallBack;
 import com.easou.androidsdk.login.service.LoginNameInfo;
@@ -30,13 +31,23 @@ import com.easou.androidsdk.login.UserAPI;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
+import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
+import com.taptap.sdk.AccessToken;
+import com.taptap.sdk.LoginManager;
+import com.taptap.sdk.LoginResponse;
+import com.taptap.sdk.Profile;
+import com.taptap.sdk.TapTapLoginCallback;
+import com.taptap.sdk.TapTapSdk;
+import com.taptap.sdk.net.Api;
 
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.easou.androidsdk.Starter.callBackManager;
 
 /**
  * created by xiaoqing.zhou
@@ -126,7 +137,50 @@ public class LoginWayDialog extends BaseDialog {
         final TextView mAccountBack = (TextView) includeAccountLogin.findViewById(R.id.tv__login_back);
         final TextView mAccountLogin = (TextView) includeAccountLogin.findViewById(R.id.tv_login);
         final TextView accountType = (TextView) includeAccountLogin.findViewById(R.id.tv_account_type);
+        final ImageView mTaptapLogin = mView.findViewById(R.id.iv_taptaplogin);
+        if (mContext.getPackageName().equals("com.blackwasp")) {
+            mTaptapLogin.setVisibility(View.VISIBLE);
+            mTaptapLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LoginManager.getInstance().registerCallback(callBackManager, new TapTapLoginCallback<LoginResponse>() {
+                        @Override
+                        public void onSuccess(LoginResponse loginResult) {
+                            //登录成功
+                            StartESAccountCenter.handleTapLogin(Profile.getCurrentProfile().getOpenid(), new LoginCallBack() {
+                                @Override
+                                public void loginSuccess() {
+                                    dismiss();
+                                    Constant.isTaptapLogin = 1;
+                                }
 
+                                @Override
+                                public void loginFail(final String msg) {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            ESToast.getInstance().ToastShow(mContext, msg);
+                                        }
+                                    });
+                                }
+                            }, mContext);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            ESToast.getInstance().ToastShow(mContext, "登录已取消");
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            ESToast.getInstance().ToastShow(mContext, "登录失败");
+                            ESdkLog.d("taptap登录失败" + throwable.getMessage());
+                        }
+                    });
+                    LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, TapTapSdk.SCOPE_PUIBLIC_PROFILE);
+                }
+            });
+        }
 
         final TextView lookPassword = (TextView) mView.findViewById(R.id.tv_look_password_loginway);
         guestLogin = (TextView) mView.findViewById(R.id.tv_guest);

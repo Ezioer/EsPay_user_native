@@ -13,10 +13,10 @@ public class Constant {
 	public static Context context;
 
 	/**
-	 * SDK版本号
-	 */
-	public static final String SDK_VERSION = "2.4.5";
-	public static final String SDK_PHONEOS = "Android";
+     * SDK版本号
+     */
+    public static final String SDK_VERSION = "2.4.8";
+    public static final String SDK_PHONEOS = "Android";
 	
 	public static final String API_SOURCE = "30";
 	public static final String API_VERSION = "5";
@@ -46,30 +46,50 @@ public class Constant {
 	public static String OAID = "0";
 	/** 记录是否为模拟器 0为真机，1为模拟器*/
 	public static int IS_SIMULATOR = 0;
-	/** 记录是否启用头条SDK */
-	public static boolean TOUTIAO_SDK;
-	/** 记录是否启用汇川（UC）GISM SDK*/
-	public static boolean GISM_SDK;
-	/** 记录是否启用广点通SDK */
-	public static boolean GDT_SDK;
-	/** 记录是否启用快手SDK */
-	public static boolean KS_SDK;
-	/** 记录是否启用爱奇艺SDK */
-	public static boolean AQY_SDK;
-	/** 保存支付限制信息 */
-	public static Map<String, String> PAY_LIMIT_INFO_MAP;
-    /** 收款方 0 默认宜搜，1为大华通，2为易游,3为ZKX，4为WZ支付*/
+    /**
+     * 记录是否启用头条SDK
+     */
+    public static boolean TOUTIAO_SDK;
+    /**
+     * 记录是否启用汇川（UC）GISM SDK
+     */
+    public static boolean GISM_SDK;
+    /**
+     * 记录是否启用广点通SDK
+     */
+    public static boolean GDT_SDK;
+    /**
+     * 记录是否启用快手SDK
+     */
+    public static boolean KS_SDK;
+    /**
+     * 记录是否启用爱奇艺SDK
+     */
+    public static boolean AQY_SDK;
+    public static boolean BD_SDK;
+    /**
+     * 保存支付限制信息
+     */
+    public static Map<String, String> PAY_LIMIT_INFO_MAP;
+    /**
+     * 收款方 0 默认宜搜，1为大华通，2为易游,3为ZKX，4为WZ支付
+     */
     public static int PAY_CHANNEl = 0;
 
-	/** URL 信息 */
-	public static String HOST_NAME = "";
-	public static String HOST_NAME_DEFAULT = "mtianshitong.com";
-	
-//	public static final String DOMAIN = "http://lab.pay.appeasou.com";
-	public static final String DOMAIN = "https://service.pay.";
+    public static String CLIENTID = "GXYSRLgq2nZY9hl19X";
+    public static int isTaptapLogin = 0;
 
-	public static final String[] DOMAIN_HOST = {"domain.game.eayou.com",
-			"domain.game.love778.com",
+    /**
+     * URL 信息
+     */
+    public static String HOST_NAME = "";
+    public static String HOST_NAME_DEFAULT = "mtianshitong.com";
+
+    //	public static final String DOMAIN = "http://lab.pay.appeasou.com";
+    public static final String DOMAIN = "https://service.pay.";
+
+    public static final String[] DOMAIN_HOST = {"domain.game.eayou.com",
+            "domain.game.love778.com",
 			"domain.game.74mo.com"};
 
 	/**
@@ -153,37 +173,41 @@ public class Constant {
 	public static final int YSTOJS_USERCERT = 27;
 	public static final int YSTOJS_GET_OAID = 28;
 	public static final int YSTOJS_GET_PAY_LIMIT_INFO = 29;
-	public static final int YSTOJS_UPLOAD_TIME = 30;
+    public static final int YSTOJS_UPLOAD_TIME = 30;
 
-	public static final String WECHAT = "WECHAT";
+    public static final String WECHAT = "WECHAT";
     public static final String WECHAT_DHT = "WECHAT_DHT";
     public static final String WECHAT_YY = "WECHAT_YY";
     //正式展科新
 //	public static final String WECHAT_ZKX = "WECHAT_ZKX";
-	//正式赛恒达通
-	public static final String WECHAT_ZKX = "WECHAT_SHDT";
-	//正式中智时代
+    //正式赛恒达通
+    public static final String WECHAT_ZKX = "WECHAT_SHDT";
+    //正式中智时代
 //	public static final String WECHAT_ZKX = "WECHAT_ZZSD";
-	//正式聚合互娱
+    //正式聚合互娱
 //	public static final String WECHAT_ZKX = "WECHAT_JHHY";
+//正式北京海默
+//	public static final String WECHAT_ZKX = "WECHAT_BJHM";
 
-	public static final String WECHAT_ZKX_GZH="WECHAT_ZKX_GZH";
-	//正式展科新
+    public static final String WECHAT_ZKX_GZH = "WECHAT_ZKX_GZH";
+    //正式展科新
 //	public static final String ZKXHGALIPAY="ZKXHGALIPAY";
-	//正式赛恒达通
-	public static final String ZKXHGALIPAY="SHDTALIPAY";
-	//正式中智时代
+    //正式赛恒达通
+    public static final String ZKXHGALIPAY = "SHDTALIPAY";
+    //正式中智时代
 //	public static final String ZKXHGALIPAY="ZZSDALIPAY";
-	//正式聚合互娱
+    //正式聚合互娱
 //	public static final String ZKXHGALIPAY="JHHYALIPAY";
+    //正式北京海默
+//	public static final String ZKXHGALIPAY="BJHMALIPAY";
 
-	public static final String UNIONPAY = "UNIONPAY2";
-	public static final String ALIPAY = "ALIPAY2";
+    public static final String UNIONPAY = "UNIONPAY2";
+    public static final String ALIPAY = "ALIPAY2";
     public static final String ALIPAY_DHT = "YXDHTALIPAY";
     public static final String YDJFDHPAY = "YDJFDHPAY";
     public static final String ALIPAY_YY = "YYXZALIPAY";
-	public static final String WFTWECHAT = "WFTWECHAT";
-	public static final String ZWXESWECHAT = "ZWXESWECHAT";
+    public static final String WFTWECHAT = "WFTWECHAT";
+    public static final String ZWXESWECHAT = "ZWXESWECHAT";
 	public static final String WFTESWECHAT = "WFTESWECHAT";
 	public static final String MODULE = "MODULE";
 	public static final String TRADEMODE = "tradeMode";
@@ -227,17 +251,20 @@ public class Constant {
 	public static final String CHANNEL_MARK = "channelMark";
 	public static final String CHANNEL_MARK_DHT = "DHT";
     public static final String CHANNEL_MARK_YY = "YY";
-    public static final String CHANNEL_MARK_WZYY= "WZYY";
+    public static final String CHANNEL_MARK_WZYY = "WZYY";
     //正式展科新
 //    public static final String CHANNEL_MARK_ZKX= "HYWZKX";
-	//正式赛恒达通
-	public static final String CHANNEL_MARK_ZKX = "HYWSHDT";
-	//正式中智时代
+    //正式赛恒达通
+    public static final String CHANNEL_MARK_ZKX = "HYWSHDT";
+    //正式中智时代
 //    public static final String CHANNEL_MARK_ZKX= "HYWZZSD";
-	//正式聚合互娱
+    //正式聚合互娱
 //    public static final String CHANNEL_MARK_ZKX= "HYWJHHY";
-
+//正式北京海默
+//    public static final String CHANNEL_MARK_ZKX= "HYWBJHM";
 	public static final String CHANNEL_MARK_ZFBZKX = "ZFBZKX";
+
+
 
 	//正式
 	public static final String user_service = "https://h5.pay.mtianshitong.com/static/sdk/common/protocol.html";

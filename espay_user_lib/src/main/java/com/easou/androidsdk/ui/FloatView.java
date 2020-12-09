@@ -238,6 +238,7 @@ public class FloatView extends View {
         try {
             if (floatView == null) {
                 floatView = getInstance(activity);
+                isClosed = false;
             } else {
                 isClosed = false;
             }

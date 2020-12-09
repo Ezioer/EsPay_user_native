@@ -20,6 +20,8 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.easou.androidsdk.data.Constant;
+import com.easou.androidsdk.data.ESConstant;
+import com.easou.androidsdk.login.service.CodeConstant;
 import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.AuthBean;
 import com.easou.androidsdk.login.service.LoginBean;
@@ -116,6 +118,20 @@ public class CommonUtils {
         editor.putString(Constant.ES_TOKEN, token);
         editor.commit();
     }
+
+    public static void saveUInfo(String u, Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("U", u);
+        editor.commit();
+    }
+
+    public static String getUInfo(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        String info = settings.getString("U", "");
+        return info;
+    }
+
 
     public static void saveLoginInfo(String info, Context mContext) {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);

@@ -3,12 +3,14 @@ package com.easou.espay_user_h5;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -131,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         //PERMISSIONCODE为申请权限时的请求码
         boolean isAllGet = true;
+        //百度权限回调
+//        BaiduAction.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (PERMISSIONCODE == requestCode) {
             // 从数组中取出返回结果，遍历判断多组权限
             for (int result : grantResults) {
@@ -336,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Starter.getInstance().logKSActionPageResume(MainActivity.this);
         /** 爱奇艺SDK进入游戏界面 */
         Starter.getInstance().logAQYActionPageResume();
+        Starter.getInstance().logBDPageResume();
     }
 
     @Override
@@ -354,6 +359,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Starter.getInstance().onGismExitApp();
 
         System.exit(0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (Starter.getInstance().callBackManager != null) {
+            Starter.getInstance().callBackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     /**

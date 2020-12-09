@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
+import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
 import com.easou.androidsdk.dialog.AccountInfoDialog;
@@ -39,6 +40,7 @@ import com.easou.androidsdk.util.GsonUtil;
 import com.easou.androidsdk.util.NetworkUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.espay_user_lib.R;
+import com.taptap.sdk.LoginManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +86,7 @@ public class StartESAccountCenter {
                         EucApiResult<LoginBean> login = AuthAPI.login(name, password, true, RegisterAPI.getRequestInfo(mContext), mContext);
                         if (login.getResultCode().equals(CodeConstant.OK)) {
                             callBack.loginSuccess();
-                            handleLoginBean(login, mContext, password);
+                            handleLoginBean(true, login, mContext, password);
                         } else {
                             if (login.getDescList().size() > 0) {
                                 callBack.loginFail(login.getDescList().get(0).getD());
@@ -102,6 +104,119 @@ public class StartESAccountCenter {
         } else {
             callBack.loginFail("网络连接错误，请检查您的网络");
         }
+    }
+
+    /**
+     * 处理tap登录
+     *
+     * @param openId
+     * @param callBack
+     * @param mContext
+     */
+    public static void handleTapLogin(final String openId, final LoginCallBack callBack, final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                //检查该tap账号是否绑定了宜搜账号
+                try {
+                    EucApiResult<CheckBindInfo> bindInfo = AuthAPI.checkIsBindThird(mContext, 1,
+                            openId, RegisterAPI.getRequestInfo(mContext));
+                    if (bindInfo.getResultCode().equals(CodeConstant.OK)) {
+                        if (bindInfo.getResult().getStatus().equals("1")) {
+                            //已绑定，直接使用宜搜账号登录
+                            loginByTokenUser(false, callBack, bindInfo.getResult().getU(), mContext);
+                        } else {
+                            //未绑定宜搜账号，自动注册宜搜账号并绑定
+                            registerEsAndBind(callBack, openId, mContext);
+                        }
+                    } else {
+                        if (bindInfo.getDescList().size() > 0) {
+                            callBack.loginFail(bindInfo.getDescList().get(0).getD());
+                        } else {
+                            callBack.loginFail("登录失败");
+                        }
+                    }
+                } catch (Exception e) {
+                    callBack.loginFail("登录失败");
+                    ESdkLog.d("查询绑定失败" + e.toString());
+                }
+            }
+        });
+    }
+
+    /**
+     * 自动注册宜搜账号并与该tap id绑定
+     *
+     * @param openId
+     */
+    private static void registerEsAndBind(final LoginCallBack callBack, final String openId, Context mContext) {
+        try {
+            EucApiResult<AuthBean> userInfo = RegisterAPI.autoRegist(true, RegisterAPI.getTapRequestInfo(mContext), mContext);
+            if (userInfo.getResultCode().equals(CodeConstant.OK)) {
+                //自动注册成功后需要绑定当前账号
+                EucApiResult<String> result = AuthAPI.bindThirdAccount(mContext, userInfo.getResult().getEsid(), userInfo.getResult().getU().getU(),
+                        1, openId, RegisterAPI.getRequestInfo(mContext));
+                if (result.getResultCode().equals(CodeConstant.OK)) {
+                    //绑定成功
+                    callBack.loginSuccess();
+                    handleRegister(false, userInfo, mContext, false, "");
+                } else {
+                    if (result.getDescList().size() > 0 && result.getDescList().get(0).getC().equals("4")) {
+                        //已经绑定过了则执行登录等操作
+                        callBack.loginSuccess();
+                        handleRegister(false, userInfo, mContext, false, "");
+                    } else {
+                        callBack.loginFail("登录失败,请重新登录");
+                    }
+                }
+            } else {
+                if (userInfo.getDescList().size() > 0) {
+                    callBack.loginFail(userInfo.getDescList().get(0).getD());
+                } else {
+                    callBack.loginFail("登录失败");
+                }
+            }
+        } catch (Exception e) {
+            ESdkLog.d("游客登录失败" + e.toString());
+            callBack.loginFail("登陆中,请稍后");
+        }
+    }
+
+    /**
+     * token登录
+     *
+     * @param
+     * @param u
+     * @param mContext
+     */
+    public static void loginByTokenUser(boolean isNeedSave, final LoginCallBack callBack, final String u, final Context mContext) {
+        try {
+            EucApiResult<LoginBean> validate = AuthAPI.validateU(u, RegisterAPI.getRequestInfo(mContext), (Activity) mContext);
+            if (validate.getResultCode().equals(CodeConstant.OK)) {
+                callBack.loginSuccess();
+                handleTapLoginBean(isNeedSave, validate, mContext);
+            } else {
+                if (validate.getDescList().size() > 0) {
+                    callBack.loginFail(validate.getDescList().get(0).getD());
+                } else {
+                    callBack.loginFail("登录失败");
+                }
+            }
+
+        } catch (Exception e) {
+            ESdkLog.d("账号登录失败" + e.toString());
+            callBack.loginFail("登陆中,请稍后");
+        }
+    }
+
+    /**
+     * 处理tap登录后该账号绑定的宜搜账号登录
+     *
+     * @param validate
+     * @param mContext
+     */
+    private static void handleTapLoginBean(boolean isNeedSave, EucApiResult<LoginBean> validate, Context mContext) {
+        handleLoginBean(isNeedSave, validate, mContext, "");
     }
 
     /**
@@ -143,7 +258,7 @@ public class StartESAccountCenter {
                         EucApiResult<AuthBean> login = RegisterAPI.registByName(name, password, true, "", RegisterAPI.getRequestInfo(mContext), mContext);
                         if (login.getResultCode().equals(CodeConstant.OK)) {
                             callBack.loginSuccess();
-                            handleRegister(login, mContext, false, password);
+                            handleRegister(true, login, mContext, false, password);
                         } else {
                             if (login.getDescList().size() > 0) {
                                 callBack.loginFail(login.getDescList().get(0).getD());
@@ -368,7 +483,7 @@ public class StartESAccountCenter {
                         EucApiResult<AuthBean> userInfo = RegisterAPI.autoRegist(true, RegisterAPI.getRequestInfo(mContext), mContext);
                         if (userInfo.getResultCode().equals(CodeConstant.OK)) {
                             callBack.loginSuccess();
-                            handleRegister(userInfo, mContext, true, "");
+                            handleRegister(true, userInfo, mContext, true, "");
                         } else {
                             if (userInfo.getDescList().size() > 0) {
                                 callBack.loginFail(userInfo.getDescList().get(0).getD());
@@ -395,25 +510,30 @@ public class StartESAccountCenter {
      * @param isShowInfoDialog
      * @param pw
      */
-    public static void handleRegister(EucApiResult<AuthBean> userInfo, final Context mContext, final boolean isShowInfoDialog, String pw) {
-        saveLoginInfo(userInfo.getResult().getUser().getName(), userInfo.getResult().getUser().getPasswd(), mContext);
-        final String userId = String.valueOf(userInfo.getResult().getUser().getId());
+    public static void handleRegister(boolean isSaveInfo, EucApiResult<AuthBean> userInfo, final Context mContext, final boolean isShowInfoDialog, String pw) {
+
+        final String userId = String.valueOf(userInfo.getResult().getEsid());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
         final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
-        //注册成功后的用户实体类和登陆返回的用户实体类不同，需要转换成一样的
         LUser user = generateLuser(userInfo.getResult().getUser());
         user.setPasswd(pw.isEmpty() ? password : pw);
         LoginBean login = new LoginBean(userInfo.getResult().getToken(), user, userInfo.getResult().getEsid(), true);
         Starter.loginBean = login;
-        CommonUtils.saveLoginInfo(GsonUtil.toJson(login), mContext);
+        if (isSaveInfo) {
+            saveLoginInfo(userInfo.getResult().getUser().getName(), userInfo.getResult().getUser().getPasswd(), mContext);
+            //注册成功后的用户实体类和登陆返回的用户实体类不同，需要转换成一样的
+            CommonUtils.saveLoginInfo(GsonUtil.toJson(login), mContext);
+            CommonUtils.saveUInfo(userInfo.getResult().getU().getU(), mContext);
+        }
         //上报sdk数据
-        StartOtherPlugin.logTTActionLogin(userId);
-        StartOtherPlugin.logGismActionLogin(userId);
+        StartOtherPlugin.logTTActionRegister();
+        StartOtherPlugin.logGismActionRegister();
         StartOtherPlugin.logGDTActionSetID(userId);
-        StartOtherPlugin.loginAqyAction();
+        StartOtherPlugin.registerAqyAction();
         StartOtherPlugin.createRoleAqyAction(userName);
-
+        StartOtherPlugin.logKSActionRegister();
+        StartOtherPlugin.logBDRegister();
         Constant.IS_LOGINED = true;
         Constant.ESDK_USERID = userId;
         Constant.ESDK_TOKEN = token;
@@ -499,23 +619,28 @@ public class StartESAccountCenter {
         Constant.ESDK_TOKEN = token;
         Starter.loginBean = userInfo.getResult();
         CommonUtils.saveLoginInfo(GsonUtil.toJson(userInfo.getResult()), mContext);
+        CommonUtils.saveUInfo(userInfo.getResult().getU().getU(), mContext);
     }
 
-    public static void handleLoginBean(final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
-        saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
-        final String userId = String.valueOf(userInfo.getResult().getUser().getId());
+    public static void handleLoginBean(boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
+        final String userId = String.valueOf(userInfo.getResult().getEsid());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
-        final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
-        userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
         Starter.loginBean = userInfo.getResult();
-        CommonUtils.saveLoginInfo(GsonUtil.toJson(userInfo.getResult()), mContext);
+        if (isSaveInfo) {
+            saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
+            final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
+            userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
+            CommonUtils.saveLoginInfo(GsonUtil.toJson(userInfo.getResult()), mContext);
+            CommonUtils.saveUInfo(userInfo.getResult().getU().getU(), mContext);
+        }
         //上报sdk数据
         StartOtherPlugin.logTTActionLogin(userId);
         StartOtherPlugin.logGismActionLogin(userId);
         StartOtherPlugin.logGDTActionSetID(userId);
         StartOtherPlugin.loginAqyAction();
         StartOtherPlugin.createRoleAqyAction(userName);
+        StartOtherPlugin.logBDLogin();
 
         Constant.IS_LOGINED = true;
         Constant.ESDK_USERID = userId;
@@ -689,11 +814,16 @@ public class StartESAccountCenter {
      * @param mContext
      */
     public static void logout(Context mContext) {
+        if (Constant.isTaptapLogin == 1) {
+            Constant.isTaptapLogin = 0;
+            LoginManager.getInstance().logout();
+        }
         Constant.IS_LOGINED = false;
         StartESUserPlugin.hideFloatView();
         StartESUserPlugin.isShowUser = false;
         FloatView.isSetHalf = true;
         CommonUtils.saveLoginInfo("", mContext);
+        CommonUtils.saveUInfo("", mContext);
         StartESUserPlugin.showLoginDialog();
         StartOtherPlugin.logTTActionLogin("");
         StartOtherPlugin.logGismActionLogout();
@@ -713,6 +843,6 @@ public class StartESAccountCenter {
                 RomHelper.checkFloatWindowPermission(Starter.mActivity);
                 Starter.getInstance().showFloatView();
             }
-        }, 300);
+        }, 500);
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import com.easou.androidsdk.login.para.AuthParametric;
 import com.easou.androidsdk.login.para.OAuthParametric;
 import com.easou.androidsdk.login.service.AuthBean;
+import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.CodeConstant;
 import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
@@ -79,7 +80,7 @@ public class AuthAPI {
      * @return
      * @throws EucAPIException
      */
-    public static EucApiResult<AuthBean> validate(String token, String U, RequestInfo info, Activity _activity)
+    public static EucApiResult<LoginBean> validate(String token, String U, RequestInfo info, Activity _activity)
             throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
@@ -87,7 +88,25 @@ public class AuthAPI {
         jbody.putContent(CookieUtil.COOKIE_U, U);
         JBean jbean = eucService.getResult("/api2/validate.json", jbody,
                 oAuthPara, info);
-        return buildAuthResult(jbean);
+        return buildLoginResult(jbean);
+    }
+
+    /**
+     * TOKEN验证接口
+     *
+     * @param info
+     * @return
+     * @throws EucAPIException
+     */
+    public static EucApiResult<LoginBean> validateU(String U, RequestInfo info, Activity _activity)
+            throws EucAPIException {
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_U, U);
+        jbody.putContent("remember", true);
+        JBean jbean = eucService.getResult("/api2/validate.json", jbody,
+                oAuthPara, info);
+        return buildLoginResult(jbean);
     }
 
 
@@ -172,6 +191,46 @@ public class AuthAPI {
         return result;
     }
 
+    /**
+     * 检查是否绑定第三方账号
+     *
+     * @param thirdType 1：taptap
+     * @param openid    第三方账号
+     */
+    public static EucApiResult<CheckBindInfo> checkIsBindThird(Context activity, int thirdType, String openid, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.put("thirdPartySsoId", thirdType);
+        jbody.put("openId", openid);
+        JBean jbean = eucService.getResult("/api2/findThirdpartySsoBind.json",
+                jbody, oAuthPara, info);
+        return buildCheckBindResult(jbean);
+    }
+
+    /**
+     * 绑定第三方账号
+     *
+     * @param activity
+     * @param userid    宜搜id
+     * @param u         宜搜token
+     * @param thirdType 第三方账号类型 1：taptap
+     * @param openid    三方账号id
+     * @param info
+     * @throws EucAPIException
+     */
+    public static EucApiResult<String> bindThirdAccount(Context activity, String userid, String u, int thirdType, String openid, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userid);
+        jbody.put("U", u);
+        jbody.put("thirdPartySsoId", thirdType);
+        jbody.put("openId", openid);
+        JBean jbean = eucService.getResult("/api2/saveThirdpartySsoUser.json",
+                jbody, oAuthPara, info);
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        return result;
+    }
+
     public static LimitStatusInfo getLimitStatue(Context activity) {
         try {
             eucService = EucService.getInstance(activity);
@@ -214,6 +273,19 @@ public class AuthAPI {
             AuthBean eucAuthResult = new AuthBean(token, juser, u,
                     String.valueOf(juser.getId()), false);
             result.setResult(eucAuthResult);
+        }
+        return result;
+    }
+
+    private static EucApiResult<CheckBindInfo> buildCheckBindResult(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<CheckBindInfo> result = new EucApiResult<CheckBindInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String status = jbean.getBody().getObject("status", String.class);
+            String userId = jbean.getBody().getObject("userId", String.class);
+            String u = jbean.getBody().getObject("U", String.class);
+            CheckBindInfo bindInfo = new CheckBindInfo(userId, status, u);
+            result.setResult(bindInfo);
         }
         return result;
     }
