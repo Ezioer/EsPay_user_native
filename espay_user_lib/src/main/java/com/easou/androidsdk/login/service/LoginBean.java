@@ -26,15 +26,15 @@ public class LoginBean implements java.io.Serializable{
     /*返回的用户实体*/
     private LUser user;
 
-	/*private int identityStatus;
+    private int identityStatus;//0认证中，1成功，2失败
 
-	public int getIdentityStatus() {
-		return identityStatus;
-	}
+    public int getIdentityStatus() {
+        return identityStatus;
+    }
 
-	public void setIdentityStatus(int identityStatus) {
-		this.identityStatus = identityStatus;
-	}*/
+    public void setIdentityStatus(int identityStatus) {
+        this.identityStatus = identityStatus;
+    }
 
     public EucUCookie getU() {
         return u;
@@ -92,25 +92,34 @@ public class LoginBean implements java.io.Serializable{
 	 * @param jUser
 	 * @param token
 	 * @param esid
-	 * @param isRegist
-	 *     注册登录标识
-	 */
-	public LoginBean(EucToken token, LUser user, EucUCookie u, String esid, boolean isRegist){
-		this.token = token;
-		this.user = user;
-		this.u = u;
-		this.esid = esid;
-		this.isRegist = isRegist;
-	}
+     * @param isRegist
+     *     注册登录标识
+     */
+    public LoginBean(EucToken token, LUser user, EucUCookie u, String esid, boolean isRegist) {
+        this.token = token;
+        this.user = user;
+        this.u = u;
+        this.esid = esid;
+        this.isRegist = isRegist;
+    }
 
-	/**
-	 * 通行证
-	 * 
-	 * @param token
-	 */
-	public EucToken getToken() {
-		return token;
-	}
+    public LoginBean(EucToken token, LUser user, EucUCookie u, String esid, boolean isRegist, int identityStatus) {
+        this.token = token;
+        this.user = user;
+        this.u = u;
+        this.esid = esid;
+        this.isRegist = isRegist;
+        this.identityStatus = identityStatus;
+    }
+
+    /**
+     * 通行证
+     *
+     * @param token
+     */
+    public EucToken getToken() {
+        return token;
+    }
 	
 	public void setToken(EucToken token) {
 		this.token = token;

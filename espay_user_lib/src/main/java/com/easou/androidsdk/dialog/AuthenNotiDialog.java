@@ -107,7 +107,7 @@ public class AuthenNotiDialog extends BaseDialog {
                         @Override
                         public void run() {
                             try {
-                                final EucApiResult<String> info = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                                final EucApiResult<String> info = AuthAPI.userIdentifyNation(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
                                 if (info.getResultCode().equals(CodeConstant.OK)) {
                                     int age = CommonUtils.getAge(idNum);
                                     StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age > 18 ? "1" : "0");

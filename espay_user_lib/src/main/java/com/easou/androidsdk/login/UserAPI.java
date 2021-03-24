@@ -201,7 +201,16 @@ public class UserAPI {
         return buildResult(jbean);
     }
 
-    //国家实名认证发送游戏角色上线下线日志
+    /**
+     * 国家实名认证发送游戏角色上线下线日志
+     *
+     * @param _activity
+     * @param deviceId
+     * @param userId
+     * @param bt        0 下线 1 上线
+     * @param info
+     * @return
+     */
     public static EucApiResult<String> loginOrOutLog(Context _activity, String deviceId, String userId, int bt
             , RequestInfo info) {
         eucService = EucService.getInstance(_activity);

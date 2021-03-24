@@ -514,7 +514,7 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    EucApiResult<String> userInfo = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                    EucApiResult<String> userInfo = AuthAPI.userIdentifyNation(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
                     if (userInfo.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess(CommonUtils.getYMDfromIdNum(idNum));
                     } else {
@@ -837,7 +837,7 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_TOKEN, token);
         String isAdult = "0";
         int age = 0;
-       /* int identityStatus = userInfo.getResult().getIdentityStatus();
+        final int identityStatus = userInfo.getResult().getIdentityStatus();
         if (identityStatus == 1) {
             //已经实名认证过
             result.put(ESConstant.SDK_USER_BIRTH_DATE,
@@ -846,9 +846,9 @@ public class StartESAccountCenter {
             age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
             isAdult = age > 18 ? "1" : "0";
             getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
-        }*/
+        }
         //身份证号为null则生日为0，未实名认证
-        result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
+/*        result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
                 CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()) : "0");
         result.put(ESConstant.SDK_IS_IDENTITY_USER, TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ? "0" : "1");
 
@@ -857,7 +857,7 @@ public class StartESAccountCenter {
             age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
             isAdult = age > 18 ? "1" : "0";
             getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
-        }
+        }*/
         final int mAge = age;
         result.put(ESConstant.SDK_IS_ADULT, isAdult);
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
@@ -867,45 +867,17 @@ public class StartESAccountCenter {
             public void run() {
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-                if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
-//                if (userInfo.getResult().getIdentityStatus() == 2 && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
+//                if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
+                if ((identityStatus == 2 || identityStatus == 0) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
                     //没有认证过的并且不是自动注册的用户需要去检查是否需要弹出实名验证框
                     if (limitStatue != null && limitStatue.getUs() != 0) {
-                        //需要登陆验证时弹出验证框
-                        AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
-                        authenNotiDialog.show();
-                        authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
-                            @Override
-                            public void authenSuccess(String userBirthdate, String idNum) {
-                                //手动验证成功回调
-                                Map<String, String> authenResult = new HashMap<String, String>();
-                                authenResult.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
-                                authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
-                                //更新当前用户的身份证信息
-                                Starter.loginBean.getUser().setIdentityNum(idNum);
-                                Starter.mCallback.onLogin(result);
-                                //回调认证结果
-                                Starter.mCallback.onUserCert(authenResult);
-                                int uAge = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
-                                //认证成功且是未成年的用户提示
-                                if (limitStatue.getNs() == 1 && uAge < 18) {
-                                    showNotiDialog(uAge);
-                                }
-                                popFloatView();
-                            }
-                        });
-                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
-                            @Override
-                            public void dialogClose() {
-                                //关闭认证回调
-                                //未认证过的且不是自动注册的用户的提示
-                                if (limitStatue.getNs() == 1) {
-                                    showNotiDialog(0);
-                                }
-                                Starter.mCallback.onLogin(result);
-                                popFloatView();
-                            }
-                        });
+                        if (identityStatus == 2) {
+                            //需要登陆验证时弹出验证框
+                            popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
+                        } else if (identityStatus == 0) {
+                            //认证中，查询认证状态,认证过的需要走下面1的流程，认证失败的需要走上面认证流程
+                        }
+
                     } else {
                       /*  //未认证过的且不是自动注册的用户的提示
                         if (limitStatue.getNs() == 1) {
@@ -916,6 +888,7 @@ public class StartESAccountCenter {
                     }
                 } else {
                     //未认证过的自动注册用户或者认证过但是未成年的提示
+                    //1
                     if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
                         showNotiDialog(mAge);
                     }
@@ -1061,6 +1034,44 @@ public class StartESAccountCenter {
                 Starter.getInstance().showFloatView();
             }
         }, 500);
+    }
+
+    //弹出实名认证框
+    private static void popAuthenDialog(Context mContext, final LimitStatusInfo limitStatue, final String identityNum, final Map<String, String> result) {
+        AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
+        authenNotiDialog.show();
+        authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
+            @Override
+            public void authenSuccess(String userBirthdate, String idNum) {
+                //手动验证成功回调
+                Map<String, String> authenResult = new HashMap<String, String>();
+                authenResult.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
+                authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+                //更新当前用户的身份证信息
+                Starter.loginBean.getUser().setIdentityNum(idNum);
+                Starter.mCallback.onLogin(result);
+                //回调认证结果
+                Starter.mCallback.onUserCert(authenResult);
+                int uAge = CommonUtils.getAge(identityNum);
+                //认证成功且是未成年的用户提示
+                if (limitStatue.getNs() == 1 && uAge < 18) {
+                    showNotiDialog(uAge);
+                }
+                popFloatView();
+            }
+        });
+        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
+            @Override
+            public void dialogClose() {
+                //关闭认证回调
+                //未认证过的且不是自动注册的用户的提示
+                if (limitStatue.getNs() == 1) {
+                    showNotiDialog(0);
+                }
+                Starter.mCallback.onLogin(result);
+                popFloatView();
+            }
+        });
     }
 
     /**
