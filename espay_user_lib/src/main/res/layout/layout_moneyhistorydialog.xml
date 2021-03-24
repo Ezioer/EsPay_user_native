@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/bg_whitedialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:text="红包提现记录"
+        android:textSize="20sp"
+        android:id="@+id/tv_history_title"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/easou_em6_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:src="@drawable/icon_close"
+        android:padding="10dp"
+        android:id="@+id/iv_history_close"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_history"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/tv_history_title"
+        android:layout_width="match_parent"
+        android:layout_height="180dp" />
+
+    <ImageView
+        android:layout_below="@id/vp_history"
+        android:id="@+id/iv_pre"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@id/tv_currentpage"
+        android:src="@drawable/ic_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_currentpage"
+        android:text="1"
+        android:layout_below="@id/vp_history"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:layout_marginLeft="20dp"
+        android:layout_below="@id/vp_history"
+        android:layout_toRightOf="@id/tv_currentpage"
+        android:id="@+id/iv_next"
+        android:src="@drawable/ic_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_whitedialog"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_getcash_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="提现红包金额"
+        android:textColor="@color/easou_em6_color"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/iv_close_getcash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:padding="10dp"
+        android:src="@drawable/icon_close" />
+
+    <!--<LinearLayout
+        android:id="@+id/ll_cashlevel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_getcash_title"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_greenbutton"
+            android:paddingLeft="4dp"
+            android:paddingTop="2dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="2dp"
+            android:id="@+id/tv_level_one"
+            android:text="500元"
+            android:textColor="@color/c_white" />
+
+        <TextView
+            android:id="@+id/tv_level_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/bg_whitebutton"
+            android:paddingLeft="4dp"
+            android:paddingTop="2dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="2dp"
+            android:text="1500元"
+            android:textColor="@color/easou_em6_color" />
+    </LinearLayout>-->
+    <com.easou.androidsdk.widget.flowlayout.TagFlowLayout
+        android:id="@+id/tags_cashlevel"
+        app:max_select="1"
+        android:layout_marginTop="15dp"
+        app:multiline="1"
+        app:tag_gravity="center"
+        android:layout_below="@id/tv_getcash_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_below="@id/tags_cashlevel"
+        android:id="@+id/scrollview"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <TextView
+            android:textSize="16sp"
+            android:text=""
+            android:id="@+id/tv_getcashrule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tv_getcash_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/scrollview"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_greenbutton"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:text="确定"
+        android:textColor="@color/c_white" />
+</RelativeLayout>

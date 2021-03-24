@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:layout_width="match_parent"
@@ -50,6 +51,15 @@
                 android:gravity="center_horizontal"
                 android:src="@drawable/icon_main_gift"
                 android:textColor="@color/payeco_textColorWhite" />
+
+            <ImageView
+                android:id="@+id/iv_money"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:src="@drawable/ic_moneyunselect"
+                android:textColor="@color/payeco_textColorWhite" />
         </LinearLayout>
 
         <RelativeLayout
@@ -60,6 +70,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:visibility="visible"
                 android:id="@+id/ll_user"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -116,7 +127,8 @@
                     android:id="@+id/ll_giftcode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:layout_below="@id/listview"
+                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/icon_giftcode"
@@ -157,6 +169,200 @@
                         android:textSize="18sp" />
                 </RelativeLayout>
             </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingTop="20dp"
+                android:visibility="gone"
+                android:id="@+id/ll_money"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:id="@+id/rl_money_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_centerInParent="true"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:background="@drawable/bg_moneyrule"
+                        android:textColor="@color/easou_em2_color"
+                        android:text="红包领取规则"
+                        android:id="@+id/tv_taskrule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:layout_marginRight="10dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/iv_refresh_info"
+                        android:src="@drawable/ic_refresh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_margin="10dp"
+                    android:background="@drawable/bg_money"
+                    android:id="@+id/rl_role_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp">
+
+                    <ImageView
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/iv_role"
+                        android:src="@drawable/ic_role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tv_role_name"
+                        tools:text="太史公"
+                        android:textStyle="bold"
+                        android:textColor="@color/c_white"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@+id/iv_role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tv_role_zone"
+                        tools:text="史学家 汉朝6服"
+                        android:textColor="@color/c_white"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@+id/iv_role"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:padding="4dp"
+                    android:background="@drawable/bg_money"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:id="@+id/rl_money_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_getlefttime"
+                        android:text="领取剩余时间: "
+                        android:textColor="@color/c_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        tools:text="xx天xx时xx分xx秒"
+                        android:textColor="@color/c_white"
+                        android:layout_toRightOf="@id/tv_getlefttime"
+                        android:id="@+id/tv_gettimevalue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:textColor="@color/c_white"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/tv_getlefttime"
+                        android:id="@+id/tv_cashlefttime"
+                        android:text="提现剩余时间: "
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:textColor="@color/c_white"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/tv_getlefttime"
+                        tools:text="xx天xx时xx分xx秒"
+                        android:layout_toRightOf="@id/tv_cashlefttime"
+                        android:id="@+id/tv_cashtimevalue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:textColor="@color/c_white"
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/tv_cashlefttime"
+                        android:id="@+id/tv_totalmoney"
+                        android:text="本期红包总额: "
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/tv_cashlefttime"
+                        android:id="@+id/tv_totalmoneyvalue"
+                        android:text="0元 "
+                        android:layout_toRightOf="@+id/tv_totalmoney"
+                        android:textColor="@color/c_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:text="记录"
+                        android:id="@+id/tv_history"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_below="@+id/tv_cashlefttime"
+                        android:background="@drawable/bg_moneyrule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/tv_totalmoney"
+                        android:id="@+id/tv_leftmoney"
+                        android:text="本期红包余额: "
+                        android:textColor="@color/c_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_below="@id/tv_totalmoney"
+                        android:id="@+id/tv_leftmoneyvalue"
+                        android:text="0元 "
+                        android:layout_toRightOf="@id/tv_leftmoney"
+                        android:textColor="@color/c_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:text="提现"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dp"
+                        android:id="@+id/tv_getcash"
+                        android:layout_below="@+id/tv_totalmoney"
+                        android:background="@drawable/bg_moneyrule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+                <ListView
+                    tools:listitem="@layout/item_moneytask"
+                    android:layout_margin="10dp"
+                    android:id="@+id/listview_money"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

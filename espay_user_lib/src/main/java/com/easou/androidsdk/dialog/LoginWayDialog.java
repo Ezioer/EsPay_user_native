@@ -57,7 +57,7 @@ import static com.easou.androidsdk.Starter.callBackManager;
 public class LoginWayDialog extends BaseDialog {
 
     public LoginWayDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight) {
-        super(context, animation, gravity, mWidth, mHeight);
+        super(context, animation, gravity, mWidth, mHeight, false);
         mContext = context;
     }
 

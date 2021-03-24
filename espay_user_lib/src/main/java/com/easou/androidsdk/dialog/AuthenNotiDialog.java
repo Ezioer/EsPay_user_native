@@ -33,7 +33,7 @@ import com.easou.espay_user_lib.R;
 public class AuthenNotiDialog extends BaseDialog {
 
     public AuthenNotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight, int us) {
-        super(context, animation, gravity, mWidth, mHeight);
+        super(context, animation, gravity, mWidth, mHeight, false);
         mContext = context;
         this.us = us;
     }
@@ -116,7 +116,7 @@ public class AuthenNotiDialog extends BaseDialog {
                                         public void run() {
                                             ESToast.getInstance().ToastShow(mContext, "认证成功");
                                             if (listener != null) {
-                                                listener.authenSuccess(CommonUtils.getYMDfromIdNum(idNum));
+                                                listener.authenSuccess(CommonUtils.getYMDfromIdNum(idNum), idNum);
                                             }
                                             dismiss();
                                         }
@@ -160,7 +160,7 @@ public class AuthenNotiDialog extends BaseDialog {
     }
 
     public interface authenResult {
-        void authenSuccess(String ymd);
+        void authenSuccess(String ymd, String idNum);
     }
 
     private setCloseListener closeListener = null;

@@ -614,18 +614,20 @@ public class ESPayCenterActivity extends BaseActivity {
     public void aliPay() {
         Map<String, String> map = setupPayMap(true);
         map.put(Constant.TRADEMODE, Constant.MODULE);
-        map.put(Constant.PAYCHANNEL, Constant.ALIPAY);
 
 	/*	if (Constant.USE_DHT) {
 			map.put(Constant.PAYCHANNEL, Constant.ALIPAY_DHT);
 		}*/
-        if (Constant.PAY_CHANNEl == 1) {
+       /* if (Constant.PAY_CHANNEl == 1) {
             map.put(Constant.PAYCHANNEL, Constant.ALIPAY_DHT);
         } else if (Constant.PAY_CHANNEl == 2) {
             map.put(Constant.PAYCHANNEL, Constant.ALIPAY_YY);
         } else if (Constant.PAY_CHANNEl == 3) {
             map.put(Constant.PAYCHANNEL, Constant.ZKXHGALIPAY);
-        }
+        }*/
+
+        //绯红默认写死为赛恒达通
+        map.put(Constant.PAYCHANNEL, Constant.ZKXHGALIPAY);
 
         HttpAsyncTaskImp aliTask = new HttpAsyncTaskImp(mActivity, map, easoutgc, key, FeeType.ALIPAY);
         aliTask.setDataFinishListener(new HttpAsyncTaskImp.DataFinishListener() {
@@ -686,7 +688,7 @@ public class ESPayCenterActivity extends BaseActivity {
             inputMap.put(Constant.CHANNEL_MARK, Constant.CHANNEL_MARK_DHT);
         }*/
 
-        if (Constant.PAY_CHANNEl == 1) {
+      /*  if (Constant.PAY_CHANNEl == 1) {
             inputMap.put(Constant.CHANNEL_MARK, Constant.CHANNEL_MARK_DHT);
         } else if (Constant.PAY_CHANNEl == 2) {
             inputMap.put(Constant.CHANNEL_MARK, Constant.CHANNEL_MARK_YY);
@@ -694,7 +696,10 @@ public class ESPayCenterActivity extends BaseActivity {
             inputMap.put(Constant.CHANNEL_MARK, Constant.CHANNEL_MARK_ZKX);
         } else if (Constant.PAY_CHANNEl == 4) {
             inputMap.put(Constant.CHANNEL_MARK, Constant.CHANNEL_MARK_WZYY);
-        }
+        }*/
+
+        //绯红默认写死为赛恒达通
+        inputMap.put(Constant.CHANNEL_MARK, Constant.CHANNEL_MARK_ZKX);
 
         String room_view_url = Constant.DOMAIN + Tools.getHostName() + Constant.WEB_SERVER_URL
                 + StartESPayPlugin.getParam(inputMap, key);
@@ -743,19 +748,20 @@ public class ESPayCenterActivity extends BaseActivity {
     public void wxPay() {
         Map<String, String> map = setupPayMap(true);
         map.put(Constant.TRADEMODE, Constant.MODULE);
-        map.put(Constant.PAYCHANNEL, Constant.WECHAT);
 
        /* if (Constant.USE_DHT) {
             map.put(Constant.PAYCHANNEL, Constant.WECHAT_DHT);
         }*/
 
-        if (Constant.PAY_CHANNEl == 1) {
+       /* if (Constant.PAY_CHANNEl == 1) {
             map.put(Constant.PAYCHANNEL, Constant.WECHAT_DHT);
         } else if (Constant.PAY_CHANNEl == 2) {
             map.put(Constant.PAYCHANNEL, Constant.WECHAT_YY);
         } else if (Constant.PAY_CHANNEl == 3) {
             map.put(Constant.PAYCHANNEL, Constant.WECHAT_ZKX);
-        }
+        }*/
+
+        map.put(Constant.PAYCHANNEL, Constant.WECHAT_ZKX);
 
         HttpAsyncTaskImp wxTask = new HttpAsyncTaskImp(mActivity, map, easoutgc, key, FeeType.WECHAT);
 

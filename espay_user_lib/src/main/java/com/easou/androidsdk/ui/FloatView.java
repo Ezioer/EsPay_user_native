@@ -26,15 +26,16 @@ import com.easou.espay_user_lib.R;
 public class FloatView extends View {
 
     private DisplayMetrics displayMetrics;
-    private Drawable drawable;
+    private static Drawable drawable;
+    private static Drawable moneyDrawable;
     //	private Drawable halfIcon;
 //	private Drawable halfIconLeft;
     private int firstX, firstY, lastX, lastY;
     private View floatViewLayout;
-    private ImageView imageview;
+    private static ImageView imageview;
 
     private boolean isFullIcon = true;
-    public static boolean isSetHalf = true;
+    public static boolean isSetHalf = false;
     private int mPreviousPosition_x;
     private int mPreviousPosition_y;
     private boolean isViewadded = false;
@@ -56,7 +57,7 @@ public class FloatView extends View {
                     lastX = (int) event.getRawX();
                     lastY = (int) event.getRawY();
                 } else if (action == MotionEvent.ACTION_MOVE) {
-                    isSetHalf = false;
+                    isSetHalf = true;
 
                     lastX = (int) event.getRawX();
                     lastY = (int) event.getRawY();
@@ -77,11 +78,11 @@ public class FloatView extends View {
                     }
 
                 } else if (action == MotionEvent.ACTION_UP) {
-                    isSetHalf = true;
+                    isSetHalf = false;
                     if (isClick(firstX, firstY, lastX, lastY)) {
                         if (isFullIcon) {
                             StartESUserPlugin.showSdkView();
-                            if (isSetHalf) {
+                            if (!isSetHalf) {
                                 setHalfIcon();
                             }
                         } else {
@@ -145,6 +146,9 @@ public class FloatView extends View {
         drawable = activity.getResources().getDrawable(activity.getApplication().getResources()
                 .getIdentifier("es_floaticon", "drawable", activity.getApplication().getPackageName()));
 
+        moneyDrawable = activity.getResources().getDrawable(activity.getApplication().getResources()
+                .getIdentifier("ic_moneyfloat", "drawable", activity.getApplication().getPackageName()));
+
 	/*	halfIcon = activity.getResources().getDrawable(activity.getApplication().getResources()
 				.getIdentifier("es_floaticonhalf", "drawable", activity.getApplication().getPackageName()));
 
@@ -169,6 +173,14 @@ public class FloatView extends View {
 //		imageview.setAlpha(128);
     }
 
+    public static void setMoneyIcon() {
+        imageview.setImageDrawable(moneyDrawable);
+    }
+
+    public static void setNormalIcon() {
+        imageview.setImageDrawable(drawable);
+    }
+
     private static int getOrientation(Context context) {
         Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int orientation = display.getOrientation();
@@ -180,7 +192,7 @@ public class FloatView extends View {
         imageview.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (isSetHalf) {
+                if (!isSetHalf) {
                     if (isLeft) {
                         startLeftHide();
 //						imageview.setImageDrawable(halfIconLeft);
@@ -261,7 +273,6 @@ public class FloatView extends View {
         } catch (Exception e) {
             mWManager.updateViewLayout(floatViewLayout, mWMParams);
             isViewadded = true;
-            e.printStackTrace();
         }
 
         if (isFullIcon) {
@@ -279,7 +290,7 @@ public class FloatView extends View {
 
     public void closeFloatview() {
         if (isViewadded) {
-            mWManager.removeView(floatViewLayout);
+            mWManager.removeViewImmediate(floatViewLayout);
         }
         isViewadded = false;
     }

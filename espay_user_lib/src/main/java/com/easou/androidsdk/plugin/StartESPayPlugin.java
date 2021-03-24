@@ -266,7 +266,7 @@ public class StartESPayPlugin {
 			param = param + "&channelMark=DHT";
 		}*/
 
-        if (Constant.PAY_CHANNEl == 1) {
+       /* if (Constant.PAY_CHANNEl == 1) {
             param = param + "&channelMark="+Constant.CHANNEL_MARK_DHT;
         } else if (Constant.PAY_CHANNEl == 2) {
             param = param + "&channelMark="+Constant.CHANNEL_MARK_YY;
@@ -274,7 +274,9 @@ public class StartESPayPlugin {
             param = param + "&channelMark="+Constant.CHANNEL_MARK_ZKX;
         } else if (Constant.PAY_CHANNEl == 4){
             param = param + "&channelMark="+Constant.CHANNEL_MARK_WZYY;
-        }
+        }*/
+
+        param = param + "&channelMark=" + Constant.CHANNEL_MARK_ZKX;
         return param;
     }
 

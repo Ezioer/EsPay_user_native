@@ -5,10 +5,14 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+//import com.bun.miitmdid.core.ErrorCode;
+//import com.bun.miitmdid.core.MdidSdkHelper;
+//import com.bun.supplier.IIdentifierListener;
+//import com.bun.supplier.IdSupplier;
 import com.bun.miitmdid.core.ErrorCode;
 import com.bun.miitmdid.core.MdidSdkHelper;
-import com.bun.supplier.IIdentifierListener;
-import com.bun.supplier.IdSupplier;
+import com.bun.miitmdid.interfaces.IIdentifierListener;
+import com.bun.miitmdid.interfaces.IdSupplier;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
 
@@ -19,16 +23,47 @@ import com.easou.androidsdk.plugin.StartOtherPlugin;
 
 public class MiitHelper implements IIdentifierListener {
 
-	private MiitHelper (){};
-	private static class GetSingleHolder{
-		private static final MiitHelper INSTANCE = new MiitHelper();
-	}
+    private MiitHelper() {
+    }
 
-	public static MiitHelper getInstance() {
-		return GetSingleHolder.INSTANCE;
-	}
+    ;
 
-	static void getOAID(MiitHelper helper, Context context) {
+    @Override
+    public void OnSupport(boolean b, IdSupplier idSupplier) {
+        if (idSupplier == null) {
+            return;
+        }
+        String oaid = idSupplier.getOAID();
+        String vaid = idSupplier.getVAID();
+        String aaid = idSupplier.getAAID();
+
+        if (!TextUtils.isEmpty(oaid.trim())) {
+            Constant.OAID = oaid;
+            StartOtherPlugin.logGDTActionSetOAID(oaid);
+        }
+
+        ESdkLog.d("获取的oaid：" + Constant.OAID);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("support: ").append(b ? "true" : "false").append("\n");
+        builder.append("OAID: ").append(oaid).append("\n");
+        builder.append("VAID: ").append(vaid).append("\n");
+        builder.append("AAID: ").append(aaid).append("\n");
+        String idstext = builder.toString();
+        if (_listener != null) {
+            _listener.OnIdsAvalid(idstext);
+        }
+    }
+
+    private static class GetSingleHolder {
+        private static final MiitHelper INSTANCE = new MiitHelper();
+    }
+
+    public static MiitHelper getInstance() {
+        return GetSingleHolder.INSTANCE;
+    }
+
+    static void getOAID(MiitHelper helper, Context context) {
 		helper.getDeviceIds(context);
 	}
 
@@ -91,32 +126,7 @@ public class MiitHelper implements IIdentifierListener {
         return sdk.InitSdk(cxt,this);*/
 		return 0;
 	}
-	@Override
-	public void OnSupport(boolean isSupport, IdSupplier _supplier) {
-		if(_supplier==null) {
-			return;
-		}
-		String oaid=_supplier.getOAID();
-		String vaid=_supplier.getVAID();
-		String aaid=_supplier.getAAID();
 
-		if (!TextUtils.isEmpty(oaid.trim())) {
-			Constant.OAID = oaid;
-			StartOtherPlugin.logGDTActionSetOAID(oaid);
-		}
-
-		ESdkLog.d("获取的oaid：" + Constant.OAID);
-
-		StringBuilder builder=new StringBuilder();
-		builder.append("support: ").append(isSupport?"true":"false").append("\n");
-		builder.append("OAID: ").append(oaid).append("\n");
-		builder.append("VAID: ").append(vaid).append("\n");
-		builder.append("AAID: ").append(aaid).append("\n");
-		String idstext=builder.toString();
-		if(_listener!=null){
-			_listener.OnIdsAvalid(idstext);
-		}
-	}
 	public interface AppIdsUpdater{
 		void OnIdsAvalid(@NonNull  String ids);
 	}

@@ -8,18 +8,26 @@ import java.util.concurrent.Executors;
  */
 
 public class ThreadPoolManager {
-        private ExecutorService service;
-        private static ThreadPoolManager manager;
-        private ThreadPoolManager() {
-            int num = Runtime.getRuntime().availableProcessors();
-            this.service = Executors.newFixedThreadPool(num * 2);
-        }
-        public static ThreadPoolManager getInstance() {
-            if(manager == null) {
-                manager = new ThreadPoolManager();
+    private ExecutorService service;
+    private static ThreadPoolManager manager;
+
+    private ThreadPoolManager() {
+        int num = Runtime.getRuntime().availableProcessors();
+        this.service = Executors.newFixedThreadPool(num * 2);
+    }
+
+    public static ThreadPoolManager getInstance() {
+        if (manager == null) {
+            synchronized (ThreadPoolManager.class) {
+                if (manager == null) {
+                    manager = new ThreadPoolManager();
+                }
             }
-            return manager;
         }
-        public void addTask(Runnable runnable) {
-            this.service.submit(runnable);   }
+        return manager;
+    }
+
+    public void addTask(Runnable runnable) {
+        this.service.submit(runnable);
+    }
 }

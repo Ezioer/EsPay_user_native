@@ -9,8 +9,16 @@ import android.widget.Toast;
 
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
+import com.easou.androidsdk.dialog.NotiDialog;
+import com.easou.androidsdk.login.MoneyDataCallBack;
+import com.easou.androidsdk.login.service.CashHistoryInfo;
+import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.CheckBindInfo;
+import com.easou.androidsdk.login.service.DrawResultInfo;
+import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.LoginNameInfo;
+import com.easou.androidsdk.login.service.MoneyBaseInfo;
+import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
 import com.easou.androidsdk.dialog.AccountInfoDialog;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
@@ -88,16 +96,20 @@ public class StartESAccountCenter {
                             callBack.loginSuccess();
                             handleLoginBean(true, login, mContext, password);
                         } else {
-                            if (login.getDescList().size() > 0) {
-                                callBack.loginFail(login.getDescList().get(0).getD());
+                            if (login.getResultCode().equals("502")) {
+                                callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                             } else {
-                                callBack.loginFail("登录失败");
+                                if (login.getDescList().size() > 0) {
+                                    callBack.loginFail(login.getDescList().get(0).getD());
+                                } else {
+                                    callBack.loginFail("登录失败");
+                                }
                             }
                         }
 
                     } catch (Exception e) {
                         ESdkLog.d("账号登录失败" + e.toString());
-                        callBack.loginFail("登陆中,请稍后");
+                        callBack.loginFail("登录中,请稍后");
                     }
                 }
             });
@@ -130,10 +142,14 @@ public class StartESAccountCenter {
                             registerEsAndBind(callBack, openId, mContext);
                         }
                     } else {
-                        if (bindInfo.getDescList().size() > 0) {
-                            callBack.loginFail(bindInfo.getDescList().get(0).getD());
+                        if (bindInfo.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("登录失败");
+                            if (bindInfo.getDescList().size() > 0) {
+                                callBack.loginFail(bindInfo.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("登录失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -161,24 +177,32 @@ public class StartESAccountCenter {
                     callBack.loginSuccess();
                     handleRegister(false, userInfo, mContext, false, "");
                 } else {
-                    if (result.getDescList().size() > 0 && result.getDescList().get(0).getC().equals("4")) {
-                        //已经绑定过了则执行登录等操作
-                        callBack.loginSuccess();
-                        handleRegister(false, userInfo, mContext, false, "");
+                    if (result.getResultCode().equals("502")) {
+                        callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                     } else {
-                        callBack.loginFail("登录失败,请重新登录");
+                        if (result.getDescList().size() > 0 && result.getDescList().get(0).getC().equals("4")) {
+                            //已经绑定过了则执行登录等操作
+                            callBack.loginSuccess();
+                            handleRegister(false, userInfo, mContext, false, "");
+                        } else {
+                            callBack.loginFail("登录失败,请重新登录");
+                        }
                     }
                 }
             } else {
-                if (userInfo.getDescList().size() > 0) {
-                    callBack.loginFail(userInfo.getDescList().get(0).getD());
+                if (userInfo.getResultCode().equals("502")) {
+                    callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                 } else {
-                    callBack.loginFail("登录失败");
+                    if (userInfo.getDescList().size() > 0) {
+                        callBack.loginFail(userInfo.getDescList().get(0).getD());
+                    } else {
+                        callBack.loginFail("登录失败");
+                    }
                 }
             }
         } catch (Exception e) {
             ESdkLog.d("游客登录失败" + e.toString());
-            callBack.loginFail("登陆中,请稍后");
+            callBack.loginFail("登录中,请稍后");
         }
     }
 
@@ -196,16 +220,20 @@ public class StartESAccountCenter {
                 callBack.loginSuccess();
                 handleTapLoginBean(isNeedSave, validate, mContext);
             } else {
-                if (validate.getDescList().size() > 0) {
-                    callBack.loginFail(validate.getDescList().get(0).getD());
+                if (validate.getResultCode().equals("502")) {
+                    callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                 } else {
-                    callBack.loginFail("登录失败");
+                    if (validate.getDescList().size() > 0) {
+                        callBack.loginFail(validate.getDescList().get(0).getD());
+                    } else {
+                        callBack.loginFail("登录失败");
+                    }
                 }
             }
 
         } catch (Exception e) {
             ESdkLog.d("账号登录失败" + e.toString());
-            callBack.loginFail("登陆中,请稍后");
+            callBack.loginFail("登录中,请稍后");
         }
     }
 
@@ -222,11 +250,12 @@ public class StartESAccountCenter {
     /**
      * 修改密码后静默登陆
      *
+     * @param callBack
      * @param name
      * @param password
      * @param mContext
      */
-    public static void silenceLogin(final String name, final String password, final Context mContext) {
+    public static void silenceLogin(final LoginCallBack callBack, final String name, final String password, final Context mContext) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
@@ -234,9 +263,19 @@ public class StartESAccountCenter {
                     EucApiResult<LoginBean> login = AuthAPI.login(name, password, true, RegisterAPI.getRequestInfo(mContext), mContext);
                     if (login.getResultCode().equals(CodeConstant.OK)) {
                         reLogin(login, mContext, password);
+                    } else {
+                        if (login.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
+                        } else {
+                            callBack.loginFail("请重新登录");
+                        }
+                        StartESUserPlugin.hideUserCenter();
+                        logout(mContext);
                     }
                 } catch (Exception e) {
-                    ESdkLog.d("账号登录失败" + e.toString());
+                    ESdkLog.d("登录失败" + e.toString());
+                    StartESUserPlugin.hideUserCenter();
+                    logout(mContext);
                 }
             }
         });
@@ -260,10 +299,14 @@ public class StartESAccountCenter {
                             callBack.loginSuccess();
                             handleRegister(true, login, mContext, false, password);
                         } else {
-                            if (login.getDescList().size() > 0) {
-                                callBack.loginFail(login.getDescList().get(0).getD());
+                            if (login.getResultCode().equals("502")) {
+                                callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                             } else {
-                                callBack.loginFail("账号注册失败");
+                                if (login.getDescList().size() > 0) {
+                                    callBack.loginFail(login.getDescList().get(0).getD());
+                                } else {
+                                    callBack.loginFail("账号注册失败");
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -292,13 +335,17 @@ public class StartESAccountCenter {
                 try {
                     EucApiResult<String> userInfo = UserAPI.updatePasswd(Constant.ESDK_TOKEN, oldPw, newPw, RegisterAPI.getRequestInfo(mContext), mContext);
                     if (userInfo.getResultCode().equals(CodeConstant.OK)) {
-                        silenceLogin(Starter.loginBean.getUser().getName(), newPw, mContext);
+                        silenceLogin(callBack, Starter.loginBean.getUser().getName(), newPw, mContext);
                         callBack.loginSuccess();
                     } else {
-                        if (userInfo.getDescList().size() > 0) {
-                            callBack.loginFail(userInfo.getDescList().get(0).getD());
+                        if (userInfo.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("更改失败");
+                            if (userInfo.getDescList().size() > 0) {
+                                callBack.loginFail(userInfo.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("更改失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -325,10 +372,14 @@ public class StartESAccountCenter {
                     if (info.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess();
                     } else {
-                        if (info.getDescList().size() > 0) {
-                            callBack.loginFail(info.getDescList().get(0).getD());
+                        if (info.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("操作失败");
+                            if (info.getDescList().size() > 0) {
+                                callBack.loginFail(info.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("操作失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -357,10 +408,14 @@ public class StartESAccountCenter {
                     if (userInfo.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess(userInfo.getResult().getUser().getName());
                     } else {
-                        if (userInfo.getDescList().size() > 0) {
-                            callBack.loginFail(userInfo.getDescList().get(0).getD());
+                        if (userInfo.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("操作失败");
+                            if (userInfo.getDescList().size() > 0) {
+                                callBack.loginFail(userInfo.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("操作失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -388,10 +443,14 @@ public class StartESAccountCenter {
                     if (info.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess();
                     } else {
-                        if (info.getDescList().size() > 0) {
-                            callBack.loginFail(info.getDescList().get(0).getD());
+                        if (info.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("操作失败");
+                            if (info.getDescList().size() > 0) {
+                                callBack.loginFail(info.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("操作失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -424,10 +483,14 @@ public class StartESAccountCenter {
                         }
                         callBack.loginSuccess();
                     } else {
-                        if (info.getDescList().size() > 0) {
-                            callBack.loginFail(info.getDescList().get(0).getD());
+                        if (info.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("操作失败");
+                            if (info.getDescList().size() > 0) {
+                                callBack.loginFail(info.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("操作失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -455,10 +518,14 @@ public class StartESAccountCenter {
                     if (userInfo.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess(CommonUtils.getYMDfromIdNum(idNum));
                     } else {
-                        if (userInfo.getDescList().size() > 0) {
-                            callBack.loginFail(userInfo.getDescList().get(0).getD());
+                        if (userInfo.getResultCode().equals("502")) {
+                            callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                         } else {
-                            callBack.loginFail("认证失败");
+                            if (userInfo.getDescList().size() > 0) {
+                                callBack.loginFail(userInfo.getDescList().get(0).getD());
+                            } else {
+                                callBack.loginFail("认证失败");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -485,21 +552,125 @@ public class StartESAccountCenter {
                             callBack.loginSuccess();
                             handleRegister(true, userInfo, mContext, true, "");
                         } else {
-                            if (userInfo.getDescList().size() > 0) {
-                                callBack.loginFail(userInfo.getDescList().get(0).getD());
+                            if (userInfo.getResultCode().equals("502")) {
+                                callBack.loginFail("账号系统升级维护中，请您稍候再尝试登录。");
                             } else {
-                                callBack.loginFail("登录失败");
+                                if (userInfo.getDescList().size() > 0) {
+                                    callBack.loginFail(userInfo.getDescList().get(0).getD());
+                                } else {
+                                    callBack.loginFail("登录失败");
+                                }
                             }
                         }
                     } catch (Exception e) {
                         ESdkLog.d("游客登录失败" + e.toString());
-                        callBack.loginFail("登陆中,请稍后");
+                        callBack.loginFail("登录中,请稍后");
                     }
                 }
             });
         } else {
             callBack.loginFail("网络连接错误，请检查您的网络");
         }
+    }
+
+    //获取红包界面基本数据
+    public static void moneyBaseInfo(final MoneyDataCallBack<MoneyBaseInfo> callBack, final Context mContext
+            , final String playerId, final String serverId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MoneyBaseInfo moneyInfo = EucService.getInstance(mContext).getMoneyInfo(playerId, serverId);
+                    if (moneyInfo == null) {
+                        callBack.fail("网络出错，请重试");
+                        return;
+                    }
+                    callBack.success(moneyInfo);
+                } catch (Exception e) {
+                    callBack.fail("网络出错，请重试");
+                }
+            }
+        });
+    }
+
+    //获取红包列表数据
+    public static void moneyListInfo(final MoneyDataCallBack<MoneyListInfo> callBack, final Context mContext
+            , final String playerId, final String serverId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MoneyListInfo listInfo = EucService.getInstance(mContext).getMoneyList(playerId, serverId);
+                    if (listInfo == null) {
+                        callBack.fail("红包获取失败");
+                        return;
+                    }
+                    callBack.success(listInfo);
+                } catch (Exception e) {
+                    callBack.fail("红包获取失败");
+                }
+            }
+        });
+    }
+
+    //获取提现信息
+    public static void getCashInfo(final MoneyDataCallBack<CashLevelInfo> callBack, final Context mContext
+            , final String playerId, final String serverId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CashLevelInfo listInfo = EucService.getInstance(mContext).getCashInfo(playerId, serverId);
+                    if (listInfo == null) {
+                        callBack.fail("网络出错，请重试");
+                        return;
+                    }
+                    callBack.success(listInfo);
+                } catch (Exception e) {
+                    callBack.fail("网络出错，请重试");
+                }
+            }
+        });
+    }
+
+    //提现
+    public static void getCash(final MoneyDataCallBack<DrawResultInfo> callBack, final Context mContext
+            , final String playerId, final String money, final String serverId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DrawResultInfo listInfo = EucService.getInstance(mContext).getCash(playerId, money, serverId);
+                    if (listInfo == null) {
+                        callBack.fail("提现失败");
+                        return;
+                    }
+                    callBack.success(listInfo);
+                } catch (Exception e) {
+                    callBack.fail("提现失败");
+                }
+            }
+        });
+    }
+
+    //提现记录
+    public static void getCashHistory(final MoneyDataCallBack<CashHistoryInfo> callBack, final Context mContext
+            , final String playerId, final String serverId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CashHistoryInfo listInfo = EucService.getInstance(mContext).getCashHistory(playerId, serverId);
+                    if (listInfo == null) {
+                        callBack.fail("暂无记录");
+                        return;
+                    }
+                    callBack.success(listInfo);
+                } catch (Exception e) {
+                    callBack.fail("暂无记录");
+                }
+            }
+        });
     }
 
     /**
@@ -521,6 +692,7 @@ public class StartESAccountCenter {
         LoginBean login = new LoginBean(userInfo.getResult().getToken(), user, userInfo.getResult().getEsid(), true);
         Starter.loginBean = login;
         if (isSaveInfo) {
+            //tap登录不需要保存这些信息，因为每次都会根据tap保存的信息进行服务器查询是否绑定操作来登录
             saveLoginInfo(userInfo.getResult().getUser().getName(), userInfo.getResult().getUser().getPasswd(), mContext);
             //注册成功后的用户实体类和登陆返回的用户实体类不同，需要转换成一样的
             CommonUtils.saveLoginInfo(GsonUtil.toJson(login), mContext);
@@ -546,6 +718,7 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_IS_IDENTITY_USER, "0");
         result.put(ESConstant.SDK_IS_ADULT, "0");
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
+        final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -556,43 +729,48 @@ public class StartESAccountCenter {
                     register.put(ESConstant.SDK_USER_ID, userId);
                     register.put(ESConstant.SDK_USER_NAME, userName);
                     postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-                    ThreadPoolManager.getInstance().addTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (limitStatue != null && limitStatue.getUs() != 0) {
-                                        //需要实名认证
-                                        AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
-                                        authenNotiDialog.show();
-                                        authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
-                                            @Override
-                                            public void authenSuccess(String userBirthdate) {
-                                                Map<String, String> cert = new HashMap<String, String>();
-                                                cert.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
-                                                cert.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
-                                                Starter.mCallback.onRegister(register);
-                                                Starter.mCallback.onUserCert(cert);
-                                                popFloatView();
-                                            }
-                                        });
-                                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
-                                            @Override
-                                            public void dialogClose() {
-                                                Starter.mCallback.onRegister(register);
-                                                popFloatView();
-                                            }
-                                        });
-                                    } else {
-                                        Starter.mCallback.onRegister(register);
-                                        popFloatView();
-                                    }
+                    if (limitStatue != null && limitStatue.getUs() != 0) {
+                        //需要实名认证
+                        AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
+                        authenNotiDialog.show();
+                        authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
+                            @Override
+                            public void authenSuccess(String userBirthdate, String idNum) {
+                                Map<String, String> cert = new HashMap<String, String>();
+                                cert.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
+                                cert.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+                                //更新当前用户的身份证信息
+                                Starter.loginBean.getUser().setIdentityNum(idNum);
+                                Starter.mCallback.onRegister(register);
+                                //回调认证结果
+                                Starter.mCallback.onUserCert(cert);
+                                int age = CommonUtils.getAge(idNum);
+                                //认证成功后对未成年人进行提示
+                                if (limitStatue.getNs() == 1 && age < 18) {
+                                    showNotiDialog(age);
                                 }
-                            });
-                        }
-                    });
+                                popFloatView();
+                            }
+                        });
+                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
+                            @Override
+                            public void dialogClose() {
+                                Starter.mCallback.onRegister(register);
+                                //关闭认证对未成年人提示
+                                if (limitStatue.getNs() == 1) {
+                                    showNotiDialog(0);
+                                }
+                                popFloatView();
+                            }
+                        });
+                    } else {
+                        Starter.mCallback.onRegister(register);
+                       /* //注册用户登录提示
+                        if (limitStatue.getNs() == 1) {
+                            showNotiDialog(0);
+                        }*/
+                        popFloatView();
+                    }
                 } else {
                     //自动注册用户需要弹出账号信息框
                     AccountInfoDialog infoDialog = new AccountInfoDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, userName, password);
@@ -602,6 +780,10 @@ public class StartESAccountCenter {
                         public void dialogClose() {
                             Starter.mCallback.onLogin(result);
                             postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
+                            //游客登录提示
+                            if (limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
+                                showNotiDialog(0);
+                            }
                             popFloatView();
                         }
                     });
@@ -628,9 +810,12 @@ public class StartESAccountCenter {
         String token = String.valueOf(userInfo.getResult().getToken().token);
         Starter.loginBean = userInfo.getResult();
         if (isSaveInfo) {
-            saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
-            final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
-            userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
+            //tap登录不需要保存这些信息，因为每次都会根据tap保存的信息进行服务器查询是否绑定操作来登录
+            if (!pw.isEmpty()) {
+                saveLoginInfo(userInfo.getResult().getUser().getName(), pw, mContext);
+                final String password = String.valueOf(userInfo.getResult().getUser().getPasswd());
+                userInfo.getResult().getUser().setPasswd(pw.isEmpty() ? password : pw);
+            }
             CommonUtils.saveLoginInfo(GsonUtil.toJson(userInfo.getResult()), mContext);
             CommonUtils.saveUInfo(userInfo.getResult().getU().getU(), mContext);
         }
@@ -650,68 +835,90 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_ID, userId);
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
+        String isAdult = "0";
+        int age = 0;
+       /* int identityStatus = userInfo.getResult().getIdentityStatus();
+        if (identityStatus == 1) {
+            //已经实名认证过
+            result.put(ESConstant.SDK_USER_BIRTH_DATE,
+                    CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()));
+            result.put(ESConstant.SDK_IS_IDENTITY_USER, "1");
+            age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
+            isAdult = age > 18 ? "1" : "0";
+            getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
+        }*/
         //身份证号为null则生日为0，未实名认证
         result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
                 CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()) : "0");
         result.put(ESConstant.SDK_IS_IDENTITY_USER, TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ? "0" : "1");
-        String isAdult = "0";
 
         if (!TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum())) {
             //实名认证过的用户才会去做支付限制
-            int age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
+            age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
             isAdult = age > 18 ? "1" : "0";
             getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
         }
-
+        final int mAge = age;
         result.put(ESConstant.SDK_IS_ADULT, isAdult);
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
+        final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                 if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
-                    //没有认证过的及不是自动注册的用户都需要去检查是否需要弹出实名验证框
-                    ThreadPoolManager.getInstance().addTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (limitStatue != null && limitStatue.getUs() != 0) {
-                                        //需要登陆验证时弹出验证框
-                                        AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
-                                        authenNotiDialog.show();
-                                        authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
-                                            @Override
-                                            public void authenSuccess(String userBirthdate) {
-                                                //手动验证成功回调
-                                                Map<String, String> authenResult = new HashMap<String, String>();
-                                                authenResult.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
-                                                authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
-                                                Starter.mCallback.onLogin(result);
-                                                Starter.mCallback.onUserCert(authenResult);
-                                                popFloatView();
-                                            }
-                                        });
-                                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
-                                            @Override
-                                            public void dialogClose() {
-                                                //关闭认证回调
-                                                Starter.mCallback.onLogin(result);
-                                                popFloatView();
-                                            }
-                                        });
-                                    } else {
-                                        Starter.mCallback.onLogin(result);
-                                        popFloatView();
-                                    }
+//                if (userInfo.getResult().getIdentityStatus() == 2 && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
+                    //没有认证过的并且不是自动注册的用户需要去检查是否需要弹出实名验证框
+                    if (limitStatue != null && limitStatue.getUs() != 0) {
+                        //需要登陆验证时弹出验证框
+                        AuthenNotiDialog authenNotiDialog = new AuthenNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, limitStatue.getUs());
+                        authenNotiDialog.show();
+                        authenNotiDialog.setResult(new AuthenNotiDialog.authenResult() {
+                            @Override
+                            public void authenSuccess(String userBirthdate, String idNum) {
+                                //手动验证成功回调
+                                Map<String, String> authenResult = new HashMap<String, String>();
+                                authenResult.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
+                                authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
+                                //更新当前用户的身份证信息
+                                Starter.loginBean.getUser().setIdentityNum(idNum);
+                                Starter.mCallback.onLogin(result);
+                                //回调认证结果
+                                Starter.mCallback.onUserCert(authenResult);
+                                int uAge = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
+                                //认证成功且是未成年的用户提示
+                                if (limitStatue.getNs() == 1 && uAge < 18) {
+                                    showNotiDialog(uAge);
                                 }
-                            });
-                        }
-                    });
+                                popFloatView();
+                            }
+                        });
+                        authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
+                            @Override
+                            public void dialogClose() {
+                                //关闭认证回调
+                                //未认证过的且不是自动注册的用户的提示
+                                if (limitStatue.getNs() == 1) {
+                                    showNotiDialog(0);
+                                }
+                                Starter.mCallback.onLogin(result);
+                                popFloatView();
+                            }
+                        });
+                    } else {
+                      /*  //未认证过的且不是自动注册的用户的提示
+                        if (limitStatue.getNs() == 1) {
+                            showNotiDialog(0);
+                        }*/
+                        Starter.mCallback.onLogin(result);
+                        popFloatView();
+                    }
                 } else {
+                    //未认证过的自动注册用户或者认证过但是未成年的提示
+                    if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
+                        showNotiDialog(mAge);
+                    }
                     Starter.mCallback.onLogin(result);
                     popFloatView();
                 }
@@ -821,10 +1028,20 @@ public class StartESAccountCenter {
         Constant.IS_LOGINED = false;
         StartESUserPlugin.hideFloatView();
         StartESUserPlugin.isShowUser = false;
-        FloatView.isSetHalf = true;
+        FloatView.isSetHalf = false;
         CommonUtils.saveLoginInfo("", mContext);
         CommonUtils.saveUInfo("", mContext);
+        CommonUtils.saveShowMoney(mContext, 0);
+        CommonUtils.saveServiceUrl(mContext, "");
+        CommonUtils.savePlayerId(mContext, "");
+        ((Activity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FloatView.setNormalIcon();
+            }
+        });
         StartESUserPlugin.showLoginDialog();
+        StartOtherPlugin.logOutTT();
         StartOtherPlugin.logTTActionLogin("");
         StartOtherPlugin.logGismActionLogout();
         StartOtherPlugin.logGDTActionSetID("");
@@ -844,5 +1061,34 @@ public class StartESAccountCenter {
                 Starter.getInstance().showFloatView();
             }
         }, 500);
+    }
+
+    /**
+     * 公告提醒框
+     */
+    public static void showNotiDialog(int age) {
+        String text = "";
+        if (age == 0 || TextUtils.isEmpty(String.valueOf(age))) {
+            text = "您当前登录的账号是游客账号，游戏体验时长累计不能超过一小时，并且无法进行充值，建议您尽快完善实名信息。";
+        } else {
+            if (age < 8 && age > 0) {
+                text = "为呵护未成年人的健康成长，游戏推出了青少年模式。您的账号将受到如下限制：\n" +
+                        "            1、每日22点至次日8点，禁止登陆；\n" +
+                        "            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
+                        "            3、您无法在游戏进行充值。";
+            } else if (age >= 8 && age < 16) {
+                text = "为呵护未成年人的健康成长，游戏推出了青少年模式。您的账号将受到如下限制：\n" +
+                        "            1、每日22点至次日8点，禁止登陆；\n" +
+                        "            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
+                        "            3、充值额度每次不超过50元，每月不超过200元。";
+            } else if (age >= 16 && age < 18) {
+                text = "为呵护未成年人的健康成长，游戏推出了青少年模式。您的账号将受到如下限制：\n" +
+                        "            1、每日22点至次日8点，禁止登陆；\n" +
+                        "            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
+                        "            3、充值额度每次不超过100元，每月不超过400元。";
+            }
+        }
+        NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, "", text, "");
+        authenDialog.show();
     }
 }

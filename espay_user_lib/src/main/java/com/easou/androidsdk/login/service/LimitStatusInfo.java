@@ -9,6 +9,15 @@ public class LimitStatusInfo {
     private int us = 0;
     private int ps = 0;
     private int ls = 0;
+    private int ns = 0;
+
+    public int getNs() {
+        return ns;
+    }
+
+    public void setNs(int ns) {
+        this.ns = ns;
+    }
 
     public int getUs() {
         return us;

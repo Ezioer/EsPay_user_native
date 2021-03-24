@@ -13,6 +13,24 @@ public class GiftInfo {
     private String giftname;
     //0未领取 1领取
     private int status;
+    private int ps;
+    private int us;
+
+    public int getPs() {
+        return ps;
+    }
+
+    public void setPs(int ps) {
+        this.ps = ps;
+    }
+
+    public int getUs() {
+        return us;
+    }
+
+    public void setUs(int us) {
+        this.us = us;
+    }
 
     public long getActivityId() {
         return activityId;

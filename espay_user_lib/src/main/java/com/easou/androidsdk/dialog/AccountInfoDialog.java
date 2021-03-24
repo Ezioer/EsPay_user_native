@@ -18,7 +18,7 @@ import com.easou.espay_user_lib.R;
 public class AccountInfoDialog extends BaseDialog {
 
     public AccountInfoDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,String account,String password) {
-        super(context, animation, gravity, mWidth, mHeight);
+        super(context, animation, gravity, mWidth, mHeight, false);
         mContext = context;
         this.account = account;
         this.password = password;

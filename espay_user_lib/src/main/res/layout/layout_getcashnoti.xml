@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/bg_whitedialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:text="活动规则"
+        android:textSize="20sp"
+        android:id="@+id/tv_getcashresult_title"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/easou_em6_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:src="@drawable/icon_close"
+        android:padding="10dp"
+        android:id="@+id/iv_getcashresult_close"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:text=""
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_below="@id/tv_getcashresult_title"
+        android:id="@+id/tv_getcashresult_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:text="ssssss"
+        android:padding="4dp"
+        android:textIsSelectable="true"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_below="@id/tv_getcashresult_content"
+        android:id="@+id/tv_getcashresult_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

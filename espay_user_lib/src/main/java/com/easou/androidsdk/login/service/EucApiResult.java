@@ -44,19 +44,22 @@ public class EucApiResult<T> implements java.io.Serializable {
 			JHead jhead;
 			if (jbean.getHead() != null){
 				jhead = jbean.getHead();
-				if (null == jhead.getRet()) {
-					//throw new EucAPIException("返回码错误");
-					setResultCode(CodeConstant.ERROR);
-				}
-				if (null!=jbean.getDesc()) {
-					JDesc jdesc = jbean.getDesc();
-					for (int i = 0; i < jdesc.size(); i++) {
-						getDescList().add(jdesc.getReason(i));
-					}
-				}
-				setResultCode(jhead.getRet());
-				setVersion(jhead.getVersion());
-			}else{
+                if (null == jhead.getRet()) {
+                    //throw new EucAPIException("返回码错误");
+                    setResultCode(CodeConstant.ERROR);
+                }
+                if (null != jbean.getDesc()) {
+                    JDesc jdesc = jbean.getDesc();
+                    for (int i = 0; i < jdesc.size(); i++) {
+                        getDescList().add(jdesc.getReason(i));
+                    }
+                }
+                if (jhead.getRet().equals("502")) {
+                    setResultCode("502");
+                }
+                setResultCode(jhead.getRet());
+                setVersion(jhead.getVersion());
+            }else{
 				setResultCode(CodeConstant.ERROR);
 			}
 			

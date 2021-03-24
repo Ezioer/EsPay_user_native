@@ -20,6 +20,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
@@ -46,7 +48,6 @@ public class EucHttpClient {
      * 获取响应对象
      *
      * @param request 请求对象
-     * @param context 配置参数
      * @return
      */
     public static HttpResponse getHttpResponse(HttpUriRequest request) {
@@ -122,6 +123,7 @@ public class EucHttpClient {
             url = buildURL(url, paraMap);
             request = new HttpGet(url);
         }
+        SSLSocketFactory.getSocketFactory().setHostnameVerifier(new AllowAllHostnameVerifier());
         //httpclient 设置请求超时
         HttpParams params = request.getParams();
         params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
@@ -136,6 +138,9 @@ public class EucHttpClient {
         if (response == null || response.getStatusLine().getStatusCode() != 200) {// 通讯失败
             // 终止连接
             request.abort();
+            if (response.getStatusLine().getStatusCode() == 502) {
+                return "502";
+            }
             return null;
         }
         try {
@@ -162,7 +167,7 @@ public class EucHttpClient {
      * 生成URL
      *
      * @param url
-     * @param paraMap
+     * @param
      * @return
      */
     protected static String buildURL(String url, Map paramMap) {

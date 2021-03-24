@@ -5,11 +5,12 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.bun.miitmdid.core.JLibrary;
+//import com.bun.miitmdid.core.JLibrary;
 import com.bytedance.applog.AppLog;
 import com.bytedance.applog.GameReportHelper;
+import com.bytedance.applog.ILogger;
 import com.bytedance.applog.InitConfig;
-import com.bytedance.applog.util.UriConfig;
+import com.bytedance.applog.util.UriConstants;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.http.EAPayInter;
 import com.easou.androidsdk.util.CommonUtils;
@@ -53,10 +54,20 @@ public class StartOtherPlugin {
             String qn = CommonUtils.readPropertiesValue(context, "qn");
 
             final InitConfig config = new InitConfig(aid, qn);
-            config.setUriConfig(UriConfig.DEFAULT);
+            config.setUriConfig(UriConstants.DEFAULT);
+            config.setLogger(new ILogger() {
+                @Override
+                public void log(String s, Throwable throwable) {
+                    ESdkLog.d(s);
+                    if (throwable != null) {
+                        throwable.printStackTrace();
+                    }
+                }
+            });
             config.setEnablePlay(true);
+            config.setAutoStart(true);
             config.setProcess(true);
-            AppLog.setEnableLog(true);
+            config.setAbEnable(true);
             AppLog.init(context, config);
         }
     }
@@ -66,7 +77,7 @@ public class StartOtherPlugin {
      */
     public static void onTTResume(Activity activity) {
         if (Constant.TOUTIAO_SDK) {
-//			TeaAgent.onResume(activity);
+            AppLog.onResume(activity);
         }
     }
 
@@ -75,7 +86,7 @@ public class StartOtherPlugin {
      */
     public static void onTTPause(Activity activity) {
         if (Constant.TOUTIAO_SDK) {
-//			TeaAgent.onPause(activity);
+            AppLog.onPause(activity);
         }
     }
 
@@ -109,6 +120,12 @@ public class StartOtherPlugin {
                 AppLog.setUserUniqueID(uid);
             }
             GameReportHelper.onEventLogin("H5SDK", true);
+        }
+    }
+
+    public static void logOutTT() {
+        if (Constant.TOUTIAO_SDK) {
+            AppLog.setUserUniqueID(null);
         }
     }
 
@@ -183,7 +200,7 @@ public class StartOtherPlugin {
         Tools.disableAPIDialog();
 
         try {
-            JLibrary.InitEntry(mContext);
+//            JLibrary.InitEntry(mContext);
         } catch (Exception e) {
             // TODO Auto-generated catch block
 //            e.printStackTrace();
@@ -409,8 +426,8 @@ public class StartOtherPlugin {
      * 广点通SDK设置用户软ID
      */
     public static void logGDTActionSetID(String uid) {
-        if (Constant.GDT_SDK)
-            GDTAction.setUserUniqueId(uid);
+       /* if (Constant.GDT_SDK)
+            GDTAction.setUserUniqueId(uid);*/
     }
 
     /**
@@ -435,13 +452,13 @@ public class StartOtherPlugin {
     public static void logGDTActionRegister() {
 
         if (Constant.GDT_SDK) {
-            JSONObject actionParam = new JSONObject();
+            /*JSONObject actionParam = new JSONObject();
             try {
                 actionParam.put(ActionParam.Key.OUTER_ACTION_ID, "ESREGISTER");
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-            GDTAction.logAction(ActionType.REGISTER, actionParam);
+            }*/
+            GDTAction.logAction(ActionType.REGISTER);
         }
     }
 
@@ -486,19 +503,24 @@ public class StartOtherPlugin {
         if (TextUtils.equals(CommonUtils.readPropertiesValue(mContext, "use_KS"), "0")) {
 
             ESdkLog.d("调用了快手SDK初始化接口");
-            Constant.KS_SDK = true;
-            TurboAgent.init(TurboConfig.TurboConfigBuilder.create(mContext)
-                    .setAppId(CommonUtils.readPropertiesValue(mContext, "KS_appid"))
-                    .setAppName(CommonUtils.readPropertiesValue(mContext, "KS_appName"))
-                    .setAppChannel(CommonUtils.readPropertiesValue(mContext, "qn"))
-                    .setOAIDProxy(new OAIDProxy() { // 设置获取oaid的接口
-                        @Override
-                        public String getOAID() {
-                            return Constant.OAID;// 返回设备标识oaid
-                        }
-                    })
-                    .setEnableDebug(true)
-                    .build());
+            try {
+                Constant.KS_SDK = true;
+                TurboAgent.init(TurboConfig.TurboConfigBuilder.create(mContext)
+                        .setAppId(CommonUtils.readPropertiesValue(mContext, "KS_appid"))
+                        .setAppName(CommonUtils.readPropertiesValue(mContext, "KS_appName"))
+                        .setAppChannel(CommonUtils.readPropertiesValue(mContext, "qn"))
+                        .setOAIDProxy(new OAIDProxy() { // 设置获取oaid的接口
+                            @Override
+                            public String getOAID() {
+                                return Constant.OAID;// 返回设备标识oaid
+                            }
+                        })
+                        .setEnableDebug(true)
+                        .build());
+            } catch (Exception e) {
+                ESdkLog.d("快手sdk初始化失败" + e.getMessage());
+            }
+
         }
     }
 

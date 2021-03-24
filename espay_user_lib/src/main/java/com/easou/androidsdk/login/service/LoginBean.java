@@ -16,25 +16,35 @@ public class LoginBean implements java.io.Serializable{
 	 */
 	private static final long serialVersionUID = 4782288831244671067L;
 
-	private EucToken token;
-	/*U信息*/
-	private EucUCookie u;
-	/*是否登录的注册方式*/
-	private boolean isRegist;
-	/*返回ESID*/
-	private String esid;
-	/*返回的用户实体*/
-	private LUser user;
+    private EucToken token;
+    /*U信息*/
+    private EucUCookie u;
+    /*是否登录的注册方式*/
+    private boolean isRegist;
+    /*返回ESID*/
+    private String esid;
+    /*返回的用户实体*/
+    private LUser user;
 
-	public EucUCookie getU() {
-		return u;
+	/*private int identityStatus;
+
+	public int getIdentityStatus() {
+		return identityStatus;
 	}
 
-	public void setU(EucUCookie u) {
-		this.u = u;
-	}
+	public void setIdentityStatus(int identityStatus) {
+		this.identityStatus = identityStatus;
+	}*/
 
-	public boolean isRegist() {
+    public EucUCookie getU() {
+        return u;
+    }
+
+    public void setU(EucUCookie u) {
+        this.u = u;
+    }
+
+    public boolean isRegist() {
 		return isRegist;
 	}
 

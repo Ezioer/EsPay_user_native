@@ -1,12 +1,8 @@
 package com.easou.androidsdk.plugin;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.MutableContextWrapper;
-import android.os.Looper;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Window;
@@ -15,17 +11,17 @@ import android.view.WindowManager;
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
+import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
-import com.easou.androidsdk.dialog.NotiDialog;
 import com.easou.androidsdk.dialog.UserCenterDialog;
-import com.easou.androidsdk.dialog.WebViewDialog;
 import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.LoginCallBack;
+import com.easou.androidsdk.login.MoneyDataCallBack;
 import com.easou.androidsdk.login.RegisterAPI;
-import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
+import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.ui.ESUserWebActivity;
 import com.easou.androidsdk.ui.FloatView;
@@ -35,7 +31,6 @@ import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.FileHelper;
 import com.easou.androidsdk.util.HostRequestUtils;
 import com.easou.androidsdk.util.NetworkUtils;
-import com.easou.androidsdk.util.SensorManagerHelper;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
@@ -211,15 +206,6 @@ public class StartESUserPlugin {
 
     }
 
-
-    /**
-     * 公告提醒框
-     */
-    public static void showNotiDialog() {
-        NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, "", "", "");
-        authenDialog.show();
-    }
-
     public static void hideUserCenter() {
         if (mUserCenterDialog != null) {
             mUserCenterDialog.dismiss();
@@ -247,11 +233,11 @@ public class StartESUserPlugin {
         }
         if (mUserCenterDialog.isShowing()) {
             //正在展示则隐藏用户中心并将图标设置显示一半
-            FloatView.isSetHalf = true;
+            FloatView.isSetHalf = false;
             mUserCenterDialog.dismiss();
         } else {
             //显示正常图标并显示用户中心
-            FloatView.isSetHalf = false;
+            FloatView.isSetHalf = true;
             mUserCenterDialog.show();
             mUserCenterDialog.setUpdatePwHide();
             //设置用户中心的dialog为全屏显示
@@ -274,16 +260,6 @@ public class StartESUserPlugin {
             authenDialog = new AuthenNotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, 4);
         }
         authenDialog.show();
-    }
-
-    /**
-     * 弹出webview页面
-     *
-     * @param url
-     */
-    public static void showWebViewDialaog(String url) {
-        WebViewDialog mHelpDialog = new WebViewDialog(Starter.mActivity, R.style.easou_usercenterdialog, Gravity.LEFT | Gravity.BOTTOM, 0.9f, 0, url);
-        mHelpDialog.show();
     }
 
     /**
@@ -346,8 +322,32 @@ public class StartESUserPlugin {
     public static void startGameLoginLog(Map<String, String> playerInfo) {
 
         StartLogPlugin.startGameLoginLog(playerInfo);
-
+        initMoneyActivity(playerInfo.get(ESConstant.PLAYER_ID), playerInfo.get(ESConstant.PLAYER_SERVER_ID));
 //		ESUserWebActivity.clientToJS(Constant.YSTOJS_GAME_LOGIN_LOG, playerInfo);
+    }
+
+    private static void initMoneyActivity(String playerId, String serverId) {
+        if (CommonUtils.isNotNullOrEmpty(playerId) && CommonUtils.isNotNullOrEmpty(serverId)) {
+            CommonUtils.savePlayerId(Starter.mActivity, playerId);
+            CommonUtils.saveServerId(Starter.mActivity, serverId);
+            StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyBaseInfo>() {
+                @Override
+                public void success(MoneyBaseInfo moneyBaseInfo) {
+                    Starter.mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CommonUtils.saveShowMoney(Starter.mActivity, 1);
+                            FloatView.setMoneyIcon();
+                        }
+                    });
+                }
+
+                @Override
+                public void fail(String msg) {
+                    CommonUtils.saveShowMoney(Starter.mActivity, 0);
+                }
+            }, Starter.mActivity, playerId, serverId);
+        }
     }
 
     /**
@@ -423,13 +423,17 @@ public class StartESUserPlugin {
      */
     public static void hideFloatView() {
 //		UserCenterActivity.mContext.moveTaskToBack(true);
-        isShowUser = false;
-        if (mUserCenterDialog != null && mUserCenterDialog.isShowing()) {
-            FloatView.isSetHalf = true;
-            mUserCenterDialog.dismiss();
+        try {
+            isShowUser = false;
+            if (mUserCenterDialog != null && mUserCenterDialog.isShowing()) {
+                FloatView.isSetHalf = false;
+                mUserCenterDialog.dismiss();
+            }
+            ESdkLog.d("隐藏悬浮窗");
+            FloatView.close();
+        } catch (Exception e) {
+            ESdkLog.d("隐藏悬浮窗出错" + e.getMessage());
         }
-        ESdkLog.d("隐藏悬浮窗");
-        FloatView.close();
     }
 
     /**

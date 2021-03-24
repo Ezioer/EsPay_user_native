@@ -3,8 +3,10 @@ package com.easou.androidsdk.dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.easou.espay_user_lib.R;
@@ -17,7 +19,7 @@ import com.easou.espay_user_lib.R;
 public class NotiDialog extends BaseDialog {
 
     public NotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,String title,String content,String buttom) {
-        super(context, animation, gravity, mWidth, mHeight);
+        super(context, animation, gravity, mWidth, mHeight, true);
         mContext = context;
         mTitle = title;
         mContent = content;
@@ -42,13 +44,13 @@ public class NotiDialog extends BaseDialog {
         TextView buttom = (TextView) mView.findViewById(R.id.tv_buttom);
         TextView title = (TextView) mView.findViewById(R.id.tv_title_type);
         TextView content = (TextView) mView.findViewById(R.id.tv_noti_content);
-        if (mButtom.isEmpty()){
-            buttom.setVisibility(View.GONE);
-        } else {
-            buttom.setVisibility(View.VISIBLE);
-        }
-        buttom.setText(mButtom);
-        title.setText(mTitle);
+        ImageView mClose = mView.findViewById(R.id.iv_close);
+        mClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
         content.setText(mContent);
     }
 }

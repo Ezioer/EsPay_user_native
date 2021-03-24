@@ -84,6 +84,8 @@ public class Starter {
                 StartOtherPlugin.logKSActionAppActive();
             }
         }, 3000);
+        CommonUtils.saveShowMoney(activity, 0);
+        CommonUtils.savePlayerId(activity, "");
         StartESUserPlugin.loginSdk();
     }
 
@@ -155,14 +157,14 @@ public class Starter {
      * 头条进入页面统计
      */
     public void logTTPageResume(Activity context) {
-//        StartOtherPlugin.onTTResume(context);
+        StartOtherPlugin.onTTResume(context);
     }
 
     /**
      * 头条离开页面统计
      */
     public void logTTPagePause(Activity context) {
-//        StartOtherPlugin.onTTPause(context);
+        StartOtherPlugin.onTTPause(context);
     }
 
     /**

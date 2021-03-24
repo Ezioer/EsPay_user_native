@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="@string/authentication"
+        android:text="@string/noti"
+        android:textStyle="bold"
         android:textColor="@color/payeco_textColorWhite"
         android:textSize="22sp" />
 
@@ -39,7 +40,9 @@
                 android:id="@+id/tv_noti_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/authen_reason"
+                android:textSize="16sp"
+                android:lineSpacingExtra="6dp"
+                android:text="您当前登录的账号是游客账号，游戏体验时长累计不能超过一小时，并且无法进行充值，建议您尽快完善实名信息。"
                 android:textColor="@color/easou_thin1_color" />
 
             <TextView
@@ -47,6 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginTop="40dp"
+                android:visibility="gone"
                 android:background="@drawable/bg_submit"
                 android:gravity="center"
                 android:paddingLeft="20dp"

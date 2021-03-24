@@ -43,6 +43,9 @@ public class RegisterAPI {
         jbody.putContent("deviceId", Tools.getOnlyId());
         JBean jbean = eucService.getResult("/api2/autoRegist.json", jbody, oAuthPara,
                 info);
+        if (jbean == null) {
+            return null;
+        }
         return buildAuthResult(jbean);
     }
 
@@ -79,7 +82,6 @@ public class RegisterAPI {
 	/**
 	 * 预约用户名，预约成功会返回一个预约名和预约号，用户名注册时可带上该预约号
 	 * 
-	 * @param username
 	 * @param info
 	 * @return	返回的字符串内容为{预约名},{预约号}
 	 * @throws EucAPIException

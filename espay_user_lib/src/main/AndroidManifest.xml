@@ -135,16 +135,9 @@
         <activity
             android:name="com.easou.androidsdk.dialog.WebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:hardwareAccelerated="false"
             android:theme="@style/easou_translucent_notitle"></activity>
 
-        <activity
-            android:name="com.easou.androidsdk.dialog.UserCenterActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleInstance"
-            android:screenOrientation="behind"
-            android:taskAffinity=":com.easdk"
-            android:excludeFromRecents="true"
-            android:theme="@style/easou_translucent_notitle" />
         <activity
             android:name="com.easou.androidsdk.ui.ESPayCenterActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

@@ -26,6 +26,7 @@
     <string name="submit">提交</string>
     <string name="ok">确认</string>
     <string name="authentication">实名认证</string>
+    <string name="noti">提醒</string>
     <string name="authen_now">马上认证</string>
     <string name="inputname">请输入姓名</string>
     <string name="inputidnumber">请输入身份证号码</string>

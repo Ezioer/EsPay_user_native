@@ -34,8 +34,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,6 +164,45 @@ public class CommonUtils {
         editor.commit();
     }
 
+    public static String getPlayerId(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        String info = settings.getString("playerid", "");
+        return info;
+    }
+
+    public static void savePlayerId(Context mContext, String id) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("playerid", id);
+        editor.commit();
+    }
+
+    public static String getServerId(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        String info = settings.getString("serverid", "");
+        return info;
+    }
+
+    public static void saveServerId(Context mContext, String id) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("serverid", id);
+        editor.commit();
+    }
+
+    public static int isShowMoney(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        int info = settings.getInt("showmoney", 0);
+        return info;
+    }
+
+    public static void saveShowMoney(Context mContext, int isShow) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("showmoney", isShow);
+        editor.commit();
+    }
+
     public static void saveLoginNameInfo(String info, Context mContext) {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -189,6 +230,11 @@ public class CommonUtils {
             year = id.substring(6, 10);
             month = id.substring(10, 12);
             day = id.substring(12, 14);
+            if (id.length() == 15) {
+                year = "19" + id.substring(6, 8);
+                month = id.substring(8, 10);
+                day = id.substring(10, 12);
+            }
         } else {
             return "";
         }
@@ -201,6 +247,9 @@ public class CommonUtils {
             //正则匹配身份证号是否是正确的，15位或者17位数字+数字/x/X
             if (id.matches("^\\d{15}|\\d{17}[\\dxX]$")) {
                 year = id.substring(6, 10);
+                if (id.length() == 15) {
+                    year = "19" + id.substring(6, 8);
+                }
             } else {
                 System.out.println("身份证号码不匹配！");
                 return 0;
@@ -398,6 +447,33 @@ public class CommonUtils {
         } catch (NameNotFoundException e) {
             return "";
         }
+    }
+
+    public static String formatTime(Long time) {
+        long value = time;//361
+        Long seconds = value % 60;
+        value /= 60;
+        Long minutes = value % 60;
+        value /= 60;
+        Long hours = value % 24;
+        Long day = value / 24;
+        return String.format("%d天%d时%d分%d秒", day, hours, minutes, seconds);
+    }
+
+    public static String formatDate(long time) {
+        String YMDHMS = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat format = new SimpleDateFormat(YMDHMS);
+        return format.format(new Date(time));
+    }
+
+    public static boolean isNotNullOrEmpty(String string) {
+        if (string == null) {
+            return false;
+        }
+        if (string.isEmpty() || string.length() == 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -881,7 +957,6 @@ public class CommonUtils {
     /**
      * 产生一个随机的字符串
      *
-     * @param 字符串长度
      * @return
      */
     public static String getRandomString(int length) {

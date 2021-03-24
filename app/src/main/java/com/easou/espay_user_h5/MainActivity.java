@@ -29,6 +29,7 @@ import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.StatusBarUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
+import com.easou.espay_user_h5.R;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
@@ -40,7 +41,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button btnBuyPort, btnChangeAccount, btnGetUserInfo, btnUserCert, btnLogin;
-
+    private EditText mPlayId;
+    private Button mSubmitPlayerId;
     /**
      * 特别说明！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
      * client.properties文件中appId, partnerId, key, qn, notifyUrl, redirectUrl，
@@ -167,7 +169,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnChangeAccount = (Button) this.findViewById(R.id.parse_changeaccount);
         btnUserCert = (Button) this.findViewById(R.id.parse_usercert);
         btnLogin = (Button) this.findViewById(R.id.login_game);
-
+        mPlayId = this.findViewById(R.id.et_player_id);
+        mSubmitPlayerId = this.findViewById(R.id.btn_submitplayerid);
+        mSubmitPlayerId.setOnClickListener(this);
         btnGetUserInfo.setOnClickListener(this);
         btnBuyPort.setOnClickListener(this);
         btnChangeAccount.setOnClickListener(this);
@@ -306,16 +310,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                  * 用于数据统计，在游戏登录成功（非sdk登录成功，玩家登录成功且经过选区服及创建角色或选择角色，完全进入游戏后）后调用
                  */
                 Map<String, String> playerInfo = new HashMap<String, String>();
-                playerInfo.put(ESConstant.PLAYER_NAME, "角色名字"); // 游戏角色名称
-                playerInfo.put(ESConstant.PLAYER_LEVEL, "50"); // 游戏角色等级
-                playerInfo.put(ESConstant.PLAYER_ID, "123456"); // 游戏角色id
-                playerInfo.put(ESConstant.PLAYER_SERVER_ID, "10"); // 游戏区服id
+                playerInfo.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
+                playerInfo.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
+                playerInfo.put(ESConstant.PLAYER_ID, mPlayId.getText().toString()); // 游戏角色id
+                playerInfo.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
                 Starter.getInstance().startGameLoginLog(playerInfo);
 
                 // demo演示代码
                 enterGame(View.VISIBLE);
                 break;
-
+            case R.id.btn_submitplayerid:
+                Map<String, String> playerI = new HashMap<String, String>();
+                playerI.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
+                playerI.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
+                playerI.put(ESConstant.PLAYER_ID, mPlayId.getText().toString()); // 游戏角色id
+                playerI.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
+                Starter.getInstance().startGameLoginLog(playerI);
+                break;
             default:
                 break;
         }
@@ -341,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         /** 爱奇艺SDK进入游戏界面 */
         Starter.getInstance().logAQYActionPageResume();
         Starter.getInstance().logBDPageResume();
+        Starter.getInstance().logTTPageResume(this);
     }
 
     @Override
@@ -350,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Starter.getInstance().logKSActionPagePause(MainActivity.this);
         /**  爱奇艺退出游戏时调用 */
         Starter.getInstance().logAQYActionPageDestory();
+        Starter.getInstance().logTTPagePause(this);
     }
 
     @Override
@@ -357,7 +370,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onBackPressed();
         /** GISM SDK 退出游戏回调 */
         Starter.getInstance().onGismExitApp();
-
         System.exit(0);
     }
 

@@ -87,8 +87,8 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
         hideBottomUIMenu();
         setContentView(getApplication().getResources().getIdentifier("layout_webview", "layout",
                 getApplication().getPackageName()));
-        StatusBarUtils.showOrHide(true, this);
-        NotchUtil.fullscreenUseStatus(this);
+//        StatusBarUtils.showOrHide(true, this);
+//        NotchUtil.fullscreenUseStatus(this);
         mActivity = this;
         initView();
     }
@@ -115,7 +115,9 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
         mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);// WebView启用Javascript脚本执行
         mWebView.setVerticalScrollBarEnabled(true);// 取消VerticalScrollBar显示
         mWebView.getSettings().setDomStorageEnabled(true);// 设置html5离线缓存可用
-
+        mWebView.getSettings().setDatabaseEnabled(true);
+        mWebView.getSettings().setAppCacheEnabled(true);
+        mWebView.getSettings().setAllowFileAccess(true);
         mWebView.addJavascriptInterface(new Object() {
             private ConfigerManagner configerManagner;
 
@@ -226,7 +228,7 @@ public class WebViewActivity extends Activity implements ReWebChomeClient.OpenFi
         Window _window = getWindow();
         WindowManager.LayoutParams params = _window.getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         _window.setAttributes(params);
     }
 

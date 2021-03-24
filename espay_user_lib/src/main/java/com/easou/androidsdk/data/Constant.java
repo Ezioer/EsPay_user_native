@@ -15,7 +15,7 @@ public class Constant {
 	/**
      * SDK版本号
      */
-    public static final String SDK_VERSION = "2.4.8";
+    public static final String SDK_VERSION = "2.4.9";
     public static final String SDK_PHONEOS = "Android";
 	
 	public static final String API_SOURCE = "30";
@@ -67,6 +67,7 @@ public class Constant {
      */
     public static boolean AQY_SDK;
     public static boolean BD_SDK;
+    public static boolean isShowMoney;
     /**
      * 保存支付限制信息
      */
@@ -85,7 +86,7 @@ public class Constant {
     public static String HOST_NAME = "";
     public static String HOST_NAME_DEFAULT = "mtianshitong.com";
 
-    //	public static final String DOMAIN = "http://lab.pay.appeasou.com";
+    //    	public static final String DOMAIN = "http://lab.pay.appeasou.com";
     public static final String DOMAIN = "https://service.pay.";
 
     public static final String[] DOMAIN_HOST = {"domain.game.eayou.com",

@@ -1,12 +1,15 @@
 package com.easou.androidsdk.dialog;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +28,14 @@ import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.login.AuthenCallBack;
 import com.easou.androidsdk.login.LoginCallBack;
+import com.easou.androidsdk.login.MoneyDataCallBack;
 import com.easou.androidsdk.login.UserAPI;
+import com.easou.androidsdk.login.service.CashHistoryInfo;
+import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.GiftBean;
 import com.easou.androidsdk.login.service.GiftInfo;
+import com.easou.androidsdk.login.service.MoneyBaseInfo;
+import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
@@ -47,7 +55,7 @@ import java.util.Map;
 public class UserCenterDialog extends BaseDialog {
 
     public UserCenterDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight) {
-        super(context, animation, gravity, mWidth, mHeight);
+        super(context, animation, gravity, mWidth, mHeight, false);
         mContext = context;
     }
 
@@ -56,6 +64,13 @@ public class UserCenterDialog extends BaseDialog {
     private boolean bindType = true;
     private int currentType = 0;
     private RelativeLayout rlChangePw;
+    private ListView giftList;
+    private TextView tvGiftCode;
+    private RelativeLayout llGiftCode;
+    private CountDownTimer getTimer, cashTimer;
+    private ImageView mMoney;
+    private TextView mLeftMoneyValue;
+    private ObjectAnimator circle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,18 +107,39 @@ public class UserCenterDialog extends BaseDialog {
                 rlChangePw.setVisibility(View.VISIBLE);
             }
         }
+
+        if (currentType == 2 && giftList != null && llGiftCode != null && tvGiftCode != null) {
+            initGifts();
+        }
+
+        if (CommonUtils.isShowMoney(mContext) == 1) {
+            mMoney.setVisibility(View.VISIBLE);
+        } else {
+            mMoney.setVisibility(View.GONE);
+        }
+
+        if (currentType == 3) {
+            initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+        }
     }
 
     private void initView() {
         final View includeMenu = findViewById(R.id.include_usermenu);
         final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
         final ImageView ivGift = (ImageView) findViewById(R.id.iv_gift);
+        mMoney = findViewById(R.id.iv_money);
+        if (CommonUtils.isShowMoney(mContext) == 1) {
+            mMoney.setVisibility(View.VISIBLE);
+        } else {
+            mMoney.setVisibility(View.GONE);
+        }
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
         final RelativeLayout llGift = (RelativeLayout) findViewById(R.id.ll_gift);
-        final RelativeLayout llGiftCode = (RelativeLayout) findViewById(R.id.ll_giftcode);
-        final TextView tvGiftCode = (TextView) findViewById(R.id.tv_giftcode);
-        final ListView giftList = (ListView) findViewById(R.id.listview);
+        final LinearLayout llMoney = findViewById(R.id.ll_money);
+        llGiftCode = (RelativeLayout) findViewById(R.id.ll_giftcode);
+        tvGiftCode = (TextView) findViewById(R.id.tv_giftcode);
+        giftList = (ListView) findViewById(R.id.listview);
         final LinearLayout llUser = (LinearLayout) findViewById(R.id.ll_user);
         tvWelcome.setText("您好：" + Starter.loginBean.getUser().getName());
 
@@ -117,8 +153,11 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_mehign);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gift);
+                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
                     llUser.setVisibility(View.VISIBLE);
                     llGift.setVisibility(View.GONE);
+                    llMoney.setVisibility(View.GONE);
+                    resetTimer();
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
                         WebViewActivity.mActivity = null;
@@ -135,45 +174,17 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_me);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gifthign);
+                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
                     llUser.setVisibility(View.GONE);
                     llGift.setVisibility(View.VISIBLE);
+                    llMoney.setVisibility(View.GONE);
+                    resetTimer();
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
                         WebViewActivity.mActivity = null;
                     }
-                    ThreadPoolManager.getInstance().addTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            final GiftBean userGift = UserAPI.getUserGift(mContext);
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (userGift != null && userGift.getResultCode() == 1 && userGift.getRows() != null) {
-                                        initList(userGift.getRows());
-                                    } else {
-                                        if (userGift != null && !TextUtils.isEmpty(userGift.getMsg())) {
-                                            ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
-                                        } else {
-                                            ESToast.getInstance().ToastShow(mContext, "暂无礼包信息!");
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
+                    initGifts();
                 }
-            }
-
-            private void initList(final List<GiftInfo> rows) {
-                GiftAdapter adapter = new GiftAdapter(mContext, rows);
-                giftList.setAdapter(adapter);
-                adapter.setCodeListener(new GiftAdapter.GetCodeClickListener() {
-                    @Override
-                    public void onClick(int pos) {
-                        llGiftCode.setVisibility(View.VISIBLE);
-                        tvGiftCode.setText(rows.get(pos).getCode());
-                    }
-                });
             }
         });
 
@@ -206,6 +217,33 @@ public class UserCenterDialog extends BaseDialog {
             }
         });
 
+        //红包
+        mMoney.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentType != 3) {
+                    currentType = 3;
+                    String playerId = CommonUtils.getPlayerId(mContext);
+                    String serverId = CommonUtils.getServerId(mContext);
+                    mMoney.setImageResource(R.drawable.ic_moneyselect);
+                    ivMe.setImageResource(R.drawable.icon_main_me);
+                    ivService.setImageResource(R.drawable.icon_main_service);
+                    ivGift.setImageResource(R.drawable.icon_main_gift);
+                    llUser.setVisibility(View.GONE);
+                    llGift.setVisibility(View.GONE);
+                    llMoney.setVisibility(View.VISIBLE);
+                    if (playerId.isEmpty() || serverId.isEmpty()) {
+                        ESToast.getInstance().ToastShow(mContext, "暂无红包活动");
+                        return;
+                    }
+                    initMoneyPage(playerId, serverId);
+                    if (WebViewActivity.mActivity != null) {
+                        WebViewActivity.mActivity.finish();
+                        WebViewActivity.mActivity = null;
+                    }
+                }
+            }
+        });
 
         final View includeChangePw = findViewById(R.id.include_changepassword);
         final View includeBind = findViewById(R.id.include_bind);
@@ -310,6 +348,7 @@ public class UserCenterDialog extends BaseDialog {
                                         result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");
                                         result.put(ESConstant.SDK_USER_BIRTH_DATE, birthdate);
                                         Starter.mCallback.onUserCert(result);
+                                        Starter.loginBean.getUser().setIdentityNum(idNum);
                                         ESToast.getInstance().ToastShow(mContext, "认证成功");
                                         ivAuthenBack.performClick();
                                     }
@@ -401,6 +440,10 @@ public class UserCenterDialog extends BaseDialog {
                                     ((Activity) mContext).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            if (timer != null) {
+                                                timer.cancel();
+                                                timer.onFinish();
+                                            }
                                             ESToast.getInstance().ToastShow(mContext, msg);
                                         }
                                     });
@@ -430,9 +473,6 @@ public class UserCenterDialog extends BaseDialog {
                                     @Override
                                     public void run() {
                                         ESToast.getInstance().ToastShow(mContext, "操作成功");
-                                        if (timer != null) {
-                                            timer.cancel();
-                                        }
                                         if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())) {
                                             mBindPhoneType.setText("绑定手机");
                                         } else {
@@ -519,4 +559,248 @@ public class UserCenterDialog extends BaseDialog {
             }
         });
     }
+
+    private void resetTimer() {
+        if (getTimer != null) {
+            getTimer.cancel();
+            getTimer.onFinish();
+            getTimer = null;
+        }
+        if (cashTimer != null) {
+            cashTimer.cancel();
+            cashTimer.onFinish();
+            cashTimer = null;
+        }
+    }
+
+    //获取红包界面数据
+    private void initMoneyPage(String playerId, String serverId) {
+        StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyBaseInfo>() {
+            @Override
+            public void success(final MoneyBaseInfo moneyBaseInfo) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initMoney(moneyBaseInfo);
+                    }
+                });
+            }
+
+            @Override
+            public void fail(String msg) {
+
+            }
+        }, mContext, playerId, serverId);
+    }
+
+    //初始化红包页面
+    private void initMoney(final MoneyBaseInfo moneyBaseInfo) {
+        TextView mTaskRule = mView.findViewById(R.id.tv_taskrule);
+        final ImageView mRefresh = mView.findViewById(R.id.iv_refresh_info);
+        TextView mName = mView.findViewById(R.id.tv_role_name);
+        mName.setText(moneyBaseInfo.getPlayerName());
+        TextView mRoleInfo = mView.findViewById(R.id.tv_role_zone);
+        mRoleInfo.setText(moneyBaseInfo.getPlayerLevel() + " " + moneyBaseInfo.getServerName());
+        final TextView mGetLeftTimeValue = mView.findViewById(R.id.tv_gettimevalue);
+        final TextView mCashLeftTimeValue = mView.findViewById(R.id.tv_cashtimevalue);
+        mLeftMoneyValue = mView.findViewById(R.id.tv_leftmoneyvalue);
+        mLeftMoneyValue.setText(moneyBaseInfo.getMoneyBalance() + " 元");
+        TextView mHistory = mView.findViewById(R.id.tv_history);
+        mHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StartESAccountCenter.getCashHistory(new MoneyDataCallBack<CashHistoryInfo>() {
+                    @Override
+                    public void success(final CashHistoryInfo info) {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (info.getDrawList() != null && info.getDrawList().size() > 0) {
+                                    //红包提现记录
+                                    CashHistoryDialog dialog = new CashHistoryDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, info);
+                                    dialog.show();
+                                } else {
+                                    ESToast.getInstance().ToastShow(mContext, "暂无记录");
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void fail(String msg) {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ESToast.getInstance().ToastShow(mContext, "暂无记录");
+                            }
+                        });
+                    }
+                }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+
+            }
+        });
+        TextView mGetCash = mView.findViewById(R.id.tv_getcash);
+        mGetCash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //提现
+                StartESAccountCenter.getCashInfo(new MoneyDataCallBack<CashLevelInfo>() {
+                    @Override
+                    public void success(final CashLevelInfo info) {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                GetCashDialog dialog = new GetCashDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, info);
+                                dialog.show();
+                                dialog.setListener(new GetCashDialog.getCashSuccess() {
+                                    @Override
+                                    public void cashSuccess(int money) {
+                                        String[] s = mLeftMoneyValue.getText().toString().split(" ");
+                                        int tempMoney = Integer.valueOf(s[0]);
+                                        mLeftMoneyValue.setText((tempMoney - money) + " 元");
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void fail(String msg) {
+
+                    }
+                }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+            }
+        });
+        //领取剩余时间倒计时
+        resetTimer();
+        getTimer = new CountDownTimer(moneyBaseInfo.getGainTimeRemaining(), 1000) {
+            @Override
+            public void onTick(long l) {
+                mGetLeftTimeValue.setText(CommonUtils.formatTime(l / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                mGetLeftTimeValue.setText("00:00:00");
+            }
+        };
+        getTimer.start();
+
+        //提现剩余时间倒计时
+        cashTimer = new CountDownTimer(moneyBaseInfo.getDrawTimeRemaining(), 1000) {
+            @Override
+            public void onTick(long l) {
+                mCashLeftTimeValue.setText(CommonUtils.formatTime(l / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                mCashLeftTimeValue.setText("00:00:00");
+            }
+        };
+        cashTimer.start();
+
+        mRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //刷新红包信息
+                circle = ObjectAnimator.ofFloat(mRefresh, "rotation", 0f, 360f);
+                circle.setRepeatCount(3);
+                circle.setDuration(400);
+                circle.start();
+                initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+            }
+        });
+        mTaskRule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //红包领取规则
+                MoneyRuleDialog dialog = new MoneyRuleDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, moneyBaseInfo.getActivityRule());
+                dialog.show();
+            }
+        });
+        initMoneyList();
+        if (circle != null) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    circle.cancel();
+                    circle = null;
+                }
+            }, 400);
+        }
+    }
+
+    //初始化红包列表
+    private void initMoneyList() {
+        StartESAccountCenter.moneyListInfo(new MoneyDataCallBack<MoneyListInfo>() {
+            @Override
+            public void success(final MoneyListInfo moneyListInfo) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView mTotalMoneyValue = mView.findViewById(R.id.tv_totalmoneyvalue);
+                        mTotalMoneyValue.setText(moneyListInfo.getLuckyMoneySum() + "元");
+                        if (moneyListInfo.getLuckyMoneyList() != null && moneyListInfo.getLuckyMoneyList().size() > 0) {
+                            MoneyAdapter adapter = new MoneyAdapter(mContext, moneyListInfo.getLuckyMoneyList());
+                            ListView listView = mView.findViewById(R.id.listview_money);
+                            listView.setAdapter(adapter);
+                            adapter.setTaskListener(new MoneyAdapter.TaskClickListener() {
+                                @Override
+                                public void onClick(int pos, int moneyNum) {
+                                    String[] s = mLeftMoneyValue.getText().toString().split(" ");
+                                    int money = Integer.valueOf(s[0]);
+                                    mLeftMoneyValue.setText((money + moneyNum) + " 元");
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void fail(String msg) {
+
+            }
+        }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+    }
+
+    //初始化礼包列表
+    private void initGifts() {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                final GiftBean userGift = UserAPI.getUserGift(mContext);
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (userGift != null && userGift.getResultCode() == 1 && userGift.getRows() != null) {
+                            if (userGift.getRows().size() > 0) {
+                                initList(userGift.getRows());
+                            }
+                        } else {
+                            if (userGift != null && !TextUtils.isEmpty(userGift.getMsg())) {
+                                ESToast.getInstance().ToastShow(mContext, userGift.getMsg());
+                            } else {
+                                ESToast.getInstance().ToastShow(mContext, "暂无礼包信息!");
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void initList(final List<GiftInfo> rows) {
+        GiftAdapter adapter = new GiftAdapter(mContext, rows);
+        giftList.setAdapter(adapter);
+        adapter.setCodeListener(new GiftAdapter.GetCodeClickListener() {
+            @Override
+            public void onClick(int pos) {
+                llGiftCode.setVisibility(View.VISIBLE);
+                tvGiftCode.setText(rows.get(pos).getCode());
+            }
+        });
+    }
+
 }

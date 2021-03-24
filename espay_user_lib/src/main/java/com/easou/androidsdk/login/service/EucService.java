@@ -3,6 +3,7 @@ package com.easou.androidsdk.login.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
@@ -98,14 +99,13 @@ public class EucService {
         head.setPartnerId(partnerId);
         head.setSource(source);
         head.setQn(qn);
+//        head.setFcm(true);
         return head;
     }
 
     /**
-     * @param path      请求路径
-     * @param jHead     请求头部
+     * @param path  请求路径
      * @param jBody
-     * @param eucParser
      * @return
      */
     public JBean getResult(String path, JBody jBody, AuthParametric authPara, RequestInfo info) {
@@ -122,6 +122,13 @@ public class EucService {
 //		System.out.println("请求结果是：" + result);
         if (null == result || "".equals(result)) {
             return null;
+        }
+        if (result.equals("502")) {
+            JBean jBean = new JBean();
+            JHead jHead1 = new JHead();
+            jHead1.setRet("502");
+            jBean.setHead(jHead1);
+            return jBean;
         }
         // 返回结果
         JBean bean = GsonUtil.extraJsonBean(result);
@@ -172,8 +179,163 @@ public class EucService {
         } catch (JSONException e) {
 
         }
-
         return bean;
+    }
+
+    public GiftBean giftsUse(String path, String activityid) {
+        Map map = new HashMap();
+        map.put("activityid", activityid);
+        map.put("userid", Constant.ESDK_USERID);
+        String result = EucHttpClient.httpGet(path, map);
+        if (result == null || "".equals(result)) {
+            return null;
+        }
+        GiftBean bean = new GiftBean();
+        try {
+            JSONObject object = new JSONObject(result);
+            int code = object.optInt("resultCode");
+            String msg = object.optString("msg");
+            bean.setMsg(msg);
+            bean.setResultCode(code);
+        } catch (JSONException e) {
+            return null;
+        }
+        return bean;
+    }
+
+
+    //获取红包界面数据
+    public MoneyBaseInfo getMoneyInfo(String playerId, String serverId) {
+        Map map = getDefaultMap();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/baseInfo", map);
+        if (info == null) {
+            return null;
+        }
+        MoneyBaseInfo moneyBaseInfo = GsonUtil.fromJson(info.getData().toString(), MoneyBaseInfo.class);
+        return moneyBaseInfo;
+    }
+
+    //获取红包列表
+    public MoneyListInfo getMoneyList(String playerId, String serverId) {
+        Map map = getDefaultMap();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/taskList", map);
+        if (info == null) {
+            return null;
+        }
+        MoneyListInfo listInfo = GsonUtil.fromJson(info.getData().toString(), MoneyListInfo.class);
+        return listInfo;
+    }
+
+    //获取提现数据
+    public CashLevelInfo getCashInfo(String playerId, String serverId) {
+        Map map = getDefaultMap();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawInfo", map);
+        if (info == null) {
+            return null;
+        }
+        CashLevelInfo listInfo = GsonUtil.fromJson(info.getData().toString(), CashLevelInfo.class);
+        return listInfo;
+    }
+
+    //提现
+    public DrawResultInfo getCash(String playerId, String money, String serverId) {
+        Map map = getDefaultMap();
+        map.put("playerId", playerId);
+        map.put("drawMoney", money);
+        map.put("serverId", serverId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/draw", map);
+        if (info == null) {
+            return null;
+        }
+        DrawResultInfo resultInfo = GsonUtil.fromJson(info.getData().toString(), DrawResultInfo.class);
+        return resultInfo;
+    }
+
+    //提现记录
+    public CashHistoryInfo getCashHistory(String playerId, String serverId) {
+        Map map = getDefaultMap();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        map.put("page", "1");
+        map.put("size", "10000");
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawLog", map);
+        if (info == null) {
+            return null;
+        }
+        CashHistoryInfo resultInfo = GsonUtil.fromJson(info.getData().toString(), CashHistoryInfo.class);
+        return resultInfo;
+    }
+
+    //完成红包任务
+    public GainMoneyInfo getMoneyTask(String playerId, int moneyId, String serverId) {
+        Map map = getDefaultMap();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        map.put("luckyMoneyId", String.valueOf(moneyId));
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/gain", map);
+        if (info == null) {
+            return null;
+        }
+        GainMoneyInfo gainMoneyInfo = GsonUtil.fromJson(info.getData().toString(), GainMoneyInfo.class);
+        return gainMoneyInfo;
+    }
+
+    /**
+     * 获取相应数据
+     *
+     * @param url 请求url
+     * @param map 请求体
+     * @param <T> 响应数据实体类型
+     * @return
+     */
+    public <T> BaseResponse<T> getNetData(String url, Map map) {
+        BaseResponse info = getBaseResponse(url, map);
+        if (info == null) {
+            return null;
+        }
+        T data = GsonUtil.fromJson(info.getData().toString(), new TypeToken<T>() {
+        }.getType());
+        info.setData(data);
+        return info;
+    }
+
+    //获取通用响应体
+    private BaseResponse getBaseResponse(String url, Map map) {
+        String result = EucHttpClient.httpPost(url, map);
+        if (result == null || "".equals(result)) {
+            return null;
+        }
+        BaseResponse bean = new BaseResponse();
+        try {
+            JSONObject object = new JSONObject(result);
+            int code = object.optInt("resultCode");
+            String info = object.optString("resultInfo");
+            if (object.opt("data") != null) {
+                bean.setData(object.opt("data").toString());
+            }
+            bean.setResultInfo(info);
+            bean.setResultCode(code);
+            if (code != 1) {
+                return null;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return bean;
+    }
+
+    private Map getDefaultMap() {
+        Map map = new HashMap();
+        map.put("os", "Android");
+        map.put("esId", Constant.ESDK_USERID);
+        map.put("appId", appId);
+        return map;
     }
 
     public LimitStatusInfo getLimitSwitch(String path) {
@@ -222,7 +384,6 @@ public class EucService {
     /**
      * 请求参数信息
      *
-     * @param uri  uri信息
      * @param info 请求信息
      * @return
      */

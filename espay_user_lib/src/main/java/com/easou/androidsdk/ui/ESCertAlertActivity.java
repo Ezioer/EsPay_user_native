@@ -88,14 +88,14 @@ public class ESCertAlertActivity extends BaseActivity implements OnClickListener
 			String message = "下单失败，当前订单超过了您账号的充值限制。\n\n根据国家规定，";
 			if (Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_C_PAY).equals("0") &&
 					Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_S_PAY).equals("0")) {
-				message = message + "年龄未满" + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_MAX_AGE)
-						+ "周岁的用户不允许进行游戏充值。";
-			} else {
+                message = message + "年龄未满" + (Integer.valueOf(Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_MAX_AGE)) + 1)
+                        + "周岁的用户不允许进行游戏充值。";
+            } else {
 				message = message + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_MIN_AGE) +
-						"周岁以上未满" + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_MAX_AGE) +
-						"周岁的用户，单次充值金额不得超过" + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_S_PAY) +
-						"元人民币，当月充值金额累计不得超过" + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_C_PAY) +
-						"元。";
+                        "周岁以上未满" + (Integer.valueOf(Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_MAX_AGE)) + 1) +
+                        "周岁的用户，单次充值金额不得超过" + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_S_PAY) +
+                        "元人民币，当月充值金额累计不得超过" + Constant.PAY_LIMIT_INFO_MAP.get(Constant.SDK_C_PAY) +
+                        "元。";
 			}
 			tv_message.setText(message);
 		}

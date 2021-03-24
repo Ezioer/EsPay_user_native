@@ -19,14 +19,16 @@ class BaseDialog extends Dialog {
     private int mHeight;
     private float mWidth;
     private Context mContext;
+    private boolean mIsCanCancel;
 
-    public BaseDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight) {
+    public BaseDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight, boolean isCanCancel) {
         super(context, R.style.CommentStyle);
         this.animation = animation;
         this.gravity = gravity;
         this.mHeight = mHeight;
         this.mWidth = mWidth;
         this.mContext = context;
+        this.mIsCanCancel = isCanCancel;
     }
 
     @Override
@@ -40,7 +42,7 @@ class BaseDialog extends Dialog {
         windowparams.height = mHeight == 1 ? WindowManager.LayoutParams.MATCH_PARENT : WindowManager.LayoutParams.WRAP_CONTENT;
         windowparams.width = (int) (mContext.getResources().getDisplayMetrics().widthPixels * mWidth);
         window.setAttributes(windowparams);
-        setCanceledOnTouchOutside(false);
-        setCancelable(false);
+        setCanceledOnTouchOutside(mIsCanCancel);
+        setCancelable(mIsCanCancel);
     }
 }
