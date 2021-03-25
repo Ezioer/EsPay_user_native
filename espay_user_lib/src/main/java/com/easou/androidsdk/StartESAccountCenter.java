@@ -36,6 +36,7 @@ import com.easou.androidsdk.login.service.JUser;
 import com.easou.androidsdk.login.service.LUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
+import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.plugin.StartLogPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
@@ -47,6 +48,7 @@ import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.GsonUtil;
 import com.easou.androidsdk.util.NetworkUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
+import com.easou.androidsdk.util.Tools;
 import com.easou.espay_user_lib.R;
 import com.taptap.sdk.LoginManager;
 
@@ -673,6 +675,11 @@ public class StartESAccountCenter {
         });
     }
 
+    public static void loginOrOutLog(int bt, Context mContext) {
+        //需要根据接口状态来判断是否需要上传上下线日志
+        UserAPI.loginOrOutLog(mContext, Tools.getOnlyId(), Constant.ESDK_USERID, bt, RegisterAPI.getRequestInfo(mContext));
+    }
+
     /**
      * 注册成功后要判断是否实名认证
      *
@@ -837,7 +844,7 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_TOKEN, token);
         String isAdult = "0";
         int age = 0;
-        final int identityStatus = userInfo.getResult().getIdentityStatus();
+        final int identityStatus = userInfo.getResult().getUser().getIdentityStatus();
         if (identityStatus == 1) {
             //已经实名认证过
             result.put(ESConstant.SDK_USER_BIRTH_DATE,
@@ -876,8 +883,31 @@ public class StartESAccountCenter {
                             popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
                         } else if (identityStatus == 0) {
                             //认证中，查询认证状态,认证过的需要走下面1的流程，认证失败的需要走上面认证流程
+                            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentityStatus(userId, Tools.getOnlyId()
+                                                , RegisterAPI.getRequestInfo(mContext), mContext);
+                                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
+                                                    if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
+                                                        showNotiDialog(mAge);
+                                                    }
+                                                    Starter.mCallback.onLogin(result);
+                                                    popFloatView();
+                                                } else {
+                                                    popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
+                                                }
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            });
                         }
-
                     } else {
                       /*  //未认证过的且不是自动注册的用户的提示
                         if (limitStatue.getNs() == 1) {

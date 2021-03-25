@@ -321,7 +321,6 @@ public class AuthAPI {
             LUser juser = jbean.getBody().getObject("user", LUser.class);
             EucToken token = jbean.getBody().getObject("token", EucToken.class);
             EucUCookie u = jbean.getBody().getObject("U", EucUCookie.class);
-            int identityStatus = jbean.getBody().getObject("identityStatus", Integer.class);
             LoginBean eucAuthResult = new LoginBean(token, juser, u,
                     String.valueOf(juser.getId()), false);
             result.setResult(eucAuthResult);

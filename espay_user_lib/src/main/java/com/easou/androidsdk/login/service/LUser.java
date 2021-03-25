@@ -19,7 +19,15 @@ public class LUser implements java.io.Serializable {
 	private String passwd;    // 用户密码
 	private String identityName;
 	private String identityNum;
+	private int identityStatus;//0认证中，1成功，2失败
 
+	public int getIdentityStatus() {
+		return identityStatus;
+	}
+
+	public void setIdentityStatus(int identityStatus) {
+		this.identityStatus = identityStatus;
+	}
 
 	public String getIdentityName() {
 		return identityName;

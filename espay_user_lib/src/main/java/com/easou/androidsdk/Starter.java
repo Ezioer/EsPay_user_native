@@ -142,6 +142,16 @@ public class Starter {
      */
     public void startGameLoginLog(Map<String, String> playerInfo) {
         StartESUserPlugin.startGameLoginLog(playerInfo);
+        StartESAccountCenter.loginOrOutLog(1, mActivity);
+    }
+
+    /**
+     * 上传游戏下线日志
+     *
+     * @param playerInfo 游戏角色信息
+     */
+    public void startGameLogoutLog(Map<String, String> playerInfo) {
+        StartESAccountCenter.loginOrOutLog(0, mActivity);
     }
 
 
