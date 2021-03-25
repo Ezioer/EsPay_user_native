@@ -147,10 +147,8 @@ public class Starter {
 
     /**
      * 上传游戏下线日志
-     *
-     * @param playerInfo 游戏角色信息
      */
-    public void startGameLogoutLog(Map<String, String> playerInfo) {
+    public void startGameLogoutLog() {
         StartESAccountCenter.loginOrOutLog(0, mActivity);
     }
 
