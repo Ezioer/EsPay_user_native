@@ -41,7 +41,6 @@ public class StartLogPlugin {
             System.out.println("上传游戏登陆日志参数有误，请检查！");
             return;
         }
-
         HttpLogHelper.sendHttpRequest(Constant.MAIN_URL + Tools.getHostName() + Constant.GAME_LOGIN_URL,
                 getSendParam(2, playerInfo, null));
     }

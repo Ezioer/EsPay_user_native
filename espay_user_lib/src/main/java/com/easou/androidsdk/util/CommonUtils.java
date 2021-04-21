@@ -190,6 +190,32 @@ public class CommonUtils {
         editor.commit();
     }
 
+    public static int getNationIdentity(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        int state = settings.getInt("nationidentity", 0);
+        return state;
+    }
+
+    public static void saveNationIdentity(Context mContext, int state) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("nationidentity", state);
+        editor.commit();
+    }
+
+    public static int getLogState(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        int state = settings.getInt("logstate", 0);
+        return state;
+    }
+
+    public static void saveLogState(Context mContext, int state) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("logstate", state);
+        editor.commit();
+    }
+
     public static int isShowMoney(Context mContext) {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
         int info = settings.getInt("showmoney", 0);

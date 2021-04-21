@@ -40,7 +40,7 @@ public class RegisterAPI {
         if (remember) { // 为真传remember参数
             jbody.putContent("remember", remember);
         }
-        jbody.putContent("deviceId", Tools.getOnlyId());
+        jbody.putContent("deviceId", Tools.getDeviceImei(_context));
         JBean jbean = eucService.getResult("/api2/autoRegist.json", jbody, oAuthPara,
                 info);
         if (jbean == null) {
@@ -72,8 +72,8 @@ public class RegisterAPI {
         if (remember) { // 为真传remember参数
             jbody.putContent("remember", remember);
         }
-        jbody.putContent("deviceId", Tools.getOnlyId());
-        jbody.putContent("bookNum", bookNum);
+		jbody.putContent("deviceId", Tools.getDeviceImei(_activity));
+		jbody.putContent("bookNum", bookNum);
         JBean jbean = eucService.getResult("/api2/registByName.json", jbody, oAuthPara,
                 info);
         return buildAuthResult(jbean);
@@ -187,12 +187,17 @@ public class RegisterAPI {
 	public static RequestInfo getRequestInfo(Context context) {
         RequestInfo requestInfo = null;
         if (null == requestInfo) {
-            requestInfo = new RequestInfo();
-            requestInfo.setAgent("SDK_Android_Client");
-            requestInfo.setQn(CommonUtils.readPropertiesValue(context, "qn"));
-            requestInfo.setAppId(CommonUtils.readPropertiesValue(context, "appId"));
-            requestInfo.setSource(CommonUtils.readPropertiesValue(context, "source"));
-        }
+			requestInfo = new RequestInfo();
+			requestInfo.setAgent("SDK_Android_Client");
+			if (CommonUtils.getNationIdentity(context) == 0) {
+				requestInfo.setFcm(false);
+			} else {
+				requestInfo.setFcm(true);
+			}
+			requestInfo.setQn(CommonUtils.readPropertiesValue(context, "qn"));
+			requestInfo.setAppId(CommonUtils.readPropertiesValue(context, "appId"));
+			requestInfo.setSource(CommonUtils.readPropertiesValue(context, "source"));
+		}
         return requestInfo;
     }
 

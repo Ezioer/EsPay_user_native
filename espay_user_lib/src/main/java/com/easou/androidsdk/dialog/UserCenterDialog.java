@@ -68,7 +68,7 @@ public class UserCenterDialog extends BaseDialog {
     private TextView tvGiftCode;
     private RelativeLayout llGiftCode;
     private CountDownTimer getTimer, cashTimer;
-    private ImageView mMoney;
+//    private ImageView mMoney;
     private TextView mLeftMoneyValue;
     private ObjectAnimator circle;
 
@@ -112,7 +112,7 @@ public class UserCenterDialog extends BaseDialog {
             initGifts();
         }
 
-        if (CommonUtils.isShowMoney(mContext) == 1) {
+       /* if (CommonUtils.isShowMoney(mContext) == 1) {
             mMoney.setVisibility(View.VISIBLE);
         } else {
             mMoney.setVisibility(View.GONE);
@@ -120,19 +120,19 @@ public class UserCenterDialog extends BaseDialog {
 
         if (currentType == 3) {
             initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
-        }
+        }*/
     }
 
     private void initView() {
         final View includeMenu = findViewById(R.id.include_usermenu);
         final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
         final ImageView ivGift = (ImageView) findViewById(R.id.iv_gift);
-        mMoney = findViewById(R.id.iv_money);
-        if (CommonUtils.isShowMoney(mContext) == 1) {
+//        mMoney = findViewById(R.id.iv_money);
+       /* if (CommonUtils.isShowMoney(mContext) == 1) {
             mMoney.setVisibility(View.VISIBLE);
         } else {
             mMoney.setVisibility(View.GONE);
-        }
+        }*/
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
         final RelativeLayout llGift = (RelativeLayout) findViewById(R.id.ll_gift);
@@ -153,7 +153,7 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_mehign);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gift);
-                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
+//                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
                     llUser.setVisibility(View.VISIBLE);
                     llGift.setVisibility(View.GONE);
                     llMoney.setVisibility(View.GONE);
@@ -174,7 +174,7 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_me);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gifthign);
-                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
+//                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
                     llUser.setVisibility(View.GONE);
                     llGift.setVisibility(View.VISIBLE);
                     llMoney.setVisibility(View.GONE);
@@ -218,7 +218,7 @@ public class UserCenterDialog extends BaseDialog {
         });
 
         //红包
-        mMoney.setOnClickListener(new View.OnClickListener() {
+        /*mMoney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (currentType != 3) {
@@ -243,7 +243,7 @@ public class UserCenterDialog extends BaseDialog {
                     }
                 }
             }
-        });
+        });*/
 
         final View includeChangePw = findViewById(R.id.include_changepassword);
         final View includeBind = findViewById(R.id.include_bind);
@@ -561,7 +561,7 @@ public class UserCenterDialog extends BaseDialog {
     }
 
     private void resetTimer() {
-        if (getTimer != null) {
+       /* if (getTimer != null) {
             getTimer.cancel();
             getTimer.onFinish();
             getTimer = null;
@@ -570,7 +570,7 @@ public class UserCenterDialog extends BaseDialog {
             cashTimer.cancel();
             cashTimer.onFinish();
             cashTimer = null;
-        }
+        }*/
     }
 
     //获取红包界面数据

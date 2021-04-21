@@ -28,6 +28,16 @@ public class JHead implements Serializable {
     /* 扩展字符串 */
     private String ex;
 
+    private boolean isFcm;
+
+    public boolean isFcm() {
+        return isFcm;
+    }
+
+    public void setFcm(boolean fcm) {
+        isFcm = fcm;
+    }
+
     public String getAppId() {
         return appId;
     }

@@ -13,10 +13,10 @@ public class Constant {
 	public static Context context;
 
 	/**
-     * SDK版本号
-     */
-    public static final String SDK_VERSION = "2.4.9";
-    public static final String SDK_PHONEOS = "Android";
+	 * SDK版本号
+	 */
+	public static final String SDK_VERSION = "2.5.0";
+	public static final String SDK_PHONEOS = "Android";
 	
 	public static final String API_SOURCE = "30";
 	public static final String API_VERSION = "5";
@@ -178,24 +178,24 @@ public class Constant {
 
     public static final String WECHAT = "WECHAT";
     public static final String WECHAT_DHT = "WECHAT_DHT";
-    public static final String WECHAT_YY = "WECHAT_YY";
-    //正式展科新
-//	public static final String WECHAT_ZKX = "WECHAT_ZKX";
-    //正式赛恒达通
-    public static final String WECHAT_ZKX = "WECHAT_SHDT";
-    //正式中智时代
+	public static final String WECHAT_YY = "WECHAT_YY";
+	//正式展科新
+	public static final String WECHAT_ZKX = "WECHAT_ZKX";
+	//正式赛恒达通
+//    public static final String WECHAT_ZKX = "WECHAT_SHDT";
+	//正式中智时代
 //	public static final String WECHAT_ZKX = "WECHAT_ZZSD";
     //正式聚合互娱
 //	public static final String WECHAT_ZKX = "WECHAT_JHHY";
 //正式北京海默
 //	public static final String WECHAT_ZKX = "WECHAT_BJHM";
 
-    public static final String WECHAT_ZKX_GZH = "WECHAT_ZKX_GZH";
-    //正式展科新
-//	public static final String ZKXHGALIPAY="ZKXHGALIPAY";
-    //正式赛恒达通
-    public static final String ZKXHGALIPAY = "SHDTALIPAY";
-    //正式中智时代
+	public static final String WECHAT_ZKX_GZH = "WECHAT_ZKX_GZH";
+	//正式展科新
+	public static final String ZKXHGALIPAY = "ZKXHGALIPAY";
+	//正式赛恒达通
+//    public static final String ZKXHGALIPAY = "SHDTALIPAY";
+	//正式中智时代
 //	public static final String ZKXHGALIPAY="ZZSDALIPAY";
     //正式聚合互娱
 //	public static final String ZKXHGALIPAY="JHHYALIPAY";
@@ -252,14 +252,14 @@ public class Constant {
 	public static final String CHANNEL_MARK = "channelMark";
 	public static final String CHANNEL_MARK_DHT = "DHT";
     public static final String CHANNEL_MARK_YY = "YY";
-    public static final String CHANNEL_MARK_WZYY = "WZYY";
-    //正式展科新
-//    public static final String CHANNEL_MARK_ZKX= "HYWZKX";
-    //正式赛恒达通
-    public static final String CHANNEL_MARK_ZKX = "HYWSHDT";
-    //正式中智时代
+	public static final String CHANNEL_MARK_WZYY = "WZYY";
+	//正式展科新
+	public static final String CHANNEL_MARK_ZKX = "HYWZKX";
+	//正式赛恒达通
+//    public static final String CHANNEL_MARK_ZKX = "HYWSHDT";
+	//正式中智时代
 //    public static final String CHANNEL_MARK_ZKX= "HYWZZSD";
-    //正式聚合互娱
+	//正式聚合互娱
 //    public static final String CHANNEL_MARK_ZKX= "HYWJHHY";
 //正式北京海默
 //    public static final String CHANNEL_MARK_ZKX= "HYWBJHM";

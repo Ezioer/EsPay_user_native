@@ -44,7 +44,7 @@ public class AuthAPI {
             throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
-        jbody.putContent("deviceId", Tools.getOnlyId());
+        jbody.putContent("deviceId", Tools.getDeviceImei(_activity));
         jbody.putContent("username", username);
         jbody.putContent("password", password);
         jbody.putContent("remember", remember);
@@ -191,6 +191,32 @@ public class AuthAPI {
         return result;
     }
 
+    //国家实名认证
+    public static EucApiResult<String> userIdentifyNation(String name, String idNum, String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userId);
+        jbody.put("identityNum", idNum);
+        jbody.put("identityName", name);
+        jbody.put("deviceId", deviceId);
+        JBean jbean = eucService.getResult("/api2/saveUserIdentity2.json",
+                jbody, oAuthPara, info);
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        return result;
+    }
+
+    //查询国家实名认证状态
+    public static EucApiResult<String> queryNationIdentify(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userId);
+        jbody.put("deviceId", deviceId);
+        JBean jbean = eucService.getResult("/api2/queryUserIdentity2.json",
+                jbody, oAuthPara, info);
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        return result;
+    }
+
     /**
      * 检查是否绑定第三方账号
      *
@@ -297,7 +323,6 @@ public class AuthAPI {
             LUser juser = jbean.getBody().getObject("user", LUser.class);
             EucToken token = jbean.getBody().getObject("token", EucToken.class);
             EucUCookie u = jbean.getBody().getObject("U", EucUCookie.class);
-//            int identityStatus = jbean.getBody().getObject("identityStatus",Integer.class);
             LoginBean eucAuthResult = new LoginBean(token, juser, u,
                     String.valueOf(juser.getId()), false);
             result.setResult(eucAuthResult);

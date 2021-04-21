@@ -26,16 +26,6 @@ public class LoginBean implements java.io.Serializable{
     /*返回的用户实体*/
     private LUser user;
 
-	/*private int identityStatus;
-
-	public int getIdentityStatus() {
-		return identityStatus;
-	}
-
-	public void setIdentityStatus(int identityStatus) {
-		this.identityStatus = identityStatus;
-	}*/
-
     public EucUCookie getU() {
         return u;
     }
