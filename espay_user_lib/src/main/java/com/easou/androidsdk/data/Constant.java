@@ -266,9 +266,11 @@ public class Constant {
 	public static final String CHANNEL_MARK_ZFBZKX = "ZFBZKX";
 
 
-
 	//正式
 	public static final String user_service = "https://h5.pay.mtianshitong.com/static/sdk/common/protocol.html";
+
+	public static final String WXAPPID = "wx5303fe302200dc98";
+	public static final String WXAPPKEY = "6c3a59ea1e2c8582c9968a9bb992fd42";
 
 	public static class SdcardPath {
 		/**
@@ -288,7 +290,9 @@ public class Constant {
 		 * 应用更新目录
 		 */
 		public static final String UPDATE_APK_SAVEPATH = SAVE_ROOTPATH + "/update";
-		/** 文件缓存目录 */
+		/**
+		 * 文件缓存目录
+		 */
 		public static final String DOWNLOAD_TMP_SAVEPATH = SAVE_ROOTPATH + "/tmp";
 		/** 日志 */
 		public static final String LOG_SAVEPATH = SAVE_ROOTPATH + "/log";
