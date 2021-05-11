@@ -2,8 +2,7 @@ package com.easou.androidsdk.login.service;
 
 public class DrawResultInfo {
     private int status;
-    private String desc;
-    private String drawCode;
+    private String msg;
 
     public int getStatus() {
         return status;
@@ -13,19 +12,11 @@ public class DrawResultInfo {
         this.status = status;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getDrawCode() {
-        return drawCode;
-    }
-
-    public void setDrawCode(String drawCode) {
-        this.drawCode = drawCode;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }

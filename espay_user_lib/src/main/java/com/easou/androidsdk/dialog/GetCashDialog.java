@@ -98,16 +98,11 @@ public class GetCashDialog extends BaseDialog {
                             public void run() {
                                 if (drawResultInfo.getStatus() == 1) {
                                     //提现成功
-                                    GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                            drawResultInfo.getDesc(), drawResultInfo.getDrawCode(), "提现");
-                                    dialog.show();
                                     if (listener != null) {
                                         listener.cashSuccess(Integer.valueOf(mSelectMoney));
                                     }
-                                } else {
-                                    ESToast.getInstance().ToastShow(mContext, CommonUtils.isNotNullOrEmpty(drawResultInfo.getDesc())
-                                            ? drawResultInfo.getDesc() : "抱歉，您的余额不足以提现！");
                                 }
+                                ESToast.getInstance().ToastShow(mContext, drawResultInfo.getMsg());
                                 dismiss();
                             }
                         });

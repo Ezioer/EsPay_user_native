@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_history_one"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_moneycontent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:text="红包领取"
+        android:textColor="@color/easou_em6_color"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_timevalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_moneycontent"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:text="2020-02-02 18:01"
+        android:textColor="@color/easou_em6_color"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_moneyvalue"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:maxLines="1"
+        android:text="+100元"
+        android:textColor="@color/c_red"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_moneystate"
+        android:layout_width="55dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_moneyvalue"
+        android:layout_alignParentRight="true"
+        android:maxLines="1"
+        android:text="处理中"
+        android:textColor="@color/easou_em6_color"
+        android:textSize="14sp" />
+</RelativeLayout>
+

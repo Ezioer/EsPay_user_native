@@ -45,8 +45,8 @@ public class CashHistoryDialog extends BaseDialog {
     private void initView() {
         final ViewPager viewPager = mView.findViewById(R.id.vp_history);
         final TextView mCurrentPage = mView.findViewById(R.id.tv_currentpage);
-        final HistoryAdapter adapter = new HistoryAdapter(mContext, mInfo.getDrawList());
-        viewPager.setAdapter(adapter);
+//        final HistoryAdapter adapter = new HistoryAdapter(mContext, mInfo.getDrawList());
+//        viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
@@ -77,10 +77,10 @@ public class CashHistoryDialog extends BaseDialog {
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (viewPager.getCurrentItem() < adapter.getCount() - 1) {
+               /* if (viewPager.getCurrentItem() < adapter.getCount() - 1) {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
                     mCurrentPage.setText(viewPager.getCurrentItem() + 1 + "");
-                }
+                }*/
             }
         });
         ImageView mClose = mView.findViewById(R.id.iv_history_close);

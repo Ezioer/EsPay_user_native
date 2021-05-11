@@ -203,6 +203,19 @@ public class EucService {
     }
 
 
+    //获取用户余额 v2.0
+    public MoneyBalance getMoneyBalance() {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", 1);
+        map.put("serverId", 1);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/accBalance", map);
+        if (info == null) {
+            return null;
+        }
+        MoneyBalance money = GsonUtil.fromJson(info.getData().toString(), MoneyBalance.class);
+        return money;
+    }
+
     //获取红包界面数据
     public MoneyBaseInfo getMoneyInfo(String playerId, String serverId) {
         Map map = getDefaultMap();
@@ -242,13 +255,40 @@ public class EucService {
         return listInfo;
     }
 
-    //提现
-    public DrawResultInfo getCash(String playerId, String money, String serverId) {
-        Map map = getDefaultMap();
+    //获取提现金额 v2.0
+    public DrawMoney getCashValue() {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", 1);
+        map.put("serverId", 1);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawalLvs", map);
+        if (info == null) {
+            return null;
+        }
+        DrawMoney listInfo = GsonUtil.fromJson(info.getData().toString(), DrawMoney.class);
+        return listInfo;
+    }
+
+    //获取提现规则 v2.0
+    public DrawRule getCashRule() {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", 1);
+        map.put("serverId", 1);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawalRule", map);
+        if (info == null) {
+            return null;
+        }
+        DrawRule listInfo = GsonUtil.fromJson(info.getData().toString(), DrawRule.class);
+        return listInfo;
+    }
+
+    //提现 v2.0
+    public DrawResultInfo getCash(String playerId, String money, String serverId, String openId) {
+        Map map = getDefaultMapWithoutOS();
         map.put("playerId", playerId);
-        map.put("drawMoney", money);
+        map.put("money", money);
         map.put("serverId", serverId);
-        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/draw", map);
+        map.put("openId", openId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawal", map);
         if (info == null) {
             return null;
         }
@@ -256,14 +296,14 @@ public class EucService {
         return resultInfo;
     }
 
-    //提现记录
+    //提现记录 v2.0
     public CashHistoryInfo getCashHistory(String playerId, String serverId) {
-        Map map = getDefaultMap();
+        Map map = getDefaultMapWithoutOS();
         map.put("playerId", playerId);
         map.put("serverId", serverId);
         map.put("page", "1");
         map.put("size", "10000");
-        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawLog", map);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/moneyLogs", map);
         if (info == null) {
             return null;
         }
@@ -336,6 +376,14 @@ public class EucService {
         map.put("appId", appId);
         return map;
     }
+
+    private Map getDefaultMapWithoutOS() {
+        Map map = new HashMap();
+        map.put("esId", Constant.ESDK_USERID);
+        map.put("appId", appId);
+        return map;
+    }
+
 
     public LimitStatusInfo getLimitSwitch(String path) {
         Map map = new HashMap();

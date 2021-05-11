@@ -42,6 +42,10 @@
     <string name="gift">礼包</string>
     <string name="changepassword">修改密码</string>
     <string name="bindphone">绑定手机</string>
+    <string name="bindwx">绑定微信</string>
+    <string name="bindwxstep">绑定微信步骤</string>
+    <string name="bindcode">绑定码:</string>
+    <string name="copyandbind">复制并前往绑定</string>
     <string name="logout">退出登录</string>
     <color name="primary_color">#FF14B9C8</color>
 </resources>

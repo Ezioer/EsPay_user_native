@@ -1,19 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:background="@color/c_gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:layout_marginTop="30dp"
-        android:id="@+id/tv_username"
-        android:text="您好，xxx"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:textColor="@color/payeco_textColorWhite"
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
+
     <RelativeLayout
-        android:layout_marginTop="30dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:id="@+id/rl_userinfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@drawable/ic_role"
+            android:id="@+id/iv_useravatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_toRightOf="@id/iv_useravatar"
+            android:id="@+id/tv_username"
+            android:layout_marginLeft="10dp"
+            tools:text="账号1234567"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/payeco_textColorWhite"
+            android:layout_marginBottom="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/icon_user_bind"
+            android:id="@+id/iv_isbindphone"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/iv_useravatar"
+            android:layout_below="@id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/icon_user_bind"
+            android:id="@+id/iv_isauthen"
+            android:layout_toRightOf="@id/iv_isbindphone"
+            android:layout_below="@id/tv_username"
+            android:layout_marginLeft="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/icon_user_bind"
+            android:layout_marginLeft="4dp"
+            android:id="@+id/iv_isbindwx"
+            android:layout_toRightOf="@id/iv_isauthen"
+            android:layout_below="@id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/rl_money"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:id="@+id/rl_bindwxnoti"
+            android:background="@color/c_green"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:drawablePadding="4dp"
+                android:text="需绑定微信才能提现"
+                android:textColor="@color/c_white"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:drawableLeft="@drawable/ic_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_alignParentRight="true"
+                android:text="立即绑定"
+                android:padding="4dp"
+                android:background="@drawable/bg_wxnoti"
+                android:textColor="@color/c_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:id="@+id/rl_moneyinfo"
+            android:background="@color/c_red"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_mymoney"
+                android:text="我的红包"
+                android:textSize="16sp"
+                android:textColor="@color/c_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_moneyvalue"
+                android:text="0.00"
+                android:textStyle="bold"
+                android:textSize="26sp"
+                android:layout_marginTop="8dp"
+                android:layout_below="@id/tv_mymoney"
+                android:textColor="@color/c_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_moneyunit"
+                android:text="元"
+                android:textSize="16sp"
+                android:layout_marginLeft="4dp"
+                android:layout_toRightOf="@id/tv_moneyvalue"
+                android:layout_alignBaseline="@id/tv_moneyvalue"
+                android:textColor="@color/c_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_moneydetail"
+                android:text="红包明细"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="16sp"
+                android:drawableRight="@drawable/icon_more"
+                android:textColor="@color/c_white"
+                android:layout_below="@id/tv_moneyvalue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_alignParentRight="true"
+                android:text="提现"
+                android:padding="4dp"
+                android:id="@+id/tv_getmoney"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_wxnoti"
+                android:textColor="@color/c_white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
         android:id="@+id/rl_changepassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -21,6 +166,7 @@
         android:background="@drawable/bg_edittext"
         android:layout_width="match_parent"
         android:layout_height="46dp">
+
         <TextView
             android:id="@+id/tv_changepassword"
             android:text="@string/changepassword"
@@ -58,13 +204,44 @@
             android:layout_centerVertical="true"
             android:drawableLeft="@drawable/icon_user_bind"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
+
         <ImageView
             android:layout_centerVertical="true"
             android:src="@drawable/icon_more"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:id="@+id/rl_bindwx"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="46dp">
+
+        <TextView
+            android:textSize="18sp"
+            android:drawablePadding="5dp"
+            android:id="@+id/tv_bindwx"
+            android:text="@string/bindwx"
+            android:textColor="@color/payeco_textColorWhite"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:drawableLeft="@drawable/icon_user_bind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_more"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -76,6 +253,7 @@
         android:background="@drawable/bg_edittext"
         android:layout_width="match_parent"
         android:layout_height="46dp">
+
         <TextView
             android:drawablePadding="5dp"
             android:textSize="18sp"

@@ -14,7 +14,9 @@ import com.easou.androidsdk.login.MoneyDataCallBack;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.CheckBindInfo;
+import com.easou.androidsdk.login.service.DrawMoney;
 import com.easou.androidsdk.login.service.DrawResultInfo;
+import com.easou.androidsdk.login.service.DrawRule;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
@@ -629,12 +631,16 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    CashLevelInfo listInfo = EucService.getInstance(mContext).getCashInfo(playerId, serverId);
-                    if (listInfo == null) {
+                    DrawMoney money = EucService.getInstance(mContext).getCashValue();
+                    DrawRule rule = EucService.getInstance(mContext).getCashRule();
+                    if (money == null || rule == null) {
                         callBack.fail("网络出错，请重试");
                         return;
                     }
-                    callBack.success(listInfo);
+                    CashLevelInfo levelInfo = new CashLevelInfo();
+                    levelInfo.setDrawRule(rule.getDrawalRule());
+                    levelInfo.setPriceLevels(money.getDrawalLvs());
+                    callBack.success(levelInfo);
                 } catch (Exception e) {
                     callBack.fail("网络出错，请重试");
                 }
@@ -649,7 +655,7 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    DrawResultInfo listInfo = EucService.getInstance(mContext).getCash(playerId, money, serverId);
+                    DrawResultInfo listInfo = EucService.getInstance(mContext).getCash(playerId, money, serverId, "");
                     if (listInfo == null) {
                         callBack.fail("提现失败");
                         return;

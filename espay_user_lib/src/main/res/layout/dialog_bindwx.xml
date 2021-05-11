@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/icon_loginbg"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_title_bindwxstep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/bindwxstep"
+        android:textStyle="bold"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textSize="22sp" />
+
+    <ImageView
+        android:id="@+id/iv_close_bindwx"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:padding="10dp"
+        android:src="@drawable/icon_close" />
+
+    <ScrollView
+        android:layout_below="@id/tv_title_bindwxstep"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/ll_bindstep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_step_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:lineSpacingExtra="6dp"
+                android:text="您当前登录的账号是游客账号，游戏体验时长累计不能超过一小时，并且无法进行充值，建议您尽快完善实名信息。"
+                android:textColor="@color/easou_thin1_color" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_bindcode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingLeft="20dp"
+                    android:text="@string/bindcode"
+                    android:textColor="@color/c_white"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_bindcode_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:textStyle="bold"
+                    tools:text="ABCDE"
+                    android:textColor="@color/c_red"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/tv_copyandbind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:gravity="center"
+                android:background="@drawable/bg_bind"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                tools:text="@string/copyandbind"
+                android:textColor="@color/c_white"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

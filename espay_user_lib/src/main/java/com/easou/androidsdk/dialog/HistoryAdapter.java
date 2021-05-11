@@ -62,49 +62,28 @@ class HistoryAdapter extends PagerAdapter {
                 for (int i = position * 3; i < 3 * (position + 1); i++) {
                     if (k == 0) {
                         final CashHistoryBean bean = mList.get(i);
-                        TextView valueOne = view.findViewById(R.id.tv_cashvalue_one);
-                        TextView timeOne = view.findViewById(R.id.tv_cashtimevalue_one);
-                        TextView lookOne = view.findViewById(R.id.tv_cashcodevalue_one);
+                        TextView contentOne = view.findViewById(R.id.tv_moneycontent_one);
+                        TextView timeOne = view.findViewById(R.id.tv_timevalue_one);
+                        TextView valueOne = view.findViewById(R.id.tv_moneyvalue_one);
+                        TextView stateOne = view.findViewById(R.id.tv_moneystate_one);
                         valueOne.setText(bean.getMoney() + "元");
-                        timeOne.setText(CommonUtils.formatDate(bean.getDrawTime()));
-                        lookOne.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                        "提现成功！您的红包提现码：", bean.getDrawCode(), "提现");
-                                dialog.show();
-                            }
-                        });
+//                        timeOne.setText(CommonUtils.formatDate(bean.getDrawTime()));
                     } else if (k == 1) {
                         final CashHistoryBean bean = mList.get(i);
-                        TextView valueTwo = view.findViewById(R.id.tv_cashvalue_two);
-                        TextView timeTwo = view.findViewById(R.id.tv_cashtimevalue_two);
-                        TextView lookTwo = view.findViewById(R.id.tv_cashcodevalue_two);
+                        TextView contentTwo = view.findViewById(R.id.tv_moneycontent_two);
+                        TextView timeTwo = view.findViewById(R.id.tv_timevalue_two);
+                        TextView valueTwo = view.findViewById(R.id.tv_moneyvalue_two);
+                        TextView statetwo = view.findViewById(R.id.tv_moneystate_two);
                         valueTwo.setText(bean.getMoney() + "元");
-                        timeTwo.setText(CommonUtils.formatDate(bean.getDrawTime()));
-                        lookTwo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                        "提现成功！您的红包提现码：", bean.getDrawCode(), "提现");
-                                dialog.show();
-                            }
-                        });
+//                        timeTwo.setText(CommonUtils.formatDate(bean.getDrawTime()));
                     } else {
                         final CashHistoryBean bean = mList.get(i);
-                        TextView valueThree = view.findViewById(R.id.tv_cashvalue_three);
-                        TextView timeThree = view.findViewById(R.id.tv_cashtimevalue_three);
-                        TextView lookThree = view.findViewById(R.id.tv_cashcodevalue_three);
+                        TextView contentThree = view.findViewById(R.id.tv_moneycontent_three);
+                        TextView timeThree = view.findViewById(R.id.tv_timevalue_three);
+                        TextView valueThree = view.findViewById(R.id.tv_moneyvalue_three);
+                        TextView stateThree = view.findViewById(R.id.tv_moneystate_three);
                         valueThree.setText(bean.getMoney() + "元");
-                        timeThree.setText(CommonUtils.formatDate(bean.getDrawTime()));
-                        lookThree.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                        "提现成功！您的红包提现码：", bean.getDrawCode(), "提现");
-                                dialog.show();
-                            }
-                        });
+//                        timeThree.setText(CommonUtils.formatDate(bean.getDrawTime()));
                     }
                     k++;
                 }
@@ -114,52 +93,31 @@ class HistoryAdapter extends PagerAdapter {
                     if (k == 0) {
                         mOne.setVisibility(View.VISIBLE);
                         final CashHistoryBean bean = mList.get(i);
-                        TextView valueOne = view.findViewById(R.id.tv_cashvalue_one);
-                        TextView timeOne = view.findViewById(R.id.tv_cashtimevalue_one);
-                        TextView lookOne = view.findViewById(R.id.tv_cashcodevalue_one);
+                        TextView contentOne = view.findViewById(R.id.tv_moneycontent_one);
+                        TextView timeOne = view.findViewById(R.id.tv_timevalue_one);
+                        TextView valueOne = view.findViewById(R.id.tv_moneyvalue_one);
+                        TextView stateOne = view.findViewById(R.id.tv_moneystate_one);
                         valueOne.setText(bean.getMoney() + "元");
-                        timeOne.setText(CommonUtils.formatDate(bean.getDrawTime()));
-                        lookOne.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                        "提现成功！您的红包提现码：", bean.getDrawCode(), "提现");
-                                dialog.show();
-                            }
-                        });
+//                        timeOne.setText(CommonUtils.formatDate(bean.getDrawTime()));
 
                     } else if (k == 1) {
                         mTwo.setVisibility(View.VISIBLE);
                         final CashHistoryBean bean = mList.get(i);
-                        TextView valueTwo = view.findViewById(R.id.tv_cashvalue_two);
-                        TextView timeTwo = view.findViewById(R.id.tv_cashtimevalue_two);
-                        TextView lookTwo = view.findViewById(R.id.tv_cashcodevalue_two);
+                        TextView contentTwo = view.findViewById(R.id.tv_moneycontent_two);
+                        TextView timeTwo = view.findViewById(R.id.tv_timevalue_two);
+                        TextView valueTwo = view.findViewById(R.id.tv_moneyvalue_two);
+                        TextView statetwo = view.findViewById(R.id.tv_moneystate_two);
                         valueTwo.setText(bean.getMoney() + "元");
-                        timeTwo.setText(CommonUtils.formatDate(bean.getDrawTime()));
-                        lookTwo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                        "提现成功！您的红包提现码：", bean.getDrawCode(), "提现");
-                                dialog.show();
-                            }
-                        });
+//                        timeTwo.setText(CommonUtils.formatDate(bean.getDrawTime()));
                     } else {
                         mThree.setVisibility(View.VISIBLE);
                         final CashHistoryBean bean = mList.get(i);
-                        TextView valueThree = view.findViewById(R.id.tv_cashvalue_three);
-                        TextView timeThree = view.findViewById(R.id.tv_cashtimevalue_three);
-                        TextView lookThree = view.findViewById(R.id.tv_cashcodevalue_three);
+                        TextView contentThree = view.findViewById(R.id.tv_moneycontent_three);
+                        TextView timeThree = view.findViewById(R.id.tv_timevalue_three);
+                        TextView valueThree = view.findViewById(R.id.tv_moneyvalue_three);
+                        TextView stateThree = view.findViewById(R.id.tv_moneystate_three);
                         valueThree.setText(bean.getMoney() + "元");
-                        timeThree.setText(CommonUtils.formatDate(bean.getDrawTime()));
-                        lookThree.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GetCashNotiDialog dialog = new GetCashNotiDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
-                                        "提现成功！您的红包提现码：", bean.getDrawCode(), "提现");
-                                dialog.show();
-                            }
-                        });
+//                        timeThree.setText(CommonUtils.formatDate(bean.getDrawTime()));
                     }
                     k++;
                 }

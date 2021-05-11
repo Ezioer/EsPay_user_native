@@ -5,9 +5,8 @@ import java.util.List;
 public class CashHistoryInfo {
     private int page;
     private int size;
-    private int drawSum;
-    private int drawSize;
-    private List<CashHistoryBean> drawList;
+    private int count;
+    private List<CashHistoryBean> logList;
 
     public int getPage() {
         return page;
@@ -25,27 +24,19 @@ public class CashHistoryInfo {
         this.size = size;
     }
 
-    public int getDrawSum() {
-        return drawSum;
+    public int getCount() {
+        return count;
     }
 
-    public void setDrawSum(int drawSum) {
-        this.drawSum = drawSum;
+    public void setCount(int count) {
+        this.count = count;
     }
 
-    public int getDrawSize() {
-        return drawSize;
+    public List<CashHistoryBean> getLogList() {
+        return logList;
     }
 
-    public void setDrawSize(int drawSize) {
-        this.drawSize = drawSize;
-    }
-
-    public List<CashHistoryBean> getDrawList() {
-        return drawList;
-    }
-
-    public void setDrawList(List<CashHistoryBean> drawList) {
-        this.drawList = drawList;
+    public void setLogList(List<CashHistoryBean> logList) {
+        this.logList = logList;
     }
 }

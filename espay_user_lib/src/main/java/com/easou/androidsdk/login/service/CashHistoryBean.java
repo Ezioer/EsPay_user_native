@@ -1,17 +1,18 @@
 package com.easou.androidsdk.login.service;
 
 public class CashHistoryBean {
-    private int id;
+    private int balanceType;//红包领取1、红包提现2、提现失败3
     private String money;
-    private long drawTime;
-    private String drawCode;
+    private String createTime;
+    private String updateTime;
+    private String msg;
 
-    public int getId() {
-        return id;
+    public int getBalanceType() {
+        return balanceType;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setBalanceType(int balanceType) {
+        this.balanceType = balanceType;
     }
 
     public String getMoney() {
@@ -22,19 +23,27 @@ public class CashHistoryBean {
         this.money = money;
     }
 
-    public long getDrawTime() {
-        return drawTime;
+    public String getCreateTime() {
+        return createTime;
     }
 
-    public void setDrawTime(long drawTime) {
-        this.drawTime = drawTime;
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 
-    public String getDrawCode() {
-        return drawCode;
+    public String getUpdateTime() {
+        return updateTime;
     }
 
-    public void setDrawCode(String drawCode) {
-        this.drawCode = drawCode;
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }
