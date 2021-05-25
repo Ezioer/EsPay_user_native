@@ -106,6 +106,9 @@ public class Constant {
 	public static final String GAME_ORDER_URL = "/androidGameLog/addOrderLog.e";
 	public static final String SDK_LOGIN_URL = "/androidGameLog/addLoginLog.e";
 
+	//游戏角色数据上传日志
+	public static final String GAME_PLAYER_LOG = "/gameLog/addPlayerLog.e";
+
 	/**
 	 * H5 SDK url
 	 */

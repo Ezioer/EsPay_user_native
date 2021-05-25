@@ -345,7 +345,7 @@ public class StartESUserPlugin {
     public static void startGameLoginLog(Map<String, String> playerInfo) {
 
         StartLogPlugin.startGameLoginLog(playerInfo);
-//        initMoneyActivity(playerInfo.get(ESConstant.PLAYER_ID), playerInfo.get(ESConstant.PLAYER_SERVER_ID));
+        initMoneyActivity(playerInfo.get(ESConstant.PLAYER_ID), playerInfo.get(ESConstant.PLAYER_SERVER_ID));
 //		ESUserWebActivity.clientToJS(Constant.YSTOJS_GAME_LOGIN_LOG, playerInfo);
     }
 

@@ -206,8 +206,8 @@ public class EucService {
     //获取用户余额 v2.0
     public MoneyBalance getMoneyBalance() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", 1);
-        map.put("serverId", 1);
+        map.put("playerId", "1");
+        map.put("serverId", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/accBalance", map);
         if (info == null) {
             return null;
@@ -216,18 +216,77 @@ public class EucService {
         return money;
     }
 
-    //获取红包界面数据
+    //获取红包界面角色信息数据 v2.0
     public MoneyBaseInfo getMoneyInfo(String playerId, String serverId) {
-        Map map = getDefaultMap();
+        Map map = getDefaultMapWithoutOS();
         map.put("playerId", playerId);
         map.put("serverId", serverId);
-        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/baseInfo", map);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/playerInfo", map);
         if (info == null) {
             return null;
         }
         MoneyBaseInfo moneyBaseInfo = GsonUtil.fromJson(info.getData().toString(), MoneyBaseInfo.class);
         return moneyBaseInfo;
     }
+
+    //获取红包分组信息 v2.0
+    public List<MoneyGroupInfo> getMoneyGroup(String playerId, String serverId) {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        map.put("openId", "1");
+        map.put("money", "1");
+        BaseResponse info = getBaseResponseS("http://sdkapi.eayou.com/luckyMoney/roleBonusGroups", map);
+        if (info == null) {
+            return null;
+        }
+        List<MoneyGroupInfo> moneyGroupInfo = GsonUtil.getList(info.getData().toString());
+        return moneyGroupInfo;
+    }
+
+    //获取分组红包详细信息 v2.0
+    public MoneyList getMoneyGroupDetail(String playerId, String serverId, int groupId) {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        map.put("page", "1");
+        map.put("size", "10000");
+        map.put("groupId", String.valueOf(groupId));
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/roleBonusList", map);
+        if (info == null) {
+            return null;
+        }
+        MoneyList moneyGroupInfo = GsonUtil.fromJson(info.getData().toString(), MoneyList.class);
+        return moneyGroupInfo;
+    }
+
+    //领取红包 v2.0
+    public DrawResultInfo getMoney(String playerId, String serverId, int taskId) {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        map.put("taskId", taskId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/roleBonusGain", map);
+        if (info == null) {
+            return null;
+        }
+        DrawResultInfo moneyGroupInfo = GsonUtil.fromJson(info.getData().toString(), DrawResultInfo.class);
+        return moneyGroupInfo;
+    }
+
+    //获取角色红包活动规则 v2.0
+    public RoleMoneyRule getRoleMoneyRule(String playerId, String serverId) {
+        Map map = getDefaultMapWithoutOS();
+        map.put("playerId", playerId);
+        map.put("serverId", serverId);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/roleActivityRule", map);
+        if (info == null) {
+            return null;
+        }
+        RoleMoneyRule moneyGroupInfo = GsonUtil.fromJson(info.getData().toString(), RoleMoneyRule.class);
+        return moneyGroupInfo;
+    }
+
 
     //获取红包列表
     public MoneyListInfo getMoneyList(String playerId, String serverId) {
@@ -258,8 +317,8 @@ public class EucService {
     //获取提现金额 v2.0
     public DrawMoney getCashValue() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", 1);
-        map.put("serverId", 1);
+        map.put("playerId", "1");
+        map.put("serverId", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawalLvs", map);
         if (info == null) {
             return null;
@@ -271,8 +330,8 @@ public class EucService {
     //获取提现规则 v2.0
     public DrawRule getCashRule() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", 1);
-        map.put("serverId", 1);
+        map.put("playerId", "1");
+        map.put("serverId", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawalRule", map);
         if (info == null) {
             return null;
@@ -282,11 +341,11 @@ public class EucService {
     }
 
     //提现 v2.0
-    public DrawResultInfo getCash(String playerId, String money, String serverId, String openId) {
+    public DrawResultInfo getCash(String money, String openId) {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", playerId);
+        map.put("playerId", "1");
         map.put("money", money);
-        map.put("serverId", serverId);
+        map.put("serverId", "1");
         map.put("openId", openId);
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawal", map);
         if (info == null) {
@@ -297,10 +356,10 @@ public class EucService {
     }
 
     //提现记录 v2.0
-    public CashHistoryInfo getCashHistory(String playerId, String serverId) {
+    public CashHistoryInfo getCashHistory() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", playerId);
-        map.put("serverId", serverId);
+        map.put("playerId", "1");
+        map.put("serverId", "1");
         map.put("page", "1");
         map.put("size", "10000");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/moneyLogs", map);
@@ -357,6 +416,30 @@ public class EucService {
             String info = object.optString("resultInfo");
             if (object.opt("data") != null) {
                 bean.setData(object.opt("data").toString());
+            }
+            bean.setResultInfo(info);
+            bean.setResultCode(code);
+            if (code != 1) {
+                return null;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return bean;
+    }
+
+    private BaseResponse getBaseResponseS(String url, Map map) {
+        String result = EucHttpClient.httpPost(url, map);
+        if (result == null || "".equals(result)) {
+            return null;
+        }
+        BaseResponse bean = new BaseResponse();
+        try {
+            JSONObject object = new JSONObject(result);
+            int code = object.optInt("resultCode");
+            String info = object.optString("resultInfo");
+            if (object.opt("groupList") != null) {
+                bean.setData(object.opt("groupList").toString());
             }
             bean.setResultInfo(info);
             bean.setResultCode(code);

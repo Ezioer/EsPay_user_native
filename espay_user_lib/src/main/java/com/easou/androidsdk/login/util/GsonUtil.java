@@ -11,6 +11,7 @@ import com.easou.androidsdk.login.service.JBody;
 import com.easou.androidsdk.login.service.JDesc;
 import com.easou.androidsdk.login.service.JHead;
 import com.easou.androidsdk.login.service.JReason;
+import com.easou.androidsdk.login.service.MoneyGroupInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -39,28 +40,33 @@ public class GsonUtil {
 	public static <T> T fromJson(String json, Type typeOfT) {
 		return gson.fromJson(json, typeOfT);
 	}
-	
+
 	public static <T> T fromJson(JsonElement json, Class<T> clazz) {
 		return gson.fromJson(json, clazz);
+	}
+
+	public static List<MoneyGroupInfo> getList(String data) {
+		return gson.fromJson(data, new TypeToken<List<MoneyGroupInfo>>() {
+		}.getType());
 	}
 
 	public static <T> T fromJson(JsonElement json, Type typeOfT) {
 		return gson.fromJson(json, typeOfT);
 	}
-	
+
 	public static JBean extraJsonBean(String json) {
 		JBean jbean = new JBean();
-		try{
-			Map<String, JsonElement> beanMap =GsonUtil.fromJson(json, beanType);
+		try {
+			Map<String, JsonElement> beanMap = GsonUtil.fromJson(json, beanType);
 			JsonElement headElement = beanMap.get("head");
 			JHead head = GsonUtil.fromJson(headElement, headType);
 			jbean.setHead(head);
 			JsonElement descElement = beanMap.get("desc");
-			LinkedList<JReason> descList= GsonUtil.fromJson(descElement, descType);
-			if(descList == null)
+			LinkedList<JReason> descList = GsonUtil.fromJson(descElement, descType);
+			if (descList == null)
 				descList = new LinkedList<JReason>();
 			JDesc desc = new JDesc();
-			for (Iterator<JReason> iterator = descList.iterator(); iterator.hasNext();) {
+			for (Iterator<JReason> iterator = descList.iterator(); iterator.hasNext(); ) {
 				JReason jReason = iterator.next();
 				desc.add(jReason);
 			}

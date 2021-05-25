@@ -28,18 +28,29 @@ import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
+import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.AuthenCallBack;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.MoneyDataCallBack;
+import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.UserAPI;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
+import com.easou.androidsdk.login.service.CheckBindByUserIdInfo;
+import com.easou.androidsdk.login.service.CodeConstant;
+import com.easou.androidsdk.login.service.EucAPIException;
+import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.GiftBean;
 import com.easou.androidsdk.login.service.GiftInfo;
 import com.easou.androidsdk.login.service.MoneyBalance;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
+import com.easou.androidsdk.login.service.MoneyGroupAndRoleInfo;
+import com.easou.androidsdk.login.service.MoneyGroupInfo;
+import com.easou.androidsdk.login.service.MoneyGroupList;
+import com.easou.androidsdk.login.service.MoneyList;
 import com.easou.androidsdk.login.service.MoneyListInfo;
+import com.easou.androidsdk.login.service.RoleMoneyRule;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
@@ -68,17 +79,20 @@ public class UserCenterDialog extends BaseDialog {
     private Context mContext;
     private boolean bindType = true;
     private int currentType = 0;
+    private LinearLayout llMoney;
     private RelativeLayout rlChangePw;
     private ListView giftList;
-    private TextView tvGiftCode, mTvMyMoney;
+    private TextView tvGiftCode, mTvMyMoney, mTotalMoneyValue;
     private RelativeLayout llGiftCode;
-    private CountDownTimer getTimer, cashTimer;
-    private ObjectAnimator circle;
+    private CountDownTimer getTimer;
     private TextView mBindPhoneType;
     private ImageView mIvBindPhone;
     private ImageView mIvAuthen;
     private ImageView mIvBindWx;
+    private ImageView mMoney;
     private boolean isBindWX;
+    private TextView mNoActivity, mTvNoRole;
+    private ViewPager mVpMoneyType;
     private RelativeLayout mRlBindWxNoti, mRlBindWx;
 
     @Override
@@ -125,21 +139,23 @@ public class UserCenterDialog extends BaseDialog {
             mMoney.setVisibility(View.VISIBLE);
         } else {
             mMoney.setVisibility(View.GONE);
-        }
-
+        } */
+        bindWXStateChange();
         if (currentType == 3) {
             initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
-        }*/
+        }
     }
 
     private void initView() {
         final View includeMenu = findViewById(R.id.include_usermenu);
         final ImageView ivMe = (ImageView) findViewById(R.id.iv_me);
         final ImageView ivGift = (ImageView) findViewById(R.id.iv_gift);
+        mMoney = findViewById(R.id.iv_money);
         //首页
         final TextView tvWelcome = (TextView) includeMenu.findViewById(R.id.tv_username);
         final RelativeLayout llGift = (RelativeLayout) findViewById(R.id.ll_gift);
-        final LinearLayout llMoney = findViewById(R.id.ll_money);
+        llMoney = findViewById(R.id.ll_money);
+        final RelativeLayout rlMoney = findViewById(R.id.rl_money_content);
         llGiftCode = (RelativeLayout) findViewById(R.id.ll_giftcode);
         tvGiftCode = (TextView) findViewById(R.id.tv_giftcode);
         giftList = (ListView) findViewById(R.id.listview);
@@ -156,9 +172,10 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_mehign);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gift);
+                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
                     llUser.setVisibility(View.VISIBLE);
                     llGift.setVisibility(View.GONE);
-                    llMoney.setVisibility(View.GONE);
+                    rlMoney.setVisibility(View.GONE);
                     resetTimer();
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
@@ -176,9 +193,10 @@ public class UserCenterDialog extends BaseDialog {
                     ivMe.setImageResource(R.drawable.icon_main_me);
                     ivService.setImageResource(R.drawable.icon_main_service);
                     ivGift.setImageResource(R.drawable.icon_main_gifthign);
+                    mMoney.setImageResource(R.drawable.ic_moneyunselect);
                     llUser.setVisibility(View.GONE);
                     llGift.setVisibility(View.VISIBLE);
-                    llMoney.setVisibility(View.GONE);
+                    rlMoney.setVisibility(View.GONE);
                     resetTimer();
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
@@ -219,7 +237,7 @@ public class UserCenterDialog extends BaseDialog {
         });
 
         //红包
-        /*mMoney.setOnClickListener(new View.OnClickListener() {
+        mMoney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (currentType != 3) {
@@ -232,11 +250,7 @@ public class UserCenterDialog extends BaseDialog {
                     ivGift.setImageResource(R.drawable.icon_main_gift);
                     llUser.setVisibility(View.GONE);
                     llGift.setVisibility(View.GONE);
-                    llMoney.setVisibility(View.VISIBLE);
-                    if (playerId.isEmpty() || serverId.isEmpty()) {
-                        ESToast.getInstance().ToastShow(mContext, "暂无红包活动");
-                        return;
-                    }
+                    rlMoney.setVisibility(View.VISIBLE);
                     initMoneyPage(playerId, serverId);
                     if (WebViewActivity.mActivity != null) {
                         WebViewActivity.mActivity.finish();
@@ -244,31 +258,39 @@ public class UserCenterDialog extends BaseDialog {
                     }
                 }
             }
-        });*/
+        });
 
-        initMoneyPage("", "");
         //是否绑定手机，实名认证以及绑定微信
         mIvBindPhone = findViewById(R.id.iv_isbindphone);
         mIvAuthen = findViewById(R.id.iv_isauthen);
         mIvBindWx = findViewById(R.id.iv_isbindwx);
         mTvMyMoney = findViewById(R.id.tv_mymoney);
+        mNoActivity = findViewById(R.id.tv_noactivity);
+        mVpMoneyType = mView.findViewById(R.id.vp_moneytype);
+        mTvNoRole = findViewById(R.id.tv_norole);
 
+        getMyMoneyBalance();
         mRlBindWxNoti = findViewById(R.id.rl_bindwxnoti);
         mRlBindWxNoti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //弹出绑定微信弹窗
-                BindWxDialog dialog = new BindWxDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, "", "");
-                dialog.show();
+                bindWxDialog();
             }
         });
         mRlBindWx = findViewById(R.id.rl_bindwx);
+        mRlBindWx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bindWxDialog();
+            }
+        });
         TextView getMoney = findViewById(R.id.tv_getmoney);
         getMoney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isBindWX) {
+                if (!CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getOpenId())) {
                     ESToast.getInstance().ToastShow(mContext, "必须绑定微信才能提现哦!");
+                    bindWxDialog();
                     return;
                 }
                 //提现
@@ -281,8 +303,27 @@ public class UserCenterDialog extends BaseDialog {
         tvMoneyDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MoneyDetailLogDialog dialog = new MoneyDetailLogDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, null);
-                dialog.show();
+                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final CashHistoryInfo cashHistory = EucService.getInstance(mContext).getCashHistory();
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (cashHistory != null && cashHistory.getLogList().size() > 0) {
+                                        MoneyDetailLogDialog dialog = new MoneyDetailLogDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, cashHistory.getLogList());
+                                        dialog.show();
+                                    } else {
+                                        ESToast.getInstance().ToastShow(mContext, "暂无记录");
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+                            ESToast.getInstance().ToastThreadShow(mContext, "网络出错，请重试");
+                        }
+                    }
+                });
             }
         });
 
@@ -305,6 +346,8 @@ public class UserCenterDialog extends BaseDialog {
         final TextView mBindType = (TextView) includeBind.findViewById(R.id.tv_title_bind);
 
         phoneBindStateChange();
+        authenStateChange();
+        bindWXStateChange();
 
         final EditText etPhone = (EditText) includeBind.findViewById(R.id.et_bind_phone);
         final EditText etCode = (EditText) includeBind.findViewById(R.id.et_bind_code);
@@ -595,122 +638,112 @@ public class UserCenterDialog extends BaseDialog {
     }
 
     private void resetTimer() {
-       /* if (getTimer != null) {
+        if (getTimer != null) {
             getTimer.cancel();
             getTimer.onFinish();
             getTimer = null;
         }
-        if (cashTimer != null) {
-            cashTimer.cancel();
-            cashTimer.onFinish();
-            cashTimer = null;
-        }*/
     }
 
     //获取红包界面数据
-    private void initMoneyPage(String playerId, String serverId) {
-        ViewPager vpMoneyType = mView.findViewById(R.id.vp_moneytype);
-        TabLayout tabLayout = mView.findViewById(R.id.tablayout_moneytype);
-        List list = new ArrayList();
-        list.add("等级红包");
-        list.add("充值红包");
-        list.add("任务红包");
-        MoneyTypeAdapter moneyTypeAdapter = new MoneyTypeAdapter(mContext, list, new ArrayList<Integer>());
-        vpMoneyType.setAdapter(moneyTypeAdapter);
-        vpMoneyType.setOffscreenPageLimit(3);
-        tabLayout.setupWithViewPager(vpMoneyType);
-        StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyBaseInfo>() {
+    private void initMoneyPage(final String playerId, final String serverId) {
+        StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyGroupAndRoleInfo>() {
             @Override
-            public void success(final MoneyBaseInfo moneyBaseInfo) {
+            public void success(final MoneyGroupAndRoleInfo moneyBaseInfo) {
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        initMoney(moneyBaseInfo);
+                        initMoney(moneyBaseInfo.getInfo(), playerId, serverId);
+                        llMoney.setVisibility(View.VISIBLE);
+                        mTvNoRole.setVisibility(View.GONE);
+                        if (moneyBaseInfo.getGroupInfo() != null && moneyBaseInfo.getGroupInfo().size() > 0) {
+                            initTab(moneyBaseInfo.getGroupInfo());
+                        } else {
+                            noActivity();
+                        }
                     }
                 });
             }
 
             @Override
             public void fail(String msg) {
-
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        llMoney.setVisibility(View.GONE);
+                        mTvNoRole.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         }, mContext, playerId, serverId);
     }
 
-    //初始化红包页面
-    private void initMoney(final MoneyBaseInfo moneyBaseInfo) {
-        TextView mTaskRule = mView.findViewById(R.id.tv_taskrule);
-        final ImageView mRefresh = mView.findViewById(R.id.iv_refresh_info);
-        TextView mName = mView.findViewById(R.id.tv_role_name);
-        mName.setText(moneyBaseInfo.getPlayerName());
-        TextView mRoleInfo = mView.findViewById(R.id.tv_role_zone);
-        mRoleInfo.setText(moneyBaseInfo.getPlayerLevel() + " " + moneyBaseInfo.getServerName());
-        final TextView mGetLeftTimeValue = mView.findViewById(R.id.tv_gettimevalue);
-        /*mHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                StartESAccountCenter.getCashHistory(new MoneyDataCallBack<CashHistoryInfo>() {
-                    @Override
-                    public void success(final CashHistoryInfo info) {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (info.getDrawList() != null && info.getDrawList().size() > 0) {
-                                    //红包提现记录
-                                    CashHistoryDialog dialog = new CashHistoryDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, info);
-                                    dialog.show();
-                                } else {
-                                    ESToast.getInstance().ToastShow(mContext, "暂无记录");
-                                }
-                            }
-                        });
-                    }
+    private void noActivity() {
+        mVpMoneyType.setVisibility(View.GONE);
+        mNoActivity.setVisibility(View.VISIBLE);
+    }
 
-                    @Override
-                    public void fail(String msg) {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ESToast.getInstance().ToastShow(mContext, "暂无记录");
-                            }
-                        });
-                    }
-                }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+    private void initTab(final List<MoneyGroupInfo> groupInfo) {
+        mVpMoneyType.setVisibility(View.VISIBLE);
+        mNoActivity.setVisibility(View.GONE);
+        TabLayout tabLayout = mView.findViewById(R.id.tablayout_moneytype);
+        final MoneyTypeAdapter moneyTypeAdapter = new MoneyTypeAdapter(mContext, groupInfo);
+        mVpMoneyType.setAdapter(moneyTypeAdapter);
+        mVpMoneyType.setOffscreenPageLimit(groupInfo.size());
+        tabLayout.setupWithViewPager(mVpMoneyType);
+        mVpMoneyType.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
 
             }
-        });
-        TextView mGetCash = mView.findViewById(R.id.tv_getcash);*/
-        /*mGetCash.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                //提现
-                StartESAccountCenter.getCashInfo(new MoneyDataCallBack<CashLevelInfo>() {
+            public void onPageSelected(final int i) {
+                final ListView moneyList = moneyTypeAdapter.getView(i);
+                ThreadPoolManager.getInstance().addTask(new Runnable() {
                     @Override
-                    public void success(final CashLevelInfo info) {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                    public void run() {
+                        StartESAccountCenter.moneyListDetailInfo(new MoneyDataCallBack<MoneyList>() {
                             @Override
-                            public void run() {
-                                GetCashDialog dialog = new GetCashDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, info);
-                                dialog.show();
-                                dialog.setListener(new GetCashDialog.getCashSuccess() {
+                            public void success(final MoneyList moneyListInfo) {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
-                                    public void cashSuccess(int money) {
-                                        String[] s = mLeftMoneyValue.getText().toString().split(" ");
-                                        int tempMoney = Integer.valueOf(s[0]);
-                                        mLeftMoneyValue.setText((tempMoney - money) + " 元");
+                                    public void run() {
+                                        if (moneyListInfo.getBonusList().size() > 0) {
+                                            MoneyDetailAdapter adapter = new MoneyDetailAdapter(mContext, moneyListInfo.getBonusList());
+                                            moneyList.setAdapter(adapter);
+                                        }
                                     }
                                 });
                             }
-                        });
-                    }
 
-                    @Override
-                    public void fail(String msg) {
+                            @Override
+                            public void fail(String msg) {
 
+                            }
+                        }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext), groupInfo.get(i).getGroupId());
                     }
-                }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+                });
             }
-        });*/
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+        mVpMoneyType.setCurrentItem(0);
+    }
+
+    //初始化红包页面
+    private void initMoney(final MoneyBaseInfo moneyBaseInfo, final String playerId, final String serverId) {
+        TextView mTaskRule = mView.findViewById(R.id.tv_taskrule);
+        TextView mName = mView.findViewById(R.id.tv_role_name);
+        mName.setText(moneyBaseInfo.getPlayerName());
+        TextView mRoleInfo = mView.findViewById(R.id.tv_role_zone);
+        mRoleInfo.setText(moneyBaseInfo.getLvNcikName() + " " + moneyBaseInfo.getServerName());
+        mTotalMoneyValue = mView.findViewById(R.id.tv_totalmoneyvalue);
+        mTotalMoneyValue.setText(moneyBaseInfo.getTotalMoney() + "");
+        final TextView mGetLeftTimeValue = mView.findViewById(R.id.tv_gettimevalue);
         //领取剩余时间倒计时
         resetTimer();
         getTimer = new CountDownTimer(moneyBaseInfo.getGainTimeRemaining(), 1000) {
@@ -726,35 +759,27 @@ public class UserCenterDialog extends BaseDialog {
         };
         getTimer.start();
 
-        /*mRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //刷新红包信息
-                circle = ObjectAnimator.ofFloat(mRefresh, "rotation", 0f, 360f);
-                circle.setRepeatCount(3);
-                circle.setDuration(400);
-                circle.start();
-                initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
-            }
-        });*/
         mTaskRule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //红包领取规则
-                MoneyRuleDialog dialog = new MoneyRuleDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, moneyBaseInfo.getActivityRule());
-                dialog.show();
+                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        final RoleMoneyRule roleMoneyRule = EucService.getInstance(mContext).getRoleMoneyRule(playerId, serverId);
+                        if (roleMoneyRule != null) {
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MoneyRuleDialog dialog = new MoneyRuleDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, roleMoneyRule.getActivityRule());
+                                    dialog.show();
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
-        initMoneyList();
-        if (circle != null) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    circle.cancel();
-                    circle = null;
-                }
-            }, 400);
-        }
     }
 
     //初始化红包列表
@@ -765,8 +790,6 @@ public class UserCenterDialog extends BaseDialog {
                 ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        TextView mTotalMoneyValue = mView.findViewById(R.id.tv_totalmoneyvalue);
-                        mTotalMoneyValue.setText(moneyListInfo.getLuckyMoneySum() + "元");
                         if (moneyListInfo.getLuckyMoneyList() != null && moneyListInfo.getLuckyMoneyList().size() > 0) {
                             MoneyAdapter adapter = new MoneyAdapter(mContext, moneyListInfo.getLuckyMoneyList());
                             ListView listView = mView.findViewById(R.id.listview_money);
@@ -831,32 +854,35 @@ public class UserCenterDialog extends BaseDialog {
     private void phoneBindStateChange() {
         if (TextUtils.isEmpty(Starter.loginBean.getUser().getMobile())) {
             mBindPhoneType.setText("绑定手机");
-            mIvBindPhone.setImageResource(R.drawable.icon_user_bind);
+            mIvBindPhone.setImageResource(R.drawable.ic_bindphone_normal);
         } else {
             mBindPhoneType.setText("解绑手机");
-            mIvBindPhone.setImageResource(R.drawable.icon_user_bind);
+            mIvBindPhone.setImageResource(R.drawable.ic_bindphone_red);
         }
     }
 
     //实名认证状态改变
     private void authenStateChange() {
         if (Starter.loginBean.getUser().getIdentityNum().isEmpty()) {
-            mIvAuthen.setImageResource(R.drawable.icon_user_bind);
+            mIvAuthen.setImageResource(R.drawable.ic_authen_normal);
         } else {
-            mIvAuthen.setImageResource(R.drawable.icon_user_bind);
+            mIvAuthen.setImageResource(R.drawable.ic_bindphone_red);
         }
     }
 
     //微信绑定状态改变
     private void bindWXStateChange() {
-        if (isBindWX) {
-            mRlBindWx.setVisibility(View.GONE);
-            mRlBindWxNoti.setVisibility(View.GONE);
-            mIvBindWx.setImageResource(R.drawable.icon_user_bind);
-        } else {
-            mRlBindWx.setVisibility(View.VISIBLE);
-            mRlBindWxNoti.setVisibility(View.VISIBLE);
-            mIvBindWx.setImageResource(R.drawable.icon_user_bind);
+        try {
+            if (CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getOpenId())) {
+                mRlBindWx.setVisibility(View.GONE);
+                mRlBindWxNoti.setVisibility(View.GONE);
+                mIvBindWx.setImageResource(R.drawable.ic_wx_red);
+            } else {
+                mRlBindWx.setVisibility(View.VISIBLE);
+                mRlBindWxNoti.setVisibility(View.VISIBLE);
+                mIvBindWx.setImageResource(R.drawable.ic_wx_normal);
+            }
+        } catch (Exception e) {
         }
     }
 
@@ -892,6 +918,9 @@ public class UserCenterDialog extends BaseDialog {
                             @Override
                             public void cashSuccess(int money) {
                                 //money为提现申请成功的金额
+                                String s = mTotalMoneyValue.getText().toString();
+                                int tempMoney = Integer.valueOf(s);
+                                mTotalMoneyValue.setText((tempMoney - money) + "");
                             }
                         });
                     }
@@ -902,6 +931,44 @@ public class UserCenterDialog extends BaseDialog {
             public void fail(String msg) {
 
             }
-        }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
+        }, mContext);
     }
+
+    //绑定微信弹窗
+    private void bindWxDialog() {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final EucApiResult<String> bindCode = AuthAPI.getBindCode(mContext, Constant.ESDK_USERID, RegisterAPI.getRequestInfo(mContext));
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (bindCode.getResultCode().equals(CodeConstant.OK)) {
+                                //弹出绑定微信弹窗
+                                BindWxDialog dialog = new BindWxDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, "", bindCode.getResult());
+                                dialog.show();
+                                dialog.setCloseListener(new BindWxDialog.DialogCloseListener() {
+                                    @Override
+                                    public void dialogClose() {
+                                        bindWXStateChange();
+                                    }
+                                });
+                            } else {
+                                ESToast.getInstance().ToastShow(mContext, "网络出错了，请重试");
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ESToast.getInstance().ToastShow(mContext, "网络出错了，请重试");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
 }

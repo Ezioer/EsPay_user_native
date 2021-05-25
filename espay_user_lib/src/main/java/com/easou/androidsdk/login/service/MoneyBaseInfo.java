@@ -3,13 +3,11 @@ package com.easou.androidsdk.login.service;
 public class MoneyBaseInfo {
     private String playerId;
     private String playerName;
-    private String playerLevel;
+    private String lvNcikName;
     private String serverId;
     private String serverName;
-    private int moneyBalance;
+    private int totalMoney;
     private Long gainTimeRemaining;
-    private Long drawTimeRemaining;
-    private String activityRule;
 
     public String getPlayerId() {
         return playerId;
@@ -25,14 +23,6 @@ public class MoneyBaseInfo {
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
-    }
-
-    public String getPlayerLevel() {
-        return playerLevel;
-    }
-
-    public void setPlayerLevel(String playerLevel) {
-        this.playerLevel = playerLevel;
     }
 
     public String getServerId() {
@@ -51,14 +41,6 @@ public class MoneyBaseInfo {
         this.serverName = serverName;
     }
 
-    public int getMoneyBalance() {
-        return moneyBalance;
-    }
-
-    public void setMoneyBalance(int moneyBalance) {
-        this.moneyBalance = moneyBalance;
-    }
-
     public Long getGainTimeRemaining() {
         return gainTimeRemaining;
     }
@@ -67,19 +49,19 @@ public class MoneyBaseInfo {
         this.gainTimeRemaining = gainTimeRemaining;
     }
 
-    public Long getDrawTimeRemaining() {
-        return drawTimeRemaining;
+    public String getLvNcikName() {
+        return lvNcikName;
     }
 
-    public void setDrawTimeRemaining(Long drawTimeRemaining) {
-        this.drawTimeRemaining = drawTimeRemaining;
+    public void setLvNcikName(String lvNcikName) {
+        this.lvNcikName = lvNcikName;
     }
 
-    public String getActivityRule() {
-        return activityRule;
+    public int getTotalMoney() {
+        return totalMoney;
     }
 
-    public void setActivityRule(String activityRule) {
-        this.activityRule = activityRule;
+    public void setTotalMoney(int totalMoney) {
+        this.totalMoney = totalMoney;
     }
 }

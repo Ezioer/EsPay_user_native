@@ -10,8 +10,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.easou.androidsdk.login.service.CashHistoryBean;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.espay_user_lib.R;
+
+import java.util.List;
 
 /**
  * created by xiaoqing.zhou
@@ -20,7 +23,7 @@ import com.easou.espay_user_lib.R;
  */
 public class MoneyDetailLogDialog extends BaseDialog {
 
-    public MoneyDetailLogDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight, CashHistoryInfo info) {
+    public MoneyDetailLogDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight, List<CashHistoryBean> info) {
         super(context, animation, gravity, mWidth, mHeight, true);
         mContext = context;
         mInfo = info;
@@ -28,7 +31,7 @@ public class MoneyDetailLogDialog extends BaseDialog {
 
     private View mView;
     private Context mContext;
-    private CashHistoryInfo mInfo;
+    private List<CashHistoryBean> mInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +43,9 @@ public class MoneyDetailLogDialog extends BaseDialog {
 
     private void initView() {
         ListView mList = findViewById(R.id.list_moneylog);
-        MoneyDetailLogAdapter adapter = new MoneyDetailLogAdapter(mContext, mInfo.getLogList());
+        MoneyDetailLogAdapter adapter = new MoneyDetailLogAdapter(mContext, mInfo);
         mList.setAdapter(adapter);
-        ImageView mClose = mView.findViewById(R.id.iv_history_close);
+        ImageView mClose = mView.findViewById(R.id.iv_moneydetail_close);
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

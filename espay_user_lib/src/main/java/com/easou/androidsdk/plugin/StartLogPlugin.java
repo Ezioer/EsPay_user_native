@@ -28,6 +28,24 @@ public class StartLogPlugin {
                 getSendParam(1, null, null));
     }
 
+    //上传游戏角色数据日志
+    public static void gamePlayerDataLog(Map<String, String> info) {
+        HttpLogHelper.sendHttpRequest(Constant.MAIN_URL + Tools.getHostName() + Constant.GAME_PLAYER_LOG,
+                getPlayerDataParams(info));
+    }
+
+    private static String getPlayerDataParams(Map<String, String> playerInfo) {
+        String param = "projectMark=jj" + "&playerId=" + playerInfo.get(ESConstant.PLAYER_ID) + "&serverId=" + playerInfo.get(ESConstant.PLAYER_SERVER_ID) +
+                "&esAppId=" + CommonUtils.readPropertiesValue(Starter.mActivity, Constant.APP_ID) +
+                "&accountId=" + Constant.ESDK_USERID +
+                "&playerLevel=" + playerInfo.get(ESConstant.PLAYER_LEVEL) +
+                "&levelNickname=" + playerInfo.get(ESConstant.LEVEL_NICK_NAME) +
+                "&playerName=" + playerInfo.get(ESConstant.PLAYER_NAME) +
+                "&serverName=" + playerInfo.get(ESConstant.SERVER_NAME) +
+                "&createdPlayerTime=" + playerInfo.get(ESConstant.CREATEDTIME);
+        return param;
+    }
+
     /**
      * 游戏登录日志
      */
@@ -36,7 +54,7 @@ public class StartLogPlugin {
         if (TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_NAME)) ||
                 TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_ID)) ||
                 TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_LEVEL)) ||
-                TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_SERVER_ID)) ) {
+                TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_SERVER_ID))) {
 
             System.out.println("上传游戏登陆日志参数有误，请检查！");
             return;

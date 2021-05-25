@@ -144,6 +144,8 @@ public class Starter {
         StartESUserPlugin.startGameLoginLog(playerInfo);
         try {
             StartESAccountCenter.loginOrOutLog(1, mActivity);
+            //游戏角色数据上传
+            StartLogPlugin.gamePlayerDataLog(playerInfo);
         } catch (Exception e) {
         }
     }

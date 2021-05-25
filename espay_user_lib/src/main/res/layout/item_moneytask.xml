@@ -6,7 +6,7 @@
     android:background="@drawable/bg_money">
 
     <ImageView
-        android:id="@+id/iv_money"
+        android:id="@+id/iv_money_icon"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
@@ -17,7 +17,7 @@
         android:layout_centerVertical="true"
         android:orientation="vertical"
         android:layout_toLeftOf="@id/tv_taskstate"
-        android:layout_toRightOf="@id/iv_money"
+        android:layout_toRightOf="@id/iv_money_icon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

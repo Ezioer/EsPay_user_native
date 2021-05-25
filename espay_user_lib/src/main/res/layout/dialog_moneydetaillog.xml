@@ -19,7 +19,7 @@
     <ImageView
         android:src="@drawable/icon_close"
         android:padding="10dp"
-        android:id="@+id/iv_history_close"
+        android:id="@+id/iv_moneydetail_close"
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

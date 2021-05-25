@@ -83,8 +83,8 @@ class MoneyDetailLogAdapter extends BaseAdapter {
             }
 
             holder.tv_moneycontent.setText(type);
-            holder.tv_timevalue.setText(bean.getUpdateTime());
-            holder.tv_moneyvalue.setText(bean.getMoney() + "");
+            holder.tv_timevalue.setText(bean.getCreateTime());
+            holder.tv_moneyvalue.setText(bean.getMoney() + "元");
             holder.tv_moneystate.setText(bean.getMsg());
         }
         return item;

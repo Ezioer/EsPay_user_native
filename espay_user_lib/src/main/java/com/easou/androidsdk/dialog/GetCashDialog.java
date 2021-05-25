@@ -118,7 +118,7 @@ public class GetCashDialog extends BaseDialog {
                             }
                         });
                     }
-                }, mContext, CommonUtils.getPlayerId(mContext), mSelectMoney, CommonUtils.getServerId(mContext));
+                }, mContext, mSelectMoney);
             }
         });
         try {

@@ -61,7 +61,7 @@
                 android:gravity="center_horizontal"
                 android:src="@drawable/ic_moneyunselect"
                 android:textColor="@color/payeco_textColorWhite"
-                android:visibility="gone" />
+                android:visibility="visible" />
         </LinearLayout>
 
         <RelativeLayout
@@ -72,8 +72,8 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:visibility="visible"
                 android:id="@+id/ll_user"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -173,7 +173,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:visibility="visible"
+                android:visibility="gone"
                 android:id="@+id/rl_money_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -280,6 +280,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:text="0元 "
+                                android:textSize="14sp"
                                 android:textColor="@color/c_white" />
                         </LinearLayout>
 
@@ -304,6 +305,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
+                                android:textSize="14sp"
+                                android:maxLines="1"
                                 android:textColor="@color/c_white"
                                 tools:text="xx分xx秒" />
                         </LinearLayout>
@@ -331,7 +334,7 @@
                         android:textSize="20sp"
                         android:id="@+id/tv_noactivity"
                         android:visibility="gone"
-                        android:text="暂无活动"
+                        android:text="暂无红包活动"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
@@ -354,7 +357,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </RelativeLayout>
-
         </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

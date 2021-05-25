@@ -20,6 +20,10 @@ import com.easou.androidsdk.login.service.DrawRule;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
+import com.easou.androidsdk.login.service.MoneyGroupAndRoleInfo;
+import com.easou.androidsdk.login.service.MoneyGroupInfo;
+import com.easou.androidsdk.login.service.MoneyGroupList;
+import com.easou.androidsdk.login.service.MoneyList;
 import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
 import com.easou.androidsdk.dialog.AccountInfoDialog;
@@ -584,21 +588,45 @@ public class StartESAccountCenter {
         }
     }
 
-    //获取红包界面基本数据
-    public static void moneyBaseInfo(final MoneyDataCallBack<MoneyBaseInfo> callBack, final Context mContext
+    //获取红包界面角色信息数据
+    public static void moneyBaseInfo(final MoneyDataCallBack<MoneyGroupAndRoleInfo> callBack, final Context mContext
             , final String playerId, final String serverId) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
                 try {
+                    MoneyGroupAndRoleInfo info = new MoneyGroupAndRoleInfo();
                     MoneyBaseInfo moneyInfo = EucService.getInstance(mContext).getMoneyInfo(playerId, serverId);
                     if (moneyInfo == null) {
                         callBack.fail("网络出错，请重试");
                         return;
                     }
-                    callBack.success(moneyInfo);
+                    List<MoneyGroupInfo> moneyGroup = EucService.getInstance(mContext).getMoneyGroup(playerId, serverId);
+                    info.setGroupInfo(moneyGroup);
+                    info.setInfo(moneyInfo);
+                    callBack.success(info);
                 } catch (Exception e) {
                     callBack.fail("网络出错，请重试");
+                }
+            }
+        });
+    }
+
+    //获取红包列表数据
+    public static void moneyListDetailInfo(final MoneyDataCallBack<MoneyList> callBack, final Context mContext
+            , final String playerId, final String serverId, final int groupId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MoneyList listInfo = EucService.getInstance(mContext).getMoneyGroupDetail(playerId, serverId, groupId);
+                    if (listInfo == null) {
+                        callBack.fail("红包获取失败");
+                        return;
+                    }
+                    callBack.success(listInfo);
+                } catch (Exception e) {
+                    callBack.fail("红包获取失败");
                 }
             }
         });
@@ -625,8 +653,7 @@ public class StartESAccountCenter {
     }
 
     //获取提现信息
-    public static void getCashInfo(final MoneyDataCallBack<CashLevelInfo> callBack, final Context mContext
-            , final String playerId, final String serverId) {
+    public static void getCashInfo(final MoneyDataCallBack<CashLevelInfo> callBack, final Context mContext) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
@@ -649,13 +676,12 @@ public class StartESAccountCenter {
     }
 
     //提现
-    public static void getCash(final MoneyDataCallBack<DrawResultInfo> callBack, final Context mContext
-            , final String playerId, final String money, final String serverId) {
+    public static void getCash(final MoneyDataCallBack<DrawResultInfo> callBack, final Context mContext, final String money) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
                 try {
-                    DrawResultInfo listInfo = EucService.getInstance(mContext).getCash(playerId, money, serverId, "");
+                    DrawResultInfo listInfo = EucService.getInstance(mContext).getCash(money, Starter.loginBean.getUser().getOpenId());
                     if (listInfo == null) {
                         callBack.fail("提现失败");
                         return;
@@ -675,7 +701,7 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    CashHistoryInfo listInfo = EucService.getInstance(mContext).getCashHistory(playerId, serverId);
+                    CashHistoryInfo listInfo = EucService.getInstance(mContext).getCashHistory();
                     if (listInfo == null) {
                         callBack.fail("暂无记录");
                         return;
@@ -1003,6 +1029,8 @@ public class StartESAccountCenter {
         lUser.setOccuId(user.getOccuId());
         lUser.setSex(user.getSex());
         lUser.setStatus(user.getStatus());
+        lUser.setOpenId("");
+        lUser.setThirdPartySsoId(0);
         return lUser;
     }
 

@@ -20,6 +20,24 @@ public class LUser implements java.io.Serializable {
     private String identityName;
     private String identityNum;
     private int identityStatus;//0认证中，1成功，2失败【未认证】，3未认证，
+    private int thirdPartySsoId;
+    private String openId;
+
+    public int getThirdPartySsoId() {
+        return thirdPartySsoId;
+    }
+
+    public void setThirdPartySsoId(int thirdPartySsoId) {
+        this.thirdPartySsoId = thirdPartySsoId;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
 
     public int getIdentityStatus() {
         return identityStatus;

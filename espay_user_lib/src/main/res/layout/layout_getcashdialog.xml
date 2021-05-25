@@ -24,40 +24,6 @@
         android:padding="10dp"
         android:src="@drawable/icon_close" />
 
-    <!--<LinearLayout
-        android:id="@+id/ll_cashlevel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_getcash_title"
-        android:layout_marginTop="15dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_greenbutton"
-            android:paddingLeft="4dp"
-            android:paddingTop="2dp"
-            android:paddingRight="4dp"
-            android:paddingBottom="2dp"
-            android:id="@+id/tv_level_one"
-            android:text="500元"
-            android:textColor="@color/c_white" />
-
-        <TextView
-            android:id="@+id/tv_level_two"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/bg_whitebutton"
-            android:paddingLeft="4dp"
-            android:paddingTop="2dp"
-            android:paddingRight="4dp"
-            android:paddingBottom="2dp"
-            android:text="1500元"
-            android:textColor="@color/easou_em6_color" />
-    </LinearLayout>-->
     <com.easou.androidsdk.widget.flowlayout.TagFlowLayout
         android:id="@+id/tags_cashlevel"
         app:max_select="1"

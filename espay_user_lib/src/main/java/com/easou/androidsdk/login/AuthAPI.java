@@ -6,6 +6,7 @@ import android.content.Context;
 import com.easou.androidsdk.login.para.AuthParametric;
 import com.easou.androidsdk.login.para.OAuthParametric;
 import com.easou.androidsdk.login.service.AuthBean;
+import com.easou.androidsdk.login.service.CheckBindByUserIdInfo;
 import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.CodeConstant;
 import com.easou.androidsdk.login.service.EucAPIException;
@@ -234,6 +235,39 @@ public class AuthAPI {
     }
 
     /**
+     * 检查是否绑定第三方账号
+     *
+     * @param userId 第三方账号
+     */
+    public static EucApiResult<CheckBindByUserIdInfo> checkIsBindThird(Context activity, String userId, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.put("thirdPartySsoId", 2);
+        jbody.put("userId", userId);
+        JBean jbean = eucService.getResult("/api2/findThirdpartySsoBindByUserId.json",
+                jbody, oAuthPara, info);
+        return buildWxCheckBindResult(jbean);
+    }
+
+    /**
+     * 获取微信绑定码
+     *
+     * @param _activity
+     * @param userId
+     * @param info
+     * @return
+     */
+    public static EucApiResult<String> getBindCode(Context _activity, String userId, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(_activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userId);
+        jbody.put("thirdPartySsoId", 2);
+        JBean jbean = eucService.getResult("/api2/getBindCodeForThirdpartySsoUser.json", jbody,
+                oAuthPara, info);
+        return buildBindCodeResult(jbean);
+    }
+
+    /**
      * 绑定第三方账号
      *
      * @param activity
@@ -312,6 +346,31 @@ public class AuthAPI {
             String u = jbean.getBody().getObject("U", String.class);
             CheckBindInfo bindInfo = new CheckBindInfo(userId, status, u);
             result.setResult(bindInfo);
+        }
+        return result;
+    }
+
+
+    private static EucApiResult<CheckBindByUserIdInfo> buildWxCheckBindResult(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<CheckBindByUserIdInfo> result = new EucApiResult<CheckBindByUserIdInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String status = jbean.getBody().getObject("status", String.class);
+            String userId = jbean.getBody().getObject("userId", String.class);
+            String openId = jbean.getBody().getObject("openId", String.class);
+            String u = jbean.getBody().getObject("U", String.class);
+            CheckBindByUserIdInfo bindInfo = new CheckBindByUserIdInfo(userId, status, u, openId);
+            result.setResult(bindInfo);
+        }
+        return result;
+    }
+
+    private static EucApiResult<String> buildBindCodeResult(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String code = jbean.getBody().getObject("bindCode", String.class);
+            result.setResult(code);
         }
         return result;
     }

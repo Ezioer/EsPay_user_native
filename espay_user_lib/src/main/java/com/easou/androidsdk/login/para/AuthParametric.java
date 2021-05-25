@@ -17,7 +17,6 @@ public interface AuthParametric<T> {
 	/**
 	 * 获取加密验证串
 	 * 
-	 * @param jHead
 	 * @param jBody
 	 * @param t 保留参数
 	 * @return
@@ -29,7 +28,6 @@ public interface AuthParametric<T> {
 	 * 
 	 * @param jBody
 	 *     业务数据
-	 * @param appId
 	 *     appId
 	 * @param key
 	 *     key

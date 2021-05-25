@@ -30,7 +30,6 @@ import com.easou.androidsdk.util.ESdkLog;
 import com.easou.androidsdk.util.StatusBarUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.espay_user_h5.R;
-
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
