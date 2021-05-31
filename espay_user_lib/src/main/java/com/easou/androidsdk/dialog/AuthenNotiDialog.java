@@ -19,6 +19,7 @@ import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.service.CodeConstant;
 import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
+import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
@@ -41,6 +42,7 @@ public class AuthenNotiDialog extends BaseDialog {
     private View mView;
     private Context mContext;
     private int us;
+    private int mType;//0 宜搜认证，其他 国家实名认证
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +109,14 @@ public class AuthenNotiDialog extends BaseDialog {
                         @Override
                         public void run() {
                             try {
-                                final EucApiResult<String> info = AuthAPI.userIdentifyNation(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                                final EucApiResult<String> info;
+                                if (CommonUtils.getNationIdentity(mContext) == 0) {
+                                    info = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID,
+                                            Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                                } else {
+                                    info = AuthAPI.userIdentifyNation(name, idNum, Constant.ESDK_USERID,
+                                            Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                                }
                                 if (info.getResultCode().equals(CodeConstant.OK)) {
                                     int age = CommonUtils.getAge(idNum);
                                     StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age > 18 ? "1" : "0");
@@ -125,7 +134,7 @@ public class AuthenNotiDialog extends BaseDialog {
                                     ((Activity) mContext).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            if (info.getDescList().size() > 0) {
+                                            if (info.getDescList().size() > 0 && info.getDescList().get(0).getC().equals("8")) {
                                                 ESToast.getInstance().ToastShow(mContext, info.getDescList().get(0).getD());
                                             } else {
                                                 ESToast.getInstance().ToastShow(mContext, "认证失败");

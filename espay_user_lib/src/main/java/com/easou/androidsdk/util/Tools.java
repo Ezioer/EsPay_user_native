@@ -3,8 +3,10 @@ package com.easou.androidsdk.util;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -13,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
+import com.easou.androidsdk.login.service.Md5SignUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +38,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Tools {
     /**
@@ -200,6 +206,7 @@ public class Tools {
     public static String getDeviceImei(Context context) {
 
         String imei = CommonUtils.getEsDeviceID(context);
+//        String imei = Tools.getOnlyId();
 
         try {
             TelephonyManager manager = (TelephonyManager) context.getApplicationContext().
@@ -332,10 +339,62 @@ public class Tools {
      * @return
      */
     public static String getOnlyId() {
-        String androidId = Settings.System.getString(Starter.mActivity.getContentResolver(), Settings.Secure.ANDROID_ID);
-        if (TextUtils.isEmpty(androidId)) {
-            return Constant.OAID;
+        String oaid = Constant.OAID;
+        if (oaid.equals("0") || oaid.equals("1")) {
+            String androidId = "";
+            String serNum = "";
+            String code = "";
+            if (getAndroidId() != null) {
+                androidId = getAndroidId();
+            }
+            if (getSerNum() != null) {
+                serNum = getSerNum();
+            }
+            if (androidId.isEmpty() && serNum.isEmpty()) {
+                code = androidId + serNum + getUuid(Starter.mActivity);
+            } else {
+                code = androidId + serNum;
+            }
+            code = Md5SignUtils.sign(code, CommonUtils.readPropertiesValue(Starter.mActivity, Constant.KEY));
+            return code;
         }
-        return androidId;
+        return Constant.OAID;
+    }
+
+    public static String getAndroidId() {
+        return Settings.System.getString(Starter.mActivity.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    public static String getSerNum() {
+        return Build.SERIAL;
+    }
+
+    public static String getUuid(Context context) {
+        // UUID 键
+        String key = "key_uuid";
+        // 获取 SharedPreferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        // 获取 UUID
+        String uuid = preferences.getString(key, "");
+        // UUID 为空值
+        if (!CommonUtils.isNotNullOrEmpty(uuid)) {
+            // 创建新的 UUID
+            uuid = UUID.randomUUID().toString();
+            // 保存
+            preferences.edit().putString(key, uuid).apply();
+        }
+        return uuid;
+    }
+
+    /**
+     * 判断字符串中是否含有字母
+     *
+     * @param cardNum
+     * @return
+     */
+    public static boolean judgeContainsStr(String cardNum) {
+        String regex = ".*[a-zA-Z]+.*";
+        Matcher m = Pattern.compile(regex).matcher(cardNum);
+        return m.matches();
     }
 }

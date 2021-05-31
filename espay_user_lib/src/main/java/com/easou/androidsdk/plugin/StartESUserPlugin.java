@@ -11,17 +11,14 @@ import android.view.WindowManager;
 import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
-import com.easou.androidsdk.data.ESConstant;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.UserCenterDialog;
 import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.LoginCallBack;
-import com.easou.androidsdk.login.MoneyDataCallBack;
 import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
-import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.ui.ESUserWebActivity;
 import com.easou.androidsdk.ui.FloatView;
@@ -69,83 +66,102 @@ public class StartESUserPlugin {
 		});*/
 
         startLogin();
-        LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
-        Profile currentProfile = Profile.getCurrentProfile();
+        final LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
+        final Profile currentProfile = Profile.getCurrentProfile();
         if (info == null && currentProfile == null) {
             //宜搜账号和tap账号都未登陆显示登陆框
             showLoginDialog();
         } else {
-            //已登陆用户直接账号密码登录
-            if (currentProfile != null) {
-                //tap登录
-                StartESAccountCenter.handleTapLogin(currentProfile.getOpenid(), new LoginCallBack() {
-                    @Override
-                    public void loginSuccess() {
-                        //登陆成功回调
-                        Constant.isTaptapLogin = 1;
-                        ESdkLog.d("login success");
-                    }
-
-                    @Override
-                    public void loginFail(final String msg) {
-                        Starter.mActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showLoginDialog();
-                                ESToast.getInstance().ToastShow(Starter.mActivity, msg);
-                            }
-                        });
-                    }
-                }, Starter.mActivity);
-            } else {
-                //宜搜登录
-                final String u = CommonUtils.getUInfo(Starter.mActivity);
-                if (TextUtils.isEmpty(u)) {
-                    StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
-                        @Override
-                        public void loginSuccess() {
-                            //登陆成功回调
-                            ESdkLog.d("login success");
+            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
+                        if (limitStatue != null) {
+                            CommonUtils.saveNationIdentity(Starter.mActivity, limitStatue.getRns());
+                            CommonUtils.saveLogState(Starter.mActivity, limitStatue.getLus());
                         }
-
-                        @Override
-                        public void loginFail(final String msg) {
-                            Starter.mActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showLoginDialog();
-                                    ESToast.getInstance().ToastShow(Starter.mActivity, msg);
-                                }
-                            });
-                        }
-                    }, info.getUser().getName(), info.getUser().getPasswd(), Starter.mActivity);
-                } else {
-                    ThreadPoolManager.getInstance().addTask(new Runnable() {
+                    } catch (Exception e) {
+                    }
+                    Starter.mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            StartESAccountCenter.loginByTokenUser(true, new LoginCallBack() {
-                                @Override
-                                public void loginSuccess() {
-                                    //登陆成功回调
-                                    ESdkLog.d("login success");
-                                }
+                            //已登陆用户直接账号密码登录
+                            if (currentProfile != null) {
+                                //tap登录
+                                StartESAccountCenter.handleTapLogin(currentProfile.getOpenid(), new LoginCallBack() {
+                                    @Override
+                                    public void loginSuccess() {
+                                        //登陆成功回调
+                                        Constant.isTaptapLogin = 1;
+                                        ESdkLog.d("login success");
+                                    }
 
-                                @Override
-                                public void loginFail(final String msg) {
-                                    Starter.mActivity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void loginFail(final String msg) {
+                                        Starter.mActivity.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showLoginDialog();
+                                                ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                                            }
+                                        });
+                                    }
+                                }, Starter.mActivity);
+                            } else {
+                                //宜搜登录
+                                final String u = CommonUtils.getUInfo(Starter.mActivity);
+                                if (TextUtils.isEmpty(u)) {
+                                    StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
+                                        @Override
+                                        public void loginSuccess() {
+                                            //登陆成功回调
+                                            ESdkLog.d("login success");
+                                        }
+
+                                        @Override
+                                        public void loginFail(final String msg) {
+                                            Starter.mActivity.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    showLoginDialog();
+                                                    ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                                                }
+                                            });
+                                        }
+                                    }, info.getUser().getName(), info.getUser().getPasswd(), Starter.mActivity);
+                                } else {
+                                    ThreadPoolManager.getInstance().addTask(new Runnable() {
                                         @Override
                                         public void run() {
-                                            showLoginDialog();
-                                            ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                                            StartESAccountCenter.loginByTokenUser(true, new LoginCallBack() {
+                                                @Override
+                                                public void loginSuccess() {
+                                                    //登陆成功回调
+                                                    ESdkLog.d("login success");
+                                                }
+
+                                                @Override
+                                                public void loginFail(final String msg) {
+                                                    Starter.mActivity.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            showLoginDialog();
+                                                            ESToast.getInstance().ToastShow(Starter.mActivity, msg);
+                                                        }
+                                                    });
+                                                }
+                                            }, u, Starter.mActivity);
                                         }
                                     });
+
                                 }
-                            }, u, Starter.mActivity);
+                            }
                         }
                     });
-
                 }
-            }
+            });
+
         }
     }
 
@@ -182,7 +198,11 @@ public class StartESUserPlugin {
                 try {
                     //获取登陆限制信息
                     final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
-                    status = AuthAPI.identifyStatus(Tools.getOnlyId(), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
+                    if (limitStatue != null) {
+                        CommonUtils.saveNationIdentity(Starter.mActivity, limitStatue.getRns());
+                        CommonUtils.saveLogState(Starter.mActivity, limitStatue.getLus());
+                    }
+                    status = AuthAPI.identifyStatus(Tools.getDeviceImei(Starter.mActivity), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
                     if (limitStatue == null || limitStatue.getUs() == 0) {
                         status = 0;
                     }
@@ -322,7 +342,7 @@ public class StartESUserPlugin {
     public static void startGameLoginLog(Map<String, String> playerInfo) {
 
         StartLogPlugin.startGameLoginLog(playerInfo);
-        initMoneyActivity(playerInfo.get(ESConstant.PLAYER_ID), playerInfo.get(ESConstant.PLAYER_SERVER_ID));
+//        initMoneyActivity(playerInfo.get(ESConstant.PLAYER_ID), playerInfo.get(ESConstant.PLAYER_SERVER_ID));
 //		ESUserWebActivity.clientToJS(Constant.YSTOJS_GAME_LOGIN_LOG, playerInfo);
     }
 
@@ -330,7 +350,7 @@ public class StartESUserPlugin {
         if (CommonUtils.isNotNullOrEmpty(playerId) && CommonUtils.isNotNullOrEmpty(serverId)) {
             CommonUtils.savePlayerId(Starter.mActivity, playerId);
             CommonUtils.saveServerId(Starter.mActivity, serverId);
-            StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyBaseInfo>() {
+            /*StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyBaseInfo>() {
                 @Override
                 public void success(MoneyBaseInfo moneyBaseInfo) {
                     Starter.mActivity.runOnUiThread(new Runnable() {
@@ -346,7 +366,7 @@ public class StartESUserPlugin {
                 public void fail(String msg) {
                     CommonUtils.saveShowMoney(Starter.mActivity, 0);
                 }
-            }, Starter.mActivity, playerId, serverId);
+            }, Starter.mActivity, playerId, serverId);*/
         }
     }
 

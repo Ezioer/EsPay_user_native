@@ -2,16 +2,11 @@ package com.easou.androidsdk.plugin;
 
 import android.text.TextUtils;
 
-import com.easou.androidsdk.StartESAccountCenter;
 import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
-import com.easou.androidsdk.login.RegisterAPI;
-import com.easou.androidsdk.login.UserAPI;
-import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.HttpLogHelper;
-import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.androidsdk.util.Tools;
 
 import java.net.URLEncoder;
@@ -46,13 +41,6 @@ public class StartLogPlugin {
             System.out.println("上传游戏登陆日志参数有误，请检查！");
             return;
         }
-        ThreadPoolManager.getInstance().addTask(new Runnable() {
-            @Override
-            public void run() {
-                UserAPI.loginOrOutLog(Starter.mActivity, Tools.getOnlyId(), Constant.ESDK_USERID, 1,
-                        RegisterAPI.getRequestInfo(Starter.mActivity));
-            }
-        });
         HttpLogHelper.sendHttpRequest(Constant.MAIN_URL + Tools.getHostName() + Constant.GAME_LOGIN_URL,
                 getSendParam(2, playerInfo, null));
     }

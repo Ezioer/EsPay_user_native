@@ -82,26 +82,25 @@ public class LoginBean implements java.io.Serializable{
 	 * @param jUser
 	 * @param token
 	 * @param esid
-     * @param isRegist
-     *     注册登录标识
-     */
-    public LoginBean(EucToken token, LUser user, EucUCookie u, String esid, boolean isRegist) {
-        this.token = token;
-        this.user = user;
-        this.u = u;
-        this.esid = esid;
-        this.isRegist = isRegist;
-    }
+	 * @param isRegist 注册登录标识
+	 */
+	public LoginBean(EucToken token, LUser user, EucUCookie u, String esid, boolean isRegist) {
+		this.token = token;
+		this.user = user;
+		this.u = u;
+		this.esid = esid;
+		this.isRegist = isRegist;
+	}
 
-    /**
-     * 通行证
-     *
-     * @param token
-     */
-    public EucToken getToken() {
-        return token;
-    }
-	
+	/**
+	 * 通行证
+	 *
+	 * @param token
+	 */
+	public EucToken getToken() {
+		return token;
+	}
+
 	public void setToken(EucToken token) {
 		this.token = token;
 	}

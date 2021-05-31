@@ -41,6 +41,7 @@ import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.plugin.StartLogPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
 import com.easou.androidsdk.romutils.RomHelper;
+import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.ui.FloatView;
 import com.easou.androidsdk.ui.UIHelper;
 import com.easou.androidsdk.util.CommonUtils;
@@ -516,7 +517,14 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    EucApiResult<String> userInfo = AuthAPI.userIdentifyNation(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
+                    EucApiResult<String> userInfo;
+                    if (CommonUtils.getNationIdentity(mContext) == 0) {
+                        userInfo = AuthAPI.userIdentify(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID,
+                                RegisterAPI.getRequestInfo(mContext), mContext);
+                    } else {
+                        userInfo = AuthAPI.userIdentifyNation(name, idNum, Constant.ESDK_USERID, Constant.ESDK_APP_ID,
+                                RegisterAPI.getRequestInfo(mContext), mContext);
+                    }
                     if (userInfo.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess(CommonUtils.getYMDfromIdNum(idNum));
                     } else {
@@ -675,9 +683,16 @@ public class StartESAccountCenter {
         });
     }
 
-    public static void loginOrOutLog(int bt, Context mContext) {
+    public static void loginOrOutLog(final int bt, final Context mContext) {
         //需要根据接口状态来判断是否需要上传上下线日志
-        UserAPI.loginOrOutLog(mContext, Tools.getOnlyId(), Constant.ESDK_USERID, bt, RegisterAPI.getRequestInfo(mContext));
+        if (CommonUtils.getLogState(mContext) == 1) {
+            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                @Override
+                public void run() {
+                    UserAPI.loginOrOutLog(mContext, Tools.getDeviceImei(mContext), Constant.ESDK_USERID, bt, RegisterAPI.getRequestInfo(mContext));
+                }
+            });
+        }
     }
 
     /**
@@ -842,88 +857,112 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_ID, userId);
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
+        final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         String isAdult = "0";
         int age = 0;
-        final int identityStatus = userInfo.getResult().getUser().getIdentityStatus();
-        if (identityStatus == 1) {
-            //已经实名认证过
-            result.put(ESConstant.SDK_USER_BIRTH_DATE,
-                    CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()));
-            result.put(ESConstant.SDK_IS_IDENTITY_USER, "1");
-            age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
-            isAdult = age > 18 ? "1" : "0";
-            getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
-        }
-        //身份证号为null则生日为0，未实名认证
-/*        result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
-                CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()) : "0");
-        result.put(ESConstant.SDK_IS_IDENTITY_USER, TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ? "0" : "1");
 
-        if (!TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum())) {
-            //实名认证过的用户才会去做支付限制
-            age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
-            isAdult = age > 18 ? "1" : "0";
-            getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
-        }*/
+        final int identityStatus = userInfo.getResult().getUser().getIdentityStatus();
+        if (limitStatue.getRns() != 0) {
+            //走国家实名认证
+            if (identityStatus == 1) {
+                //已经实名认证过
+                result.put(ESConstant.SDK_USER_BIRTH_DATE,
+                        CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()));
+                result.put(ESConstant.SDK_IS_IDENTITY_USER, "1");
+                age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
+                isAdult = age > 18 ? "1" : "0";
+                getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
+            }
+        } else {
+            //走宜搜实名认证
+            //身份证号为null则生日为0，未实名认证
+            result.put(ESConstant.SDK_USER_BIRTH_DATE, !TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ?
+                    CommonUtils.getYMDfromIdNum(userInfo.getResult().getUser().getIdentityNum()) : "0");
+            result.put(ESConstant.SDK_IS_IDENTITY_USER, TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) ? "0" : "1");
+
+            if (!TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum())) {
+                //实名认证过的用户才会去做支付限制
+                age = CommonUtils.getAge(userInfo.getResult().getUser().getIdentityNum());
+                isAdult = age > 18 ? "1" : "0";
+                getPayLimitInfo(mContext, age, userInfo.getResult().getUser().getIdentityNum(), isAdult);
+            }
+        }
+
         final int mAge = age;
         result.put(ESConstant.SDK_IS_ADULT, isAdult);
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
-        final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-//                if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
-                if ((identityStatus == 2 || identityStatus == 0) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
-                    //没有认证过的并且不是自动注册的用户需要去检查是否需要弹出实名验证框
-                    if (limitStatue != null && limitStatue.getUs() != 0) {
-                        if (identityStatus == 2) {
+                if (limitStatue.getRns() == 0) {
+                    if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
+                        //没有认证过的并且不是自动注册的用户需要去检查是否需要弹出实名验证框
+                        if (limitStatue != null && limitStatue.getUs() != 0) {
                             //需要登陆验证时弹出验证框
                             popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
-                        } else if (identityStatus == 0) {
-                            //认证中，查询认证状态,认证过的需要走下面1的流程，认证失败的需要走上面认证流程
-                            ThreadPoolManager.getInstance().addTask(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentityStatus(userId, Tools.getOnlyId()
-                                                , RegisterAPI.getRequestInfo(mContext), mContext);
-                                        ((Activity) mContext).runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
-                                                    if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                                                        showNotiDialog(mAge);
-                                                    }
-                                                    Starter.mCallback.onLogin(result);
-                                                    popFloatView();
-                                                } else {
-                                                    popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
-                                                }
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                    }
-                                }
-                            });
+                        } else {
+                            Starter.mCallback.onLogin(result);
+                            popFloatView();
                         }
                     } else {
-                      /*  //未认证过的且不是自动注册的用户的提示
-                        if (limitStatue.getNs() == 1) {
-                            showNotiDialog(0);
-                        }*/
+                        //未认证过的自动注册用户或者认证过但是未成年的提示
+                        if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
+                            showNotiDialog(mAge);
+                        }
                         Starter.mCallback.onLogin(result);
                         popFloatView();
                     }
                 } else {
-                    //未认证过的自动注册用户或者认证过但是未成年的提示
-                    //1
-                    if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                        showNotiDialog(mAge);
+                    if ((identityStatus == 0 || identityStatus == 2 || identityStatus == 3) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
+                        if (limitStatue != null && limitStatue.getUs() != 0) {
+                            if (identityStatus == 2 || identityStatus == 3) {
+                                //需要登陆验证时弹出验证框
+                                popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
+                            } else {
+                                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
+                                                    , RegisterAPI.getRequestInfo(mContext), mContext);
+                                            ((Activity) mContext).runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
+                                                        if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
+                                                            showNotiDialog(mAge);
+                                                        }
+                                                        Starter.mCallback.onLogin(result);
+                                                        popFloatView();
+                                                    } else {
+                                                        if (userInfo.getDescList().size() > 0 && userInfo.getDescList().get(0).getC().equals("8")) {
+                                                            ESToast.getInstance().ToastShow(mContext, userInfo.getDescList().get(0).getD());
+                                                        } else {
+                                                            ESToast.getInstance().ToastShow(mContext, "认证失败");
+                                                        }
+                                                        popAuthenDialog(mContext, limitStatue, userInfo.getResult().getUser().getIdentityNum(), result);
+                                                    }
+                                                }
+                                            });
+                                        } catch (Exception e) {
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            Starter.mCallback.onLogin(result);
+                            popFloatView();
+                        }
+                    } else {
+                        //未认证过的自动注册用户或者认证过但是未成年的提示
+                        if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
+                            showNotiDialog(mAge);
+                        }
+                        Starter.mCallback.onLogin(result);
+                        popFloatView();
                     }
-                    Starter.mCallback.onLogin(result);
-                    popFloatView();
                 }
             }
         });
@@ -1037,6 +1076,8 @@ public class StartESAccountCenter {
         CommonUtils.saveShowMoney(mContext, 0);
         CommonUtils.saveServiceUrl(mContext, "");
         CommonUtils.savePlayerId(mContext, "");
+        CommonUtils.saveLogState(Starter.mActivity, 0);
+        CommonUtils.saveNationIdentity(Starter.mActivity, 0);
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {

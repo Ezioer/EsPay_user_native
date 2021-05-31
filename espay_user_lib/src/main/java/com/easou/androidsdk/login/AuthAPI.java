@@ -44,7 +44,7 @@ public class AuthAPI {
             throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
-        jbody.putContent("deviceId", Tools.getOnlyId());
+        jbody.putContent("deviceId", Tools.getDeviceImei(_activity));
         jbody.putContent("username", username);
         jbody.putContent("password", password);
         jbody.putContent("remember", remember);
@@ -204,7 +204,8 @@ public class AuthAPI {
         return result;
     }
 
-    public static EucApiResult<String> queryNationIdentityStatus(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+    //查询国家实名认证状态
+    public static EucApiResult<String> queryNationIdentify(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
         jbody.put("userId", userId);

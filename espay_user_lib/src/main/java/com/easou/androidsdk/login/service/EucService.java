@@ -99,7 +99,6 @@ public class EucService {
         head.setPartnerId(partnerId);
         head.setSource(source);
         head.setQn(qn);
-        head.setFcm(true);
         return head;
     }
 

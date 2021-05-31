@@ -14,44 +14,55 @@ public class RequestInfo {
 	 * 接口调用者
 	 */
 	private String source;
-	/**
-	 * uid
-	 */
-	private String uid;
-	/**
-	 * esid
-	 */
-	private String esid;
-	/**
-	 * 渠道
-	 */
-	private String qn;
-	/**
-	 * 客户端agent
-	 */
-	private String agent;
-	/**
-	 * 应用/游戏id
-	 */
-	private String appId;
-	
-	public RequestInfo() {
-		
-	}
+    /**
+     * uid
+     */
+    private String uid;
+    /**
+     * esid
+     */
+    private String esid;
+    /**
+     * 渠道
+     */
+    private String qn;
+    /**
+     * 客户端agent
+     */
+    private String agent;
+    /**
+     * 应用/游戏id
+     */
+    private String appId;
 
-	public String getSource() {
-		return source;
-	}
+    //是否开启了国家实名认证 0 没开启，1 开启
+    private boolean isFcm;
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public boolean isFcm() {
+        return isFcm;
+    }
 
-	public String getUid() {
-		return uid;
-	}
+    public void setFcm(boolean fcm) {
+        isFcm = fcm;
+    }
 
-	public void setUid(String uid) {
+    public RequestInfo() {
+
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
 		this.uid = uid;
 	}
 
