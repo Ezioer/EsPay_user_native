@@ -73,7 +73,7 @@ class MoneyDetailAdapter extends BaseAdapter {
         holder.taskState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null && list.size() > 0 && list.get(position).getStatus() == 1) {
+                if (listener != null && list.size() > 0 && list.get(position).getStatus() == 0) {
                     //已完成才会去领取
                     final String playerId = CommonUtils.getPlayerId(mContext);
                     ThreadPoolManager.getInstance().addTask(new Runnable() {
@@ -108,13 +108,13 @@ class MoneyDetailAdapter extends BaseAdapter {
             holder.taskInfo.setText((list.get(position).getDesc()));
             String statusText = "";
             int status = list.get(position).getStatus();
-            if (status == 1) {
+            if (status == 0) {
                 statusText = "已完成";
                 holder.taskState.setTextColor(Color.parseColor("#f82172"));
             } else if (status == 2) {
                 statusText = "已领取";
                 holder.taskState.setTextColor(Color.parseColor("#67ae5b"));
-            } else if (status == 0) {
+            } else if (status == 1) {
                 statusText = "待完成";
                 holder.taskState.setTextColor(Color.parseColor("#90000000"));
             } else if (status == -1) {

@@ -49,6 +49,7 @@ import com.easou.androidsdk.login.service.MoneyGroupAndRoleInfo;
 import com.easou.androidsdk.login.service.MoneyGroupInfo;
 import com.easou.androidsdk.login.service.MoneyGroupList;
 import com.easou.androidsdk.login.service.MoneyList;
+import com.easou.androidsdk.login.service.MoneyListDetail;
 import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.login.service.RoleMoneyRule;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
@@ -92,7 +93,8 @@ public class UserCenterDialog extends BaseDialog {
     private ImageView mMoney;
     private boolean isBindWX;
     private TextView mNoActivity, mTvNoRole;
-    private ViewPager mVpMoneyType;
+    private ListView mLvMoneyType;
+    private Map<Integer, List<MoneyListDetail>> lists;
     private RelativeLayout mRlBindWxNoti, mRlBindWx;
 
     @Override
@@ -266,7 +268,7 @@ public class UserCenterDialog extends BaseDialog {
         mIvBindWx = findViewById(R.id.iv_isbindwx);
         mTvMyMoney = findViewById(R.id.tv_mymoney);
         mNoActivity = findViewById(R.id.tv_noactivity);
-        mVpMoneyType = mView.findViewById(R.id.vp_moneytype);
+        mLvMoneyType = mView.findViewById(R.id.listview_money);
         mTvNoRole = findViewById(R.id.tv_norole);
 
         getMyMoneyBalance();
@@ -679,59 +681,43 @@ public class UserCenterDialog extends BaseDialog {
     }
 
     private void noActivity() {
-        mVpMoneyType.setVisibility(View.GONE);
+        mLvMoneyType.setVisibility(View.GONE);
         mNoActivity.setVisibility(View.VISIBLE);
     }
 
     private void initTab(final List<MoneyGroupInfo> groupInfo) {
-        mVpMoneyType.setVisibility(View.VISIBLE);
+        mLvMoneyType.setVisibility(View.VISIBLE);
         mNoActivity.setVisibility(View.GONE);
+        if (lists == null) {
+            lists = new HashMap<>();
+        }
+        lists.clear();
         TabLayout tabLayout = mView.findViewById(R.id.tablayout_moneytype);
-        final MoneyTypeAdapter moneyTypeAdapter = new MoneyTypeAdapter(mContext, groupInfo);
-        mVpMoneyType.setAdapter(moneyTypeAdapter);
-        mVpMoneyType.setOffscreenPageLimit(groupInfo.size());
-        tabLayout.setupWithViewPager(mVpMoneyType);
-        mVpMoneyType.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        tabLayout.removeAllTabs();
+        for (int i = 0; i < groupInfo.size(); i++) {
+            tabLayout.addTab(tabLayout.newTab().setText(groupInfo.get(i).getGroupName()).setTag(groupInfo.get(i).getGroupId()));
+        }
+        setMoneyList(groupInfo.get(0).getGroupId());
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onPageScrolled(int i, float v, int i1) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                setMoneyList((int) tab.getTag());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
             }
 
             @Override
-            public void onPageSelected(final int i) {
-                final ListView moneyList = moneyTypeAdapter.getView(i);
-                ThreadPoolManager.getInstance().addTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        StartESAccountCenter.moneyListDetailInfo(new MoneyDataCallBack<MoneyList>() {
-                            @Override
-                            public void success(final MoneyList moneyListInfo) {
-                                ((Activity) mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (moneyListInfo.getBonusList().size() > 0) {
-                                            MoneyDetailAdapter adapter = new MoneyDetailAdapter(mContext, moneyListInfo.getBonusList());
-                                            moneyList.setAdapter(adapter);
-                                        }
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void fail(String msg) {
-
-                            }
-                        }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext), groupInfo.get(i).getGroupId());
-                    }
-                });
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
+            public void onTabReselected(TabLayout.Tab tab) {
 
             }
         });
-        mVpMoneyType.setCurrentItem(0);
+//        final MoneyTypeAdapter moneyTypeAdapter = new MoneyTypeAdapter(mContext, groupInfo);
+//        mVpMoneyType.setAdapter(moneyTypeAdapter);
+//        mVpMoneyType.setOffscreenPageLimit(groupInfo.size());
+//        tabLayout.setupWithViewPager(mVpMoneyType);
     }
 
     //初始化红包页面
@@ -866,7 +852,7 @@ public class UserCenterDialog extends BaseDialog {
         if (Starter.loginBean.getUser().getIdentityNum().isEmpty()) {
             mIvAuthen.setImageResource(R.drawable.ic_authen_normal);
         } else {
-            mIvAuthen.setImageResource(R.drawable.ic_bindphone_red);
+            mIvAuthen.setImageResource(R.drawable.ic_authen_red);
         }
     }
 
@@ -971,4 +957,37 @@ public class UserCenterDialog extends BaseDialog {
         });
     }
 
+    //设置每个分类红包下的数据
+    private void setMoneyList(final int id) {
+        if (lists.get(id) != null) {
+            MoneyDetailAdapter adapter = new MoneyDetailAdapter(mContext, lists.get(id));
+            mLvMoneyType.setAdapter(adapter);
+            return;
+        }
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                StartESAccountCenter.moneyListDetailInfo(new MoneyDataCallBack<MoneyList>() {
+                    @Override
+                    public void success(final MoneyList moneyListInfo) {
+                        lists.put(id, moneyListInfo.getBonusList());
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (moneyListInfo.getBonusList().size() > 0) {
+                                    MoneyDetailAdapter adapter = new MoneyDetailAdapter(mContext, moneyListInfo.getBonusList());
+                                    mLvMoneyType.setAdapter(adapter);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void fail(String msg) {
+
+                    }
+                }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext), id);
+            }
+        });
+    }
 }
