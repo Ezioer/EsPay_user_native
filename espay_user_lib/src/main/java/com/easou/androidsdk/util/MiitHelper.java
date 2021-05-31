@@ -87,7 +87,7 @@ public class MiitHelper implements IIdentifierListener {
 		long timee=System.currentTimeMillis();
 		long offset=timee-timeb;
 
-		if(nres == ErrorCode.INIT_ERROR_DEVICE_NOSUPPORT){//不支持的设备
+		if (nres == ErrorCode.INIT_ERROR_DEVICE_NOSUPPORT) {//不支持的设备
             ESdkLog.d("oaid：不支持的设备");
             Constant.OAID = "0";
         } else if (nres == ErrorCode.INIT_ERROR_LOAD_CONFIGFILE) {//加载配置文件出错
@@ -96,9 +96,9 @@ public class MiitHelper implements IIdentifierListener {
         } else if (nres == ErrorCode.INIT_ERROR_MANUFACTURER_NOSUPPORT) {//不支持的设备厂商
             ESdkLog.d("oaid：不支持的设备厂商");
             Constant.OAID = "0";
-        } else if (nres == ErrorCode.INIT_ERROR_RESULT_DELAY){//获取接口是异步的，结果会在回调中返回，回调执行的回调可能在工作线程
-			ESdkLog.d("oaid：获取接口是异步的，结果会在回调中返回，回调执行的回调可能在工作线程");
-		} else if (nres == ErrorCode.INIT_HELPER_CALL_ERROR) {//反射调用出错
+        } else if (nres == ErrorCode.INIT_ERROR_RESULT_DELAY) {//获取接口是异步的，结果会在回调中返回，回调执行的回调可能在工作线程
+            ESdkLog.d("oaid：获取接口是异步的，结果会在回调中返回，回调执行的回调可能在工作线程");
+        } else if (nres == ErrorCode.INIT_HELPER_CALL_ERROR) {//反射调用出错
             ESdkLog.d("oaid：反射调用出错");
             Constant.OAID = "0";
         }

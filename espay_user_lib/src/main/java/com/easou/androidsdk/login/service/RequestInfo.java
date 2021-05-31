@@ -14,16 +14,16 @@ public class RequestInfo {
 	 * 接口调用者
 	 */
 	private String source;
-	/**
-	 * uid
-	 */
-	private String uid;
-	/**
-	 * esid
-	 */
-	private String esid;
-	/**
-	 * 渠道
+    /**
+     * uid
+     */
+    private String uid;
+    /**
+     * esid
+     */
+    private String esid;
+    /**
+     * 渠道
      */
     private String qn;
     /**
@@ -55,14 +55,14 @@ public class RequestInfo {
     }
 
     public void setSource(String source) {
-		this.source = source;
-	}
+        this.source = source;
+    }
 
-	public String getUid() {
-		return uid;
-	}
+    public String getUid() {
+        return uid;
+    }
 
-	public void setUid(String uid) {
+    public void setUid(String uid) {
 		this.uid = uid;
 	}
 

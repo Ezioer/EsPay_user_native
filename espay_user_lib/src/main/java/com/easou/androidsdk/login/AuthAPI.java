@@ -191,7 +191,6 @@ public class AuthAPI {
         return result;
     }
 
-    //国家实名认证
     public static EucApiResult<String> userIdentifyNation(String name, String idNum, String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();

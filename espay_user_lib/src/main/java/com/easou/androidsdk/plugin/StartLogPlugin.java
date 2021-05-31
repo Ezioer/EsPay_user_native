@@ -36,7 +36,7 @@ public class StartLogPlugin {
         if (TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_NAME)) ||
                 TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_ID)) ||
                 TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_LEVEL)) ||
-                TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_SERVER_ID)) ) {
+                TextUtils.isEmpty(playerInfo.get(ESConstant.PLAYER_SERVER_ID))) {
 
             System.out.println("上传游戏登陆日志参数有误，请检查！");
             return;

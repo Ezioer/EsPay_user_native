@@ -36,6 +36,7 @@ import com.easou.androidsdk.login.service.JUser;
 import com.easou.androidsdk.login.service.LUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
+import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.plugin.StartLogPlugin;
 import com.easou.androidsdk.plugin.StartOtherPlugin;
@@ -890,7 +891,6 @@ public class StartESAccountCenter {
         final int mAge = age;
         result.put(ESConstant.SDK_IS_ADULT, isAdult);
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
-
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -964,7 +964,6 @@ public class StartESAccountCenter {
                         popFloatView();
                     }
                 }
-
             }
         });
     }
