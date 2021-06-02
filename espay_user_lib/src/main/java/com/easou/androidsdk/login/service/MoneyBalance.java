@@ -1,13 +1,13 @@
 package com.easou.androidsdk.login.service;
 
 public class MoneyBalance {
-    int moneyBalance;
+    String moneyBalance;
 
-    public int getMoneyBalance() {
+    public String getMoneyBalance() {
         return moneyBalance;
     }
 
-    public void setMoneyBalance(int moneyBalance) {
+    public void setMoneyBalance(String moneyBalance) {
         this.moneyBalance = moneyBalance;
     }
 }

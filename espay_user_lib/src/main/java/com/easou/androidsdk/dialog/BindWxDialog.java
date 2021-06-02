@@ -50,10 +50,6 @@ public class BindWxDialog extends BaseDialog {
     }
 
     private void initView() {
-        String text = "绑定微信步骤：\n\n" +
-                "            1、打开微信，搜索公众号XXX并关注；\n\n" +
-                "            2、打开XXX菜单，输入绑定码绑定；\n\n" +
-                "            3、绑定后返回游戏，同步绑定状态后即可开启红包之旅。\n";
         TextView bind = (TextView) mView.findViewById(R.id.tv_copyandbind);
         TextView refresh = mView.findViewById(R.id.tv_refreshstate);
         refresh.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +74,7 @@ public class BindWxDialog extends BaseDialog {
                 dismiss();
             }
         });
-        content.setText(Html.fromHtml(text));
+        content.setText(Html.fromHtml(mContent));
     }
 
     //检查当前用户是否绑定微信

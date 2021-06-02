@@ -308,23 +308,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                  * 上传游戏登陆日志接口
                  * 用于数据统计，在游戏登录成功（非sdk登录成功，玩家登录成功且经过选区服及创建角色或选择角色，完全进入游戏后）后调用
                  */
-                Map<String, String> playerInfo = new HashMap<String, String>();
-                playerInfo.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
-                playerInfo.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
-                playerInfo.put(ESConstant.PLAYER_ID, mPlayId.getText().toString()); // 游戏角色id
-                playerInfo.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
-                Starter.getInstance().startGameLoginLog(playerInfo);
+                Map<String, String> player = new HashMap<String, String>();
+                player.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
+                player.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
+                player.put(ESConstant.PLAYER_ID, mPlayId.getText().toString()); // 游戏角色id
+                player.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
+                Starter.getInstance().startGameLoginLog(player);
 
                 // demo演示代码
                 enterGame(View.VISIBLE);
                 break;
             case R.id.btn_submitplayerid:
-                Map<String, String> playerI = new HashMap<String, String>();
-                playerI.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
-                playerI.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
-                playerI.put(ESConstant.PLAYER_ID, mPlayId.getText().toString()); // 游戏角色id
-                playerI.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
-                Starter.getInstance().startGameLoginLog(playerI);
+                Map<String, String> playerInfo = new HashMap<String, String>();
+                playerInfo.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
+                playerInfo.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
+                playerInfo.put(ESConstant.PLAYER_ID, "565187645"); // 游戏角色id
+                playerInfo.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
+                playerInfo.put(ESConstant.LEVEL_NICK_NAME, "hahaha");
+                playerInfo.put(ESConstant.SERVER_NAME, "hahaha");
+                playerInfo.put("field1", "2");
+                playerInfo.put("field2", "2");
+                playerInfo.put("field3", "2");
+                playerInfo.put("field4", "2");
+                playerInfo.put("field5", "1");
+                playerInfo.put("field6", "test");
+                playerInfo.put("field7", "test");
+                playerInfo.put("field8", "test");
+                playerInfo.put("field9", "test");
+                playerInfo.put("field10", "test");
+                playerInfo.put(ESConstant.CREATEDTIME, String.valueOf(System.currentTimeMillis()));
+                Starter.getInstance().startGameLoginLog(playerInfo);
                 break;
             default:
                 break;

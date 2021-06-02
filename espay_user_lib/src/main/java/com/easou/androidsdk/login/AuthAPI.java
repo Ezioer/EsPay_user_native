@@ -21,6 +21,7 @@ import com.easou.androidsdk.login.service.LUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.login.service.RequestInfo;
+import com.easou.androidsdk.login.service.WxBindCodeInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
 import com.easou.androidsdk.util.Tools;
 
@@ -257,7 +258,7 @@ public class AuthAPI {
      * @param info
      * @return
      */
-    public static EucApiResult<String> getBindCode(Context _activity, String userId, RequestInfo info) throws EucAPIException {
+    public static EucApiResult<WxBindCodeInfo> getBindCode(Context _activity, String userId, RequestInfo info) throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
         jbody.put("userId", userId);
@@ -365,12 +366,14 @@ public class AuthAPI {
         return result;
     }
 
-    private static EucApiResult<String> buildBindCodeResult(JBean jbean)
+    private static EucApiResult<WxBindCodeInfo> buildBindCodeResult(JBean jbean)
             throws EucAPIException {
-        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        EucApiResult<WxBindCodeInfo> result = new EucApiResult<WxBindCodeInfo>(jbean);
         if (CodeConstant.OK.equals(result.getResultCode())) {
             String code = jbean.getBody().getObject("bindCode", String.class);
-            result.setResult(code);
+            String codeHtml = jbean.getBody().getObject("bindCodeHtml", String.class);
+            WxBindCodeInfo info = new WxBindCodeInfo(code, codeHtml);
+            result.setResult(info);
         }
         return result;
     }

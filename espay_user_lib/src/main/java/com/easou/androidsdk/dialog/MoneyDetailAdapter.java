@@ -31,11 +31,17 @@ class MoneyDetailAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private List<MoneyListDetail> list;
     private Context mContext;
+    private int groupId;
 
-    public MoneyDetailAdapter(Context context, List<MoneyListDetail> list) {
+    public MoneyDetailAdapter(Context context, List<MoneyListDetail> list, int groupId) {
         mContext = context;
         this.mInflater = LayoutInflater.from(context);
         this.list = list;
+        this.groupId = groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
     @Override
@@ -73,32 +79,38 @@ class MoneyDetailAdapter extends BaseAdapter {
         holder.taskState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null && list.size() > 0 && list.get(position).getStatus() == 0) {
-                    //已完成才会去领取
-                    final String playerId = CommonUtils.getPlayerId(mContext);
-                    ThreadPoolManager.getInstance().addTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            final DrawResultInfo moneyTask = EucService.getInstance(mContext).
-                                    getMoney(playerId, CommonUtils.getServerId(mContext), list.get(position).getId());
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (moneyTask == null) {
-                                        ESToast.getInstance().ToastShow(mContext, "领取失败");
-                                        return;
+                if (listener != null && list.size() > 0) {
+                    if (list.get(position).getStatus() == 1) {
+                        //已完成才会去领取
+                        final String playerId = CommonUtils.getPlayerId(mContext);
+                        ThreadPoolManager.getInstance().addTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                final DrawResultInfo moneyTask = EucService.getInstance(mContext).
+                                        getMoney(playerId, CommonUtils.getServerId(mContext), list.get(position).getId(), groupId);
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (moneyTask == null) {
+                                            ESToast.getInstance().ToastShow(mContext, "领取失败");
+                                            return;
+                                        }
+                                        if (moneyTask.getStatus() == 1) {
+                                            list.get(position).setStatus(2);
+                                            finalHolder.taskState.setText("已领取");
+                                            finalHolder.taskState.setTextColor(Color.parseColor("#67ae5b"));
+                                            listener.onClick(position, Integer.valueOf(list.get(position).getMoney()));
+                                        }
+                                        ESToast.getInstance().ToastShow(mContext, moneyTask.getMsg());
                                     }
-                                    if (moneyTask.getStatus() == 1) {
-                                        list.get(position).setStatus(2);
-                                        finalHolder.taskState.setText("已领取");
-                                        finalHolder.taskState.setTextColor(Color.parseColor("#67ae5b"));
-                                        listener.onClick(position, Integer.valueOf(list.get(position).getMoney()));
-                                    }
-                                    ESToast.getInstance().ToastShow(mContext, moneyTask.getMsg());
-                                }
-                            });
-                        }
-                    });
+                                });
+                            }
+                        });
+                    } else if (list.get(position).getStatus() == 2) {
+                        ESToast.getInstance().ToastShow(mContext, "该红包已领取");
+                    } else {
+                        ESToast.getInstance().ToastShow(mContext, "该红包暂未达到领取条件");
+                    }
                 }
             }
         });
@@ -109,15 +121,15 @@ class MoneyDetailAdapter extends BaseAdapter {
             String statusText = "";
             int status = list.get(position).getStatus();
             if (status == 0) {
-                statusText = "已完成";
+                statusText = "未完成";
                 holder.taskState.setTextColor(Color.parseColor("#f82172"));
+            } else if (status == 1) {
+                statusText = "已完成";
+                holder.taskState.setTextColor(Color.parseColor("#67ae5b"));
             } else if (status == 2) {
                 statusText = "已领取";
-                holder.taskState.setTextColor(Color.parseColor("#67ae5b"));
-            } else if (status == 1) {
-                statusText = "待完成";
                 holder.taskState.setTextColor(Color.parseColor("#90000000"));
-            } else if (status == -1) {
+            } else {
                 statusText = "已过期";
                 holder.taskState.setTextColor(Color.parseColor("#90000000"));
             }

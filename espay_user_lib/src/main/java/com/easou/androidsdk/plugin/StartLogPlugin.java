@@ -35,13 +35,26 @@ public class StartLogPlugin {
     }
 
     private static String getPlayerDataParams(Map<String, String> playerInfo) {
-        String param = "projectMark=jj" + "&playerId=" + playerInfo.get(ESConstant.PLAYER_ID) + "&serverId=" + playerInfo.get(ESConstant.PLAYER_SERVER_ID) +
+        String qn = CommonUtils.readPropertiesValue(Starter.mActivity, Constant.QN);
+        String param = "projectMark=" + qn.substring(0, 2) +
+                "&playerId=" + playerInfo.get(ESConstant.PLAYER_ID) +
+                "&serverId=" + playerInfo.get(ESConstant.PLAYER_SERVER_ID) +
                 "&esAppId=" + CommonUtils.readPropertiesValue(Starter.mActivity, Constant.APP_ID) +
                 "&accountId=" + Constant.ESDK_USERID +
                 "&playerLevel=" + playerInfo.get(ESConstant.PLAYER_LEVEL) +
                 "&levelNickname=" + playerInfo.get(ESConstant.LEVEL_NICK_NAME) +
                 "&playerName=" + playerInfo.get(ESConstant.PLAYER_NAME) +
                 "&serverName=" + playerInfo.get(ESConstant.SERVER_NAME) +
+                "&field1=" + Integer.valueOf(playerInfo.get("field1")) +
+                "&field2=" + Integer.valueOf(playerInfo.get("field2")) +
+                "&field3=" + Integer.valueOf(playerInfo.get("field3")) +
+                "&field4=" + Integer.valueOf(playerInfo.get("field4")) +
+                "&field5=" + Integer.valueOf(playerInfo.get("field5")) +
+                "&field6=" + playerInfo.get("field6") +
+                "&field7=" + playerInfo.get("field7") +
+                "&field8=" + playerInfo.get("field8") +
+                "&field9=" + playerInfo.get("field9") +
+                "&field10=" + playerInfo.get("field10") +
                 "&createdPlayerTime=" + playerInfo.get(ESConstant.CREATEDTIME);
         return param;
     }

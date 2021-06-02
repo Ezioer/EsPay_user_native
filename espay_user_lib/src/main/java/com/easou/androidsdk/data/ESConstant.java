@@ -29,5 +29,6 @@ public class ESConstant {
     public static final String SDK_IS_ADULT = "isAdult";
     public static final String SDK_IS_HOLIDAY = "isHoliday";
     public static final String SDK_LOGIN_STATUS = "loginStatus";
+    public static final String PROJECTMARK = "projectMark";
     public static String SDK_STATUS = "true";
 }

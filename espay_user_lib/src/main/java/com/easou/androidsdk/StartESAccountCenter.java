@@ -22,7 +22,6 @@ import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.login.service.MoneyGroupAndRoleInfo;
 import com.easou.androidsdk.login.service.MoneyGroupInfo;
-import com.easou.androidsdk.login.service.MoneyGroupList;
 import com.easou.androidsdk.login.service.MoneyList;
 import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
@@ -620,7 +619,7 @@ public class StartESAccountCenter {
             public void run() {
                 try {
                     MoneyList listInfo = EucService.getInstance(mContext).getMoneyGroupDetail(playerId, serverId, groupId);
-                    if (listInfo == null) {
+                    if (listInfo == null || listInfo.getBonusList() == null) {
                         callBack.fail("红包获取失败");
                         return;
                     }

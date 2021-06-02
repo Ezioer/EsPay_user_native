@@ -6,7 +6,7 @@ public class MoneyListDetail {
     private String desc;
     private Long gainDay;
     private int money;
-    private int status;//1未完成 0:完成还没领取，2：完成已经领取
+    private int status;//-0未完成 1:完成还没领取，2：完成已经领取
     private int tsort;
 
     public int getId() {

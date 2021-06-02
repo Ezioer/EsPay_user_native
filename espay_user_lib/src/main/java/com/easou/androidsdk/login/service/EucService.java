@@ -236,12 +236,12 @@ public class EucService {
         map.put("serverId", serverId);
         map.put("openId", "1");
         map.put("money", "1");
-        BaseResponse info = getBaseResponseS("http://sdkapi.eayou.com/luckyMoney/roleBonusGroups", map);
+        BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/roleBonusGroups", map);
         if (info == null) {
             return null;
         }
-        List<MoneyGroupInfo> moneyGroupInfo = GsonUtil.getList(info.getData().toString());
-        return moneyGroupInfo;
+        MoneyGroupList moneyGroupInfo = GsonUtil.fromJson(info.getData().toString(), MoneyGroupList.class);
+        return moneyGroupInfo.getGroupList();
     }
 
     //获取分组红包详细信息 v2.0
@@ -261,11 +261,12 @@ public class EucService {
     }
 
     //领取红包 v2.0
-    public DrawResultInfo getMoney(String playerId, String serverId, int taskId) {
+    public DrawResultInfo getMoney(String playerId, String serverId, int taskId, int groupId) {
         Map map = getDefaultMapWithoutOS();
         map.put("playerId", playerId);
         map.put("serverId", serverId);
-        map.put("taskId", taskId);
+        map.put("taskId", String.valueOf(taskId));
+        map.put("groupId", String.valueOf(groupId));
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/roleBonusGain", map);
         if (info == null) {
             return null;

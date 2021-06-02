@@ -1,15 +1,12 @@
 package com.easou.androidsdk.dialog;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,9 +33,7 @@ import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.UserAPI;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
-import com.easou.androidsdk.login.service.CheckBindByUserIdInfo;
 import com.easou.androidsdk.login.service.CodeConstant;
-import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.GiftBean;
@@ -47,11 +42,11 @@ import com.easou.androidsdk.login.service.MoneyBalance;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.login.service.MoneyGroupAndRoleInfo;
 import com.easou.androidsdk.login.service.MoneyGroupInfo;
-import com.easou.androidsdk.login.service.MoneyGroupList;
 import com.easou.androidsdk.login.service.MoneyList;
 import com.easou.androidsdk.login.service.MoneyListDetail;
 import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.login.service.RoleMoneyRule;
+import com.easou.androidsdk.login.service.WxBindCodeInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
 import com.easou.androidsdk.ui.ESToast;
 import com.easou.androidsdk.util.CommonUtils;
@@ -96,6 +91,9 @@ public class UserCenterDialog extends BaseDialog {
     private ListView mLvMoneyType;
     private Map<Integer, List<MoneyListDetail>> lists;
     private RelativeLayout mRlBindWxNoti, mRlBindWx;
+    private MoneyDetailAdapter moneyDetailAdapter;
+    private final List<MoneyListDetail> list = new ArrayList<>();
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +140,8 @@ public class UserCenterDialog extends BaseDialog {
         } else {
             mMoney.setVisibility(View.GONE);
         } */
+        phoneBindStateChange();
+        authenStateChange();
         bindWXStateChange();
         if (currentType == 3) {
             initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
@@ -266,7 +266,7 @@ public class UserCenterDialog extends BaseDialog {
         mIvBindPhone = findViewById(R.id.iv_isbindphone);
         mIvAuthen = findViewById(R.id.iv_isauthen);
         mIvBindWx = findViewById(R.id.iv_isbindwx);
-        mTvMyMoney = findViewById(R.id.tv_mymoney);
+        mTvMyMoney = findViewById(R.id.tv_mymoneyvalue);
         mNoActivity = findViewById(R.id.tv_noactivity);
         mLvMoneyType = mView.findViewById(R.id.listview_money);
         mTvNoRole = findViewById(R.id.tv_norole);
@@ -347,6 +347,7 @@ public class UserCenterDialog extends BaseDialog {
         final ImageView ivBindBack = (ImageView) includeBind.findViewById(R.id.iv_bind_back);
         final TextView mBindType = (TextView) includeBind.findViewById(R.id.tv_title_bind);
 
+        //界面三个图标状态改变
         phoneBindStateChange();
         authenStateChange();
         bindWXStateChange();
@@ -649,6 +650,9 @@ public class UserCenterDialog extends BaseDialog {
 
     //获取红包界面数据
     private void initMoneyPage(final String playerId, final String serverId) {
+        if (tabLayout != null) {
+            tabLayout.clearOnTabSelectedListeners();
+        }
         StartESAccountCenter.moneyBaseInfo(new MoneyDataCallBack<MoneyGroupAndRoleInfo>() {
             @Override
             public void success(final MoneyGroupAndRoleInfo moneyBaseInfo) {
@@ -692,16 +696,16 @@ public class UserCenterDialog extends BaseDialog {
             lists = new HashMap<>();
         }
         lists.clear();
-        TabLayout tabLayout = mView.findViewById(R.id.tablayout_moneytype);
+        tabLayout = mView.findViewById(R.id.tablayout_moneytype);
         tabLayout.removeAllTabs();
         for (int i = 0; i < groupInfo.size(); i++) {
             tabLayout.addTab(tabLayout.newTab().setText(groupInfo.get(i).getGroupName()).setTag(groupInfo.get(i).getGroupId()));
         }
-        setMoneyList(groupInfo.get(0).getGroupId());
+        setMoneyList(groupInfo.get(0).getGroupId(), false);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                setMoneyList((int) tab.getTag());
+                setMoneyList((int) tab.getTag(), true);
             }
 
             @Override
@@ -926,13 +930,14 @@ public class UserCenterDialog extends BaseDialog {
             @Override
             public void run() {
                 try {
-                    final EucApiResult<String> bindCode = AuthAPI.getBindCode(mContext, Constant.ESDK_USERID, RegisterAPI.getRequestInfo(mContext));
+                    final EucApiResult<WxBindCodeInfo> bindCode = AuthAPI.getBindCode(mContext, Constant.ESDK_USERID, RegisterAPI.getRequestInfo(mContext));
                     ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (bindCode.getResultCode().equals(CodeConstant.OK)) {
                                 //弹出绑定微信弹窗
-                                BindWxDialog dialog = new BindWxDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0, "", bindCode.getResult());
+                                BindWxDialog dialog = new BindWxDialog(mContext, R.style.easou_dialog, Gravity.CENTER, 0.8f, 0,
+                                        bindCode.getResult().getBindCodeHtml(), bindCode.getResult().getBindCode());
                                 dialog.show();
                                 dialog.setCloseListener(new BindWxDialog.DialogCloseListener() {
                                     @Override
@@ -958,10 +963,12 @@ public class UserCenterDialog extends BaseDialog {
     }
 
     //设置每个分类红包下的数据
-    private void setMoneyList(final int id) {
+    private void setMoneyList(final int id, final boolean isRefresh) {
         if (lists.get(id) != null) {
-            MoneyDetailAdapter adapter = new MoneyDetailAdapter(mContext, lists.get(id));
-            mLvMoneyType.setAdapter(adapter);
+            list.clear();
+            list.addAll(lists.get(id));
+            moneyDetailAdapter.setGroupId(id);
+            moneyDetailAdapter.notifyDataSetChanged();
             return;
         }
         ThreadPoolManager.getInstance().addTask(new Runnable() {
@@ -975,8 +982,23 @@ public class UserCenterDialog extends BaseDialog {
                             @Override
                             public void run() {
                                 if (moneyListInfo.getBonusList().size() > 0) {
-                                    MoneyDetailAdapter adapter = new MoneyDetailAdapter(mContext, moneyListInfo.getBonusList());
-                                    mLvMoneyType.setAdapter(adapter);
+                                    if (isRefresh) {
+                                        list.clear();
+                                        list.addAll(lists.get(id));
+                                        moneyDetailAdapter.setGroupId(id);
+                                        moneyDetailAdapter.notifyDataSetChanged();
+                                        return;
+                                    }
+                                    list.clear();
+                                    list.addAll(moneyListInfo.getBonusList());
+                                    moneyDetailAdapter = new MoneyDetailAdapter(mContext, list, id);
+                                    mLvMoneyType.setAdapter(moneyDetailAdapter);
+                                    moneyDetailAdapter.setTaskListener(new MoneyDetailAdapter.TaskClickListener() {
+                                        @Override
+                                        public void onClick(int pos, int moneyNum) {
+                                            mTvMyMoney.setText(Integer.valueOf(mTvMyMoney.getText().toString()) + moneyNum + "");
+                                        }
+                                    });
                                 }
                             }
                         });
@@ -984,7 +1006,7 @@ public class UserCenterDialog extends BaseDialog {
 
                     @Override
                     public void fail(String msg) {
-
+                        ESToast.getInstance().ToastThreadShow(mContext, msg);
                     }
                 }, mContext, CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext), id);
             }
