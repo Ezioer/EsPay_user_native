@@ -908,9 +908,9 @@ public class UserCenterDialog extends BaseDialog {
                             @Override
                             public void cashSuccess(int money) {
                                 //money为提现申请成功的金额
-                                String s = mTotalMoneyValue.getText().toString();
+                                String s = mTvMyMoney.getText().toString();
                                 int tempMoney = Integer.valueOf(s);
-                                mTotalMoneyValue.setText((tempMoney - money) + "");
+                                mTvMyMoney.setText((tempMoney - money) + "");
                             }
                         });
                     }

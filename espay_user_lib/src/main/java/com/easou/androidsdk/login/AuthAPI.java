@@ -25,6 +25,8 @@ import com.easou.androidsdk.login.service.WxBindCodeInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
 import com.easou.androidsdk.util.Tools;
 
+import java.net.URLDecoder;
+
 public class AuthAPI {
 
     protected static EucService eucService = null;
@@ -372,7 +374,13 @@ public class AuthAPI {
         if (CodeConstant.OK.equals(result.getResultCode())) {
             String code = jbean.getBody().getObject("bindCode", String.class);
             String codeHtml = jbean.getBody().getObject("bindCodeHtml", String.class);
-            WxBindCodeInfo info = new WxBindCodeInfo(code, codeHtml);
+            String codeText = "";
+            try {
+                codeText = URLDecoder.decode(codeHtml, "utf-8");
+            } catch (Exception e) {
+                codeText = codeHtml;
+            }
+            WxBindCodeInfo info = new WxBindCodeInfo(code, codeText);
             result.setResult(info);
         }
         return result;
