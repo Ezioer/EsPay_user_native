@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Map<String, String> playerInfo = new HashMap<String, String>();
                 playerInfo.put(ESConstant.PLAYER_NAME, "哈哈哈哈哈哈"); // 游戏角色名称
                 playerInfo.put(ESConstant.PLAYER_LEVEL, "9"); // 游戏角色等级
-                playerInfo.put(ESConstant.PLAYER_ID, "565187645"); // 游戏角色id
+                playerInfo.put(ESConstant.PLAYER_ID, mPlayId.getText().toString()); // 游戏角色id
                 playerInfo.put(ESConstant.PLAYER_SERVER_ID, "1"); // 游戏区服id
                 playerInfo.put(ESConstant.LEVEL_NICK_NAME, "hahaha");
                 playerInfo.put(ESConstant.SERVER_NAME, "hahaha");

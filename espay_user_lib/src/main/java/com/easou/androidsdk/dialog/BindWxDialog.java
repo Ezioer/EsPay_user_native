@@ -1,6 +1,8 @@
 package com.easou.androidsdk.dialog;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +21,7 @@ import com.easou.androidsdk.login.service.CodeConstant;
 import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.ui.ESToast;
+import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ThreadPoolManager;
 import com.easou.espay_user_lib.R;
 
@@ -62,6 +65,9 @@ public class BindWxDialog extends BaseDialog {
             @Override
             public void onClick(View view) {
                 //复制并绑定微信
+                ClipboardManager cm = (ClipboardManager) (mContext).getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData mClipData = ClipData.newPlainText("Label", mCode);
+                cm.setPrimaryClip(mClipData);
             }
         });
         TextView code = (TextView) mView.findViewById(R.id.tv_bindcode_value);
@@ -75,6 +81,17 @@ public class BindWxDialog extends BaseDialog {
             }
         });
         content.setText(Html.fromHtml(mContent));
+    }
+
+
+    private DialogCloseListener closeListener = null;
+
+    public void setCloseListener(DialogCloseListener listener) {
+        closeListener = listener;
+    }
+
+    public interface DialogCloseListener {
+        void dialogClose();
     }
 
     //检查当前用户是否绑定微信
@@ -113,15 +130,5 @@ public class BindWxDialog extends BaseDialog {
                 }
             }
         });
-    }
-
-    private DialogCloseListener closeListener = null;
-
-    public void setCloseListener(DialogCloseListener listener) {
-        closeListener = listener;
-    }
-
-    public interface DialogCloseListener {
-        void dialogClose();
     }
 }

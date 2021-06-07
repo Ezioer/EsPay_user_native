@@ -33,7 +33,9 @@ import com.easou.androidsdk.login.RegisterAPI;
 import com.easou.androidsdk.login.UserAPI;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
+import com.easou.androidsdk.login.service.CheckBindByUserIdInfo;
 import com.easou.androidsdk.login.service.CodeConstant;
+import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.GiftBean;
@@ -140,9 +142,9 @@ public class UserCenterDialog extends BaseDialog {
         } else {
             mMoney.setVisibility(View.GONE);
         } */
+        checkIsBindWx();
         phoneBindStateChange();
         authenStateChange();
-        bindWXStateChange();
         if (currentType == 3) {
             initMoneyPage(CommonUtils.getPlayerId(mContext), CommonUtils.getServerId(mContext));
         }
@@ -290,13 +292,15 @@ public class UserCenterDialog extends BaseDialog {
         getMoney.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getOpenId())) {
-                    ESToast.getInstance().ToastShow(mContext, "必须绑定微信才能提现哦!");
-                    bindWxDialog();
+                if (CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getOpenId())
+//                        && CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getMobile())
+                        && CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getIdentityNum())) {
+                    //提现
+                    getMoney();
                     return;
                 }
-                //提现
-                getMoney();
+                ESToast.getInstance().ToastShow(mContext, "提现需要绑定微信,手机号以及实名哦!");
+
             }
         });
 
@@ -434,6 +438,7 @@ public class UserCenterDialog extends BaseDialog {
                                         Starter.mCallback.onUserCert(result);
                                         Starter.loginBean.getUser().setIdentityNum(idNum);
                                         ESToast.getInstance().ToastShow(mContext, "认证成功");
+                                        authenStateChange();
                                         ivAuthenBack.performClick();
                                     }
                                 });
@@ -909,7 +914,7 @@ public class UserCenterDialog extends BaseDialog {
                             public void cashSuccess(int money) {
                                 //money为提现申请成功的金额
                                 String s = mTvMyMoney.getText().toString();
-                                int tempMoney = Integer.valueOf(s);
+                                int tempMoney = CommonUtils.transMoneyToInt(s);
                                 mTvMyMoney.setText((tempMoney - money) + "");
                             }
                         });
@@ -996,7 +1001,7 @@ public class UserCenterDialog extends BaseDialog {
                                     moneyDetailAdapter.setTaskListener(new MoneyDetailAdapter.TaskClickListener() {
                                         @Override
                                         public void onClick(int pos, int moneyNum) {
-                                            mTvMyMoney.setText(Integer.valueOf(mTvMyMoney.getText().toString()) + moneyNum + "");
+                                            mTvMyMoney.setText(CommonUtils.transMoneyToInt(mTvMyMoney.getText().toString()) + moneyNum + "");
                                         }
                                     });
                                 }
@@ -1012,4 +1017,36 @@ public class UserCenterDialog extends BaseDialog {
             }
         });
     }
+
+    //检查当前用户是否绑定微信
+    private void checkIsBindWx() {
+        if (CommonUtils.isNotNullOrEmpty(Starter.loginBean.getUser().getOpenId())) {
+            bindWXStateChange();
+            return;
+        }
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final EucApiResult<CheckBindByUserIdInfo> info = AuthAPI.checkIsBindThird(mContext, Constant.ESDK_USERID, RegisterAPI.getRequestInfo(mContext));
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (info.getResultCode().equals(CodeConstant.OK)) {
+                                if (info.getResult().getStatus().equals("1")) {
+                                    Starter.loginBean.getUser().setOpenId(info.getResult().getOpenId());
+                                }
+                                bindWXStateChange();
+                            } else {
+                            }
+                        }
+                    });
+
+                } catch (EucAPIException e) {
+                }
+            }
+        });
+    }
 }
+
+

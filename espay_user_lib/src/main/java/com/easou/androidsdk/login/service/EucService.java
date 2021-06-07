@@ -206,8 +206,6 @@ public class EucService {
     //获取用户余额 v2.0
     public MoneyBalance getMoneyBalance() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", "1");
-        map.put("serverId", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/accBalance", map);
         if (info == null) {
             return null;
@@ -234,8 +232,6 @@ public class EucService {
         Map map = getDefaultMapWithoutOS();
         map.put("playerId", playerId);
         map.put("serverId", serverId);
-        map.put("openId", "1");
-        map.put("money", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/roleBonusGroups", map);
         if (info == null) {
             return null;
@@ -318,8 +314,6 @@ public class EucService {
     //获取提现金额 v2.0
     public DrawMoney getCashValue() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", "1");
-        map.put("serverId", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawalLvs", map);
         if (info == null) {
             return null;
@@ -331,8 +325,6 @@ public class EucService {
     //获取提现规则 v2.0
     public DrawRule getCashRule() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", "1");
-        map.put("serverId", "1");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawalRule", map);
         if (info == null) {
             return null;
@@ -344,9 +336,7 @@ public class EucService {
     //提现 v2.0
     public DrawResultInfo getCash(String money, String openId) {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", "1");
         map.put("money", money);
-        map.put("serverId", "1");
         map.put("openId", openId);
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/drawal", map);
         if (info == null) {
@@ -359,8 +349,6 @@ public class EucService {
     //提现记录 v2.0
     public CashHistoryInfo getCashHistory() {
         Map map = getDefaultMapWithoutOS();
-        map.put("playerId", "1");
-        map.put("serverId", "1");
         map.put("page", "1");
         map.put("size", "10000");
         BaseResponse info = getBaseResponse("http://sdkapi.eayou.com/luckyMoney/moneyLogs", map);

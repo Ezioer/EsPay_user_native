@@ -996,4 +996,11 @@ public class CommonUtils {
         return sb.toString();
     }
 
+    public static int transMoneyToInt(String money) {
+        int intMoney = 0;
+        String[] split = money.split("\\.");
+        intMoney = Integer.valueOf(split[0]);
+        return intMoney;
+    }
+
 }
