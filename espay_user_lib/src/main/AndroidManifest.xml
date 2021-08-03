@@ -133,6 +133,13 @@
             android:screenOrientation="behind" />
 
         <activity
+            android:name="com.easou.androidsdk.dialog.CommonWebViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:excludeFromRecents="true"
+            android:theme="@style/easou_translucent_notitle"
+            android:screenOrientation="behind" />
+
+        <activity
             android:name="com.easou.androidsdk.dialog.WebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:hardwareAccelerated="false"

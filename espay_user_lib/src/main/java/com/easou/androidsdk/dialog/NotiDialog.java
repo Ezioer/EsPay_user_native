@@ -1,6 +1,7 @@
 package com.easou.androidsdk.dialog;
 
 import android.content.Context;
+import android.icu.text.SymbolTable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Html;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.easou.androidsdk.StartESAccountCenter;
+import com.easou.androidsdk.Starter;
 import com.easou.espay_user_lib.R;
 
 /**
@@ -18,12 +21,14 @@ import com.easou.espay_user_lib.R;
  */
 public class NotiDialog extends BaseDialog {
 
-    public NotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,String title,String content,String buttom) {
+    public NotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,
+                      boolean isForceQuit, String title, String content, String buttom) {
         super(context, animation, gravity, mWidth, mHeight, true);
         mContext = context;
         mTitle = title;
         mContent = content;
         mButtom = buttom;
+        this.isForceQuit = isForceQuit;
     }
 
     private View mView;
@@ -31,6 +36,7 @@ public class NotiDialog extends BaseDialog {
     private String mTitle;
     private String mContent;
     private String mButtom;
+    private boolean isForceQuit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,19 @@ public class NotiDialog extends BaseDialog {
         TextView title = (TextView) mView.findViewById(R.id.tv_title_type);
         TextView content = (TextView) mView.findViewById(R.id.tv_noti_content);
         ImageView mClose = mView.findViewById(R.id.iv_close);
+        if (isForceQuit) {
+            mClose.setVisibility(View.GONE);
+            buttom.setVisibility(View.VISIBLE);
+            buttom.setText("退出登录");
+        }
+        buttom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //强制退出登录
+                dismiss();
+                StartESAccountCenter.logout(mContext);
+            }
+        });
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

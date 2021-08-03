@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/icon_loginbg"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_service_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/userservice"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_below="@id/tv_service_title"
+        android:layout_marginTop="30dp">
+
+        <LinearLayout
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_service_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="6dp"
+                android:text="您是否同意"
+                android:textColor="@color/easou_thin1_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_dialog_private"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="6dp"
+                android:text="隐私政策,"
+                android:textColor="@color/c_blue"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_dialog_service"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="6dp"
+                android:text="用户协议"
+                android:textColor="@color/c_blue"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/scrollview"
+        android:id="@+id/ll_opera"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/tv_agree"
+            android:text="同意"
+            android:textColor="@color/c_blue"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/tv_know"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="我知道了"
+            android:textColor="@color/payeco_textColorWhite"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/tv_disagree"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="不同意"
+            android:textColor="@color/payeco_textColorWhite"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</RelativeLayout>

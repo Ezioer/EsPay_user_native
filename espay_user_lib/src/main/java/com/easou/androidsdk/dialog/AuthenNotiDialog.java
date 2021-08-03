@@ -118,11 +118,12 @@ public class AuthenNotiDialog extends BaseDialog {
                                             Constant.ESDK_APP_ID, RegisterAPI.getRequestInfo(mContext), mContext);
                                 }
                                 if (info.getResultCode().equals(CodeConstant.OK)) {
-                                    int age = CommonUtils.getAge(idNum);
-                                    StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age > 18 ? "1" : "0");
+                                    final int age = CommonUtils.getAge(idNum);
+                                    StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age >= 18 ? "1" : "0");
                                     ((Activity) mContext).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            CommonUtils.saveIsAutoCount(age >= 18 ? "1" : "0", mContext);
                                             ESToast.getInstance().ToastShow(mContext, "认证成功");
                                             if (listener != null) {
                                                 listener.authenSuccess(CommonUtils.getYMDfromIdNum(idNum), idNum);

@@ -31,5 +31,6 @@
     <color name="easou_white_alpha">#20ffffff</color>
     <color name="c_green">#67ae5b</color>
     <color name="c_white">#ffffff</color>
+    <color name="c_blue">#599ff7</color>
 
 </resources>

@@ -74,10 +74,11 @@ public class Constant {
     public static boolean AQY_SDK;
     public static boolean BD_SDK;
     public static boolean isShowMoney;
-    /**
-     * 保存支付限制信息
-     */
-    public static Map<String, String> PAY_LIMIT_INFO_MAP;
+	public static boolean isHoliday;
+	/**
+	 * 保存支付限制信息
+	 */
+	public static Map<String, String> PAY_LIMIT_INFO_MAP;
     /**
      * 收款方 0 默认宜搜，1为大华通，2为易游,3为ZKX，4为WZ支付
      */
@@ -269,12 +270,26 @@ public class Constant {
 //    public static final String CHANNEL_MARK_ZKX= "HYWJHHY";
 //正式北京海默
 //    public static final String CHANNEL_MARK_ZKX= "HYWBJHM";
-    public static final String CHANNEL_MARK_ZFBZKX = "ZFBZKX";
-
+	public static final String CHANNEL_MARK_ZFBZKX = "ZFBZKX";
 
 
 	//正式
 	public static final String user_service = "https://h5.pay.mtianshitong.com/static/sdk/common/protocol.html";
+
+
+	public static final String guestLimitNoti = "您当前登录的账号是游客账号，游戏体验时长累计不能超过一小时，并且无法进行充值，建议您尽快完善实名信息。";
+	public static final String teeLimitNoti = "为呵护未成年人的健康成长，游戏推出了青少年模式。您的账号将受到如下限制：\n" +
+			"            1、每日22点至次日8点，禁止登陆；\n" +
+			"            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
+			"            3、充值额度每次不超过100元，每月不超过400元。";
+	public static final String babyLimitNoti = "为呵护未成年人的健康成长，游戏推出了青少年模式。您的账号将受到如下限制：\n" +
+			"            1、每日22点至次日8点，禁止登陆；\n" +
+			"            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
+			"            3、您无法在游戏进行充值。";
+	public static final String boyLimitNoti = "为呵护未成年人的健康成长，游戏推出了青少年模式。您的账号将受到如下限制：\n" +
+			"            1、每日22点至次日8点，禁止登陆；\n" +
+			"            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
+			"            3、充值额度每次不超过50元，每月不超过200元。";
 
 	public static class SdcardPath {
 		/**

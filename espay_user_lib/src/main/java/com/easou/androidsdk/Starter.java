@@ -219,6 +219,9 @@ public class Starter {
         StartOtherPlugin.logGismActionExitApp();
     }
 
+    public void onDestory() {
+        StartESAccountCenter.unRegisterTimer();
+    }
 
     /**
      * 广点通SDK行为数据上报初始化
@@ -227,7 +230,7 @@ public class Starter {
      */
     public void initGDTAction(Context mContext) {
         StartOtherPlugin.initGDTAction(mContext);
-//        AppTimeWatcher.getInstance().registerWatcher((Application)mContext);
+        AppTimeWatcher.getInstance().registerWatcher((Application) mContext);
     }
 
     /**

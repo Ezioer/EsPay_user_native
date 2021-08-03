@@ -5,7 +5,10 @@ import android.app.Application;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.easou.androidsdk.StartESAccountCenter;
+import com.easou.androidsdk.Starter;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
+import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.ESdkLog;
 
 /**
@@ -32,7 +35,7 @@ public class AppTimeWatcher {
 
     private Handler mHandler;
 
-    private static long TIME = 300 * 1000;
+    private static long TIME = 1 * 60 * 1000;
     private long mCurrentTime;
     private long mHasTime = 0;
     private boolean isCancel = false;
@@ -50,9 +53,9 @@ public class AppTimeWatcher {
             public void run() {
                 //每隔5分钟向服务器请求一次
                 ESdkLog.d("计时进行中.......");
-                if (!isCancel && mBeginWork) {
+                if (!isCancel && mBeginWork && CommonUtils.getIsAutoCount(Starter.mActivity).equals("0")) {
                     ESdkLog.d("发送网络请求");
-                    StartESUserPlugin.postTime();
+                    StartESAccountCenter.uploadTime(true);
                 }
                 mHasTime = 0;
                 mCurrentTime = System.currentTimeMillis();

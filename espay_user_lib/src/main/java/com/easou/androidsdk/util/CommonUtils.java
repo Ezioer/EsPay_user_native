@@ -134,6 +134,19 @@ public class CommonUtils {
         return info;
     }
 
+    public static void saveIsAutoCount(String count, Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("isautocount", count);
+        editor.commit();
+    }
+
+    public static String getIsAutoCount(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        String info = settings.getString("isautocount", "0");
+        return info;
+    }
+
 
     public static void saveLoginInfo(String info, Context mContext) {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
@@ -187,6 +200,32 @@ public class CommonUtils {
         SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("serverid", id);
+        editor.commit();
+    }
+
+    public static int getIsAgreePrivate(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        int info = settings.getInt("isagreeprivate", 0);
+        return info;
+    }
+
+    public static void saveIsAgree(Context mContext, int id) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("isagreeprivate", id);
+        editor.commit();
+    }
+
+    public static int getIsCheckPrivate(Context mContext) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        int info = settings.getInt("ischeckprivate", 0);
+        return info;
+    }
+
+    public static void saveIsCheck(Context mContext, int id) {
+        SharedPreferences settings = mContext.getSharedPreferences(Constant.ES_H5_TOKEN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("ischeckprivate", id);
         editor.commit();
     }
 
@@ -472,6 +511,18 @@ public class CommonUtils {
             return pkg.versionName;
         } catch (NameNotFoundException e) {
             return "";
+        }
+    }
+
+    //判断当前是否在22点至8点之间
+    public static boolean is22to8() {
+        long timeMillis = System.currentTimeMillis();
+        SimpleDateFormat format = new SimpleDateFormat("HH");
+        String formatTime = format.format(new Date(timeMillis));
+        if (Integer.valueOf(formatTime) >= 22 || Integer.valueOf(formatTime) <= 8) {
+            return true;
+        } else {
+            return true;
         }
     }
 

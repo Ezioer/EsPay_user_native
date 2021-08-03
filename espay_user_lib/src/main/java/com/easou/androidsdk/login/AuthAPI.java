@@ -13,11 +13,13 @@ import com.easou.androidsdk.login.service.EucApiResult;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.EucToken;
 import com.easou.androidsdk.login.service.EucUCookie;
+import com.easou.androidsdk.login.service.IdentifyStatusInfo;
 import com.easou.androidsdk.login.service.JBean;
 import com.easou.androidsdk.login.service.JBody;
 import com.easou.androidsdk.login.service.JUser;
 import com.easou.androidsdk.login.service.LUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
+import com.easou.androidsdk.login.service.LimitTimesInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
@@ -273,7 +275,7 @@ public class AuthAPI {
      * @return
      * @throws EucAPIException
      */
-    public static int identifyStatus(String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+    public static IdentifyStatusInfo identifyStatus(String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
         jbody.put("deviceId", deviceId);
@@ -281,11 +283,13 @@ public class AuthAPI {
         EucApiResult<String> result = new EucApiResult<String>(jbean);
         if (result.getResultCode() != null && result.getResultCode().equals(CodeConstant.OK) && jbean.getBody() != null) {
             String isHoliday = jbean.getBody().getObject("isHoliday", String.class);
-            String autoRegist = (String) jbean.getBody().getObject("autoRegistLimitByDeviceId", String.class);
-            String identifyStatue = (String) jbean.getBody().getObject("userIdentityStatus", String.class);
-            return Integer.valueOf(autoRegist);
+            String autoRegist = jbean.getBody().getObject("autoRegistLimitByDeviceId", String.class);
+            String identifyStatue = jbean.getBody().getObject("userIdentityStatus", String.class);
+            IdentifyStatusInfo identifyStatusInfo = new IdentifyStatusInfo(Boolean.valueOf(isHoliday),
+                    Integer.valueOf(autoRegist), Integer.valueOf(identifyStatue));
+            return identifyStatusInfo;
         }
-        return 0;
+        return null;
     }
 
     private static EucApiResult<AuthBean> buildAuthResult(JBean jbean)
@@ -325,6 +329,43 @@ public class AuthAPI {
             LoginBean eucAuthResult = new LoginBean(token, juser, u,
                     String.valueOf(juser.getId()), false);
             result.setResult(eucAuthResult);
+        }
+        return result;
+    }
+
+
+    //获取玩家游玩时间，方便处理未成年和成年的限制
+    public static EucApiResult<LimitTimesInfo> getTotalTimes(Context activity, String userid, String token, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userid);
+        jbody.put("EASOUTGC", token);
+        JBean jbean = eucService.getResult("/api2/getUserIdentityReportTimes.json",
+                jbody, oAuthPara, info);
+        return getTimes(jbean);
+    }
+
+    //获取玩家游玩时间，方便处理未成年和成年的限制
+    public static EucApiResult<LimitTimesInfo> addTotalTimes(Context activity, String userid, String token, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.put("userId", userid);
+        jbody.put("EASOUTGC", token);
+        JBean jbean = eucService.getResult("/api2/incrUserIdentityReportTimes.json",
+                jbody, oAuthPara, info);
+        return getTimes(jbean);
+    }
+
+    private static EucApiResult<LimitTimesInfo> getTimes(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<LimitTimesInfo> result = new EucApiResult<LimitTimesInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            LimitTimesInfo info = new LimitTimesInfo();
+            String todayTimes = jbean.getBody().getObject("todayTimes", String.class);
+            String totalTimes = jbean.getBody().getObject("totalTimes", String.class);
+            info.setTodayTimes(Integer.valueOf(todayTimes));
+            info.setTotalTimes(Integer.valueOf(totalTimes));
+            result.setResult(info);
         }
         return result;
     }

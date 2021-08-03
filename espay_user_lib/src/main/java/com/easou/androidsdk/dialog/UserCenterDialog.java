@@ -68,7 +68,7 @@ public class UserCenterDialog extends BaseDialog {
     private TextView tvGiftCode;
     private RelativeLayout llGiftCode;
     private CountDownTimer getTimer, cashTimer;
-//    private ImageView mMoney;
+    //    private ImageView mMoney;
     private TextView mLeftMoneyValue;
     private ObjectAnimator circle;
 
@@ -338,11 +338,12 @@ public class UserCenterDialog extends BaseDialog {
                         StartESAccountCenter.userCenterAuthen(new AuthenCallBack() {
                             @Override
                             public void loginSuccess(final String birthdate) {
-                                int age = CommonUtils.getAge(idNum);
-                                StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age > 18 ? "1" : "0");
+                                final int age = CommonUtils.getAge(idNum);
+                                StartESAccountCenter.getPayLimitInfo(mContext, age, idNum, age >= 18 ? "1" : "0");
                                 ((Activity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        CommonUtils.saveIsAutoCount(age >= 18 ? "1" : "0", mContext);
                                         rlAuthen.setVisibility(View.GONE);
                                         Map<String, String> result = new HashMap<String, String>();
                                         result.put(ESConstant.SDK_IS_IDENTITY_USER, "false");

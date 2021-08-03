@@ -8,12 +8,15 @@ import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.RestrictTo;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -124,7 +127,7 @@ public class LoginWayDialog extends BaseDialog {
         tvMainService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, WebViewActivity.class);
+                Intent intent = new Intent(mContext, CommonWebViewActivity.class);
                 intent.putExtra("url", Constant.user_service);
                 mContext.startActivity(intent);
             }
@@ -138,6 +141,38 @@ public class LoginWayDialog extends BaseDialog {
         final TextView mAccountLogin = (TextView) includeAccountLogin.findViewById(R.id.tv_login);
         final TextView accountType = (TextView) includeAccountLogin.findViewById(R.id.tv_account_type);
         final ImageView mTaptapLogin = mView.findViewById(R.id.iv_taptaplogin);
+        final CheckBox cbPrivate = includeAccountLogin.findViewById(R.id.cb_userservice);
+        final TextView tv_private = includeAccountLogin.findViewById(R.id.tv_private);
+        final TextView tv_service = includeAccountLogin.findViewById(R.id.tv_service);
+        tv_private.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, CommonWebViewActivity.class);
+                intent.putExtra("url", Constant.user_service);
+                mContext.startActivity(intent);
+            }
+        });
+
+        tv_service.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, CommonWebViewActivity.class);
+                intent.putExtra("url", Constant.user_service);
+                mContext.startActivity(intent);
+            }
+        });
+
+        cbPrivate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                CommonUtils.saveIsCheck(mContext, b ? 1 : 0);
+            }
+        });
+        if (CommonUtils.getIsCheckPrivate(mContext) == 1) {
+            cbPrivate.setChecked(true);
+        } else {
+            cbPrivate.setChecked(false);
+        }
         if (mContext.getPackageName().equals("com.blackwasp")) {
             mTaptapLogin.setVisibility(View.VISIBLE);
             mTaptapLogin.setOnClickListener(new View.OnClickListener() {
@@ -200,22 +235,31 @@ public class LoginWayDialog extends BaseDialog {
         guestLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StartESAccountCenter.handleAutoRegister(new LoginCallBack() {
+                UserServiceDialog dialog = new UserServiceDialog(Starter.mActivity, R.style.easou_dialog,
+                        Gravity.CENTER, 0.8f, 0, true, "游客用户协议", "您是否同意");
+                dialog.show();
+                dialog.setOnAgreeListener(new UserServiceDialog.OnAgreeListener() {
                     @Override
-                    public void loginSuccess() {
-                        dismiss();
-                    }
-
-                    @Override
-                    public void loginFail(final String msg) {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                    public void agree() {
+                        StartESAccountCenter.handleAutoRegister(new LoginCallBack() {
                             @Override
-                            public void run() {
-                                ESToast.getInstance().ToastShow(mContext, msg);
+                            public void loginSuccess() {
+                                CommonUtils.saveIsCheck(mContext, 1);
+                                dismiss();
                             }
-                        });
+
+                            @Override
+                            public void loginFail(final String msg) {
+                                ((Activity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ESToast.getInstance().ToastShow(mContext, msg);
+                                    }
+                                });
+                            }
+                        }, mContext);
                     }
-                }, mContext);
+                });
             }
         });
 
@@ -287,6 +331,10 @@ public class LoginWayDialog extends BaseDialog {
                             ESToast.getInstance().ToastShow(mContext, "账号和密码不能为空");
                             return;
                         }
+                        if (!cbPrivate.isChecked()) {
+                            ESToast.getInstance().ToastShow(mContext, "需要勾选隐私和用户协议才能登录哦");
+                            return;
+                        }
                         Tools.hideKeyboard(mAccountLogin);
                         StartESAccountCenter.handleAccountLogin(new LoginCallBack() {
 
@@ -342,6 +390,10 @@ public class LoginWayDialog extends BaseDialog {
                         String password = editTextPassword.getText().toString();
                         if (name.isEmpty() || password.isEmpty()) {
                             ESToast.getInstance().ToastShow(mContext, "账号和密码不能为空");
+                            return;
+                        }
+                        if (!cbPrivate.isChecked()) {
+                            ESToast.getInstance().ToastShow(mContext, "需要勾选隐私和用户协议才能注册哦");
                             return;
                         }
                         Tools.hideKeyboard(mAccountLogin);

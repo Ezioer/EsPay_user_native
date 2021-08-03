@@ -14,9 +14,11 @@ import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
 import com.easou.androidsdk.dialog.LoginWayDialog;
 import com.easou.androidsdk.dialog.UserCenterDialog;
+import com.easou.androidsdk.dialog.UserServiceDialog;
 import com.easou.androidsdk.login.AuthAPI;
 import com.easou.androidsdk.login.LoginCallBack;
 import com.easou.androidsdk.login.RegisterAPI;
+import com.easou.androidsdk.login.service.IdentifyStatusInfo;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.ui.ESToast;
@@ -66,6 +68,26 @@ public class StartESUserPlugin {
 		});*/
 
         startLogin();
+        if (CommonUtils.getIsAgreePrivate(Starter.mActivity) == 0) {
+            UserServiceDialog dialog = null;
+            if (dialog == null) {
+                dialog = new UserServiceDialog(Starter.mActivity, R.style.easou_dialog,
+                        Gravity.CENTER, 0.8f, 0, true, "隐私政策协议", "您是否同意");
+            }
+            dialog.show();
+            dialog.setOnAgreeListener(new UserServiceDialog.OnAgreeListener() {
+                @Override
+                public void agree() {
+                    CommonUtils.saveIsAgree(Starter.mActivity, 1);
+                    login();
+                }
+            });
+        } else {
+            login();
+        }
+    }
+
+    public static void login() {
         final LoginBean info = CommonUtils.getLoginInfo(Starter.mActivity);
         final Profile currentProfile = Profile.getCurrentProfile();
         if (info == null && currentProfile == null) {
@@ -75,14 +97,7 @@ public class StartESUserPlugin {
             ThreadPoolManager.getInstance().addTask(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
-                        if (limitStatue != null) {
-                            CommonUtils.saveNationIdentity(Starter.mActivity, limitStatue.getRns());
-                            CommonUtils.saveLogState(Starter.mActivity, limitStatue.getLus());
-                        }
-                    } catch (Exception e) {
-                    }
+                    setLimitInfo();
                     Starter.mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -161,7 +176,6 @@ public class StartESUserPlugin {
                     });
                 }
             });
-
         }
     }
 
@@ -194,21 +208,7 @@ public class StartESUserPlugin {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
-                int status = 0;
-                try {
-                    //获取登陆限制信息
-                    final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
-                    if (limitStatue != null) {
-                        CommonUtils.saveNationIdentity(Starter.mActivity, limitStatue.getRns());
-                        CommonUtils.saveLogState(Starter.mActivity, limitStatue.getLus());
-                    }
-                    status = AuthAPI.identifyStatus(Tools.getDeviceImei(Starter.mActivity), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
-                    if (limitStatue == null || limitStatue.getUs() == 0) {
-                        status = 0;
-                    }
-                } catch (Exception e) {
-                    status = 0;
-                }
+                int status = setLimitInfo();
                 //开启实名认证后，如果status为1，则隐藏游客登陆
                 final int isAutoRegister = status;
                 Starter.mActivity.runOnUiThread(new Runnable() {
@@ -224,6 +224,28 @@ public class StartESUserPlugin {
             }
         });
 
+    }
+
+    //设置配置信息
+    public static int setLimitInfo() {
+        IdentifyStatusInfo status;
+        try {
+            //获取登陆限制信息
+            final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
+            if (limitStatue != null) {
+                CommonUtils.saveNationIdentity(Starter.mActivity, limitStatue.getRns());
+                CommonUtils.saveLogState(Starter.mActivity, limitStatue.getLus());
+            }
+            status = AuthAPI.identifyStatus(Tools.getDeviceImei(Starter.mActivity), RegisterAPI.getRequestInfo(Starter.mActivity), Starter.mActivity);
+            Constant.isHoliday = status.isHoliday();
+            if (limitStatue == null || limitStatue.getUs() == 0) {
+                status.setAutoRegister(0);
+            }
+        } catch (Exception e) {
+            status = new IdentifyStatusInfo(false, 0, 0);
+            status.setAutoRegister(0);
+        }
+        return status.getAutoRegister();
     }
 
     public static void hideUserCenter() {
