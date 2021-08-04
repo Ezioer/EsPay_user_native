@@ -44,5 +44,15 @@
     <string name="changepassword">修改密码</string>
     <string name="bindphone">绑定手机</string>
     <string name="logout">退出登录</string>
+    <string name="deleteaccount">永久账号注销</string>
+    <string name="deleteaccount_title">账号注销</string>
+    <string name="deleteaccount_infotitle">账号注销资料提交</string>
+    <string name="deleteaccount_name">姓名</string>
+    <string name="deleteaccount_account">账号</string>
+    <string name="deleteaccount_idnum">身份证号</string>
+    <string name="deleteaccount_bindphonenum">绑定手机号</string>
+    <string name="deleteaccount_vercode">手机验证码</string>
+    <string name="deleteaccount_getcode">点击获取验证码</string>
+    <string name="matchall">我已满足上述注销条件</string>
     <color name="primary_color">#FF14B9C8</color>
 </resources>

@@ -16,9 +16,11 @@ import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.DrawResultInfo;
+import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.LimitTimesInfo;
 import com.easou.androidsdk.login.service.LoginNameInfo;
+import com.easou.androidsdk.login.service.LogoutInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
@@ -716,6 +718,104 @@ public class StartESAccountCenter {
                 }
             });
         }
+    }
+
+    //验证注销账号验证码
+    public static void veriLogoutCode(final String mobile, final String code, final LoginCallBack callBack
+            , final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<Integer> result = AuthAPI.verifyDestoryCode(mContext, mobile,
+                            Constant.ESDK_TOKEN, code, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK) && result.getResult() == 1) {
+                        callBack.loginSuccess();
+                    } else {
+                        callBack.loginFail("网络出错了");
+                    }
+                } catch (EucAPIException e) {
+                    callBack.loginFail("网络出错了");
+                }
+            }
+        });
+    }
+
+    //获取注销账号验证码
+    public static void getLogoutCode(final String mobile, final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<String> result = AuthAPI.getDestoryCode(mContext, mobile,
+                            Constant.ESDK_TOKEN, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK)) {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ESToast.getInstance().ToastShow(mContext, "验证码发送成功，请留意短信提醒");
+                            }
+                        });
+                    } else {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ESToast.getInstance().ToastShow(mContext, "网络出错，请重试");
+                            }
+                        });
+                    }
+                } catch (EucAPIException e) {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ESToast.getInstance().ToastShow(mContext, "网络出错，请重试");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    //获取注销协议
+    public static void getLogoutInfo(final MoneyDataCallBack<LogoutInfo> callBack
+            , final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<LogoutInfo> result = AuthAPI.getLogoutProtocol(mContext,
+                            Constant.ESDK_TOKEN, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK)) {
+                        callBack.success(result.getResult());
+                    } else {
+                        callBack.fail("网络出错了");
+                    }
+                } catch (EucAPIException e) {
+                    callBack.fail("网络出错了");
+                }
+            }
+        });
+    }
+
+    //获取注销协议
+    public static void submitLogout(final LoginCallBack callBack, final String idName, final String idNum, final String phone
+            , final String code, final String name, final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<Integer> result = AuthAPI.submitLogout(mContext, Constant.ESDK_TOKEN,
+                            Constant.ESDK_USERID, name, phone, code, idName, idNum, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK)) {
+                        callBack.loginSuccess();
+                    } else {
+                        callBack.loginFail("网络出错了");
+                    }
+                } catch (EucAPIException e) {
+                    callBack.loginFail("网络出错了");
+                }
+            }
+        });
     }
 
     //获取当前用户的游玩时长

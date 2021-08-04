@@ -23,7 +23,7 @@ public class NotiDialog extends BaseDialog {
 
     public NotiDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,
                       boolean isForceQuit, String title, String content, String buttom) {
-        super(context, animation, gravity, mWidth, mHeight, true);
+        super(context, animation, gravity, mWidth, mHeight, false);
         mContext = context;
         mTitle = title;
         mContent = content;
@@ -67,9 +67,26 @@ public class NotiDialog extends BaseDialog {
         mClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismiss();
+                if (isForceQuit) {
+                    StartESAccountCenter.logout(mContext);
+                } else {
+                    if (closeListener != null) {
+                        closeListener.close();
+                    }
+                    dismiss();
+                }
             }
         });
         content.setText(mContent);
+    }
+
+    private OnCloseListener closeListener = null;
+
+    public void setOnCloseListener(OnCloseListener listener) {
+        closeListener = listener;
+    }
+
+    public interface OnCloseListener {
+        void close();
     }
 }
