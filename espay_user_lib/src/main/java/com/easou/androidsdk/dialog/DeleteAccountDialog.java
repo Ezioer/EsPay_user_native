@@ -129,7 +129,7 @@ public class DeleteAccountDialog extends BaseDialog {
         });
         mLlInfo = mView.findViewById(R.id.ll_da_info);
         TextView etAccount = mView.findViewById(R.id.et_da_account);
-        etAccount.setText(Starter.loginBean.getUser().getNickName());
+        etAccount.setText(Starter.loginBean.getUser().getName());
         etGetCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,6 +152,8 @@ public class DeleteAccountDialog extends BaseDialog {
                 if (mCurrentPageType == 1 || mCurrentPageType == 3) {
                     if (mCbAgree.isChecked()) {
                         switchPage(mCurrentPageType);
+                    } else {
+                        ESToast.getInstance().ToastShow(mContext, "请勾选条件须知");
                     }
                 } else {
                     //验证短信验证码
