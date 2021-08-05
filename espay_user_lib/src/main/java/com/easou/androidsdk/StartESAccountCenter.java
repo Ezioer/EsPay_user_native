@@ -819,7 +819,8 @@ public class StartESAccountCenter {
     }
 
     //获取当前用户的游玩时长
-    public static void uploadTime(final boolean isAdd) {
+    public static void uploadTime(final boolean isAdd, final Map<String, String> result, final boolean isLogin
+            , final Map<String, String> authenResult) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
@@ -844,6 +845,8 @@ public class StartESAccountCenter {
                                         NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
                                                 0.8f, 0, false, "", Constant.guestLimitNoti, "");
                                         authenDialog.show();
+                                    } else {
+                                        handleAuthenLogin(result, isLogin, authenResult);
                                     }
                                 } else {
                                     if (CommonUtils.getAge(user.getIdentityNum()) < 18) {
@@ -854,7 +857,11 @@ public class StartESAccountCenter {
                                             NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
                                                     0.8f, 0, false, "", Constant.teeLimitNoti, "");
                                             authenDialog.show();
+                                        } else {
+                                            handleAuthenLogin(result, isLogin, authenResult);
                                         }
+                                    } else {
+                                        handleAuthenLogin(result, isLogin, authenResult);
                                     }
                                     //成年人不做任何处理
                                 }
@@ -862,6 +869,13 @@ public class StartESAccountCenter {
                         }
                     });
                 } catch (Exception e) {
+                    //查询次数异常不影响登录
+                    Starter.mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handleAuthenLogin(result, isLogin, authenResult);
+                        }
+                    });
                 }
             }
         });
@@ -880,10 +894,11 @@ public class StartESAccountCenter {
                         public void run() {
                             if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
                                 if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                                    showNotiDialog(mAge);
+                                    showNotiDialog(mAge, result, true, null);
+                                } else {
+                                    handleAuthenLogin(result, true, null);
                                 }
-                                Starter.mCallback.onLogin(result);
-                                popFloatView();
+//                                handleResult(result);
                             } else {
                                 if (userInfo.getDescList().size() > 0 && userInfo.getDescList().get(0).getC().equals("8")) {
                                     ESToast.getInstance().ToastShow(mContext, userInfo.getDescList().get(0).getD());
@@ -977,13 +992,14 @@ public class StartESAccountCenter {
                     infoDialog.setCloseListener(new AccountInfoDialog.OnCloseDialogListener() {
                         @Override
                         public void dialogClose() {
-                            Starter.mCallback.onLogin(result);
-                            postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                             //游客登录提示
                             if (limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                                showNotiDialog(0);
+                                showNotiDialog(0, result, true, null);
+                            } else {
+                                handleAuthenLogin(result, true, null);
                             }
-                            popFloatView();
+//                            handleResult(result);
+//                            postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                         }
                     });
                 }
@@ -1086,9 +1102,11 @@ public class StartESAccountCenter {
                     } else {
                         //未认证过的自动注册用户或者认证过但是未成年的提示
                         if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                            showNotiDialog(mAge);
+                            showNotiDialog(mAge, result, true, null);
+                        } else {
+                            handleAuthenLogin(result, true, null);
                         }
-                        handleResult(result);
+//                        handleResult(result);
                     }
                 } else {
                     if ((identityStatus == 0 || identityStatus == 2 || identityStatus == 3) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
@@ -1105,9 +1123,11 @@ public class StartESAccountCenter {
                     } else {
                         //未认证过的自动注册用户或者认证过但是未成年的提示
                         if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                            showNotiDialog(mAge);
+                            showNotiDialog(mAge, result, true, null);
+                        } else {
+                            handleAuthenLogin(result, true, null);
                         }
-                        handleResult(result);
+//                        handleResult(result);
                     }
                 }
             }
@@ -1218,6 +1238,7 @@ public class StartESAccountCenter {
         StartESUserPlugin.hideFloatView();
         StartESUserPlugin.isShowUser = false;
         FloatView.isSetHalf = false;
+        Starter.loginBean = null;
         CommonUtils.saveLoginInfo("", mContext);
         CommonUtils.saveUInfo("", mContext);
         CommonUtils.saveShowMoney(mContext, 0);
@@ -1275,19 +1296,21 @@ public class StartESAccountCenter {
                 authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
                 //更新当前用户的身份证信息
                 Starter.loginBean.getUser().setIdentityNum(idNum);
-                if (isLogin) {
+                int uAge = CommonUtils.getAge(idNum);
+                /*if (isLogin) {
                     Starter.mCallback.onLogin(result);
                 } else {
                     Starter.mCallback.onRegister(result);
                 }
                 //回调认证结果
-                Starter.mCallback.onUserCert(authenResult);
-                int uAge = CommonUtils.getAge(idNum);
+                Starter.mCallback.onUserCert(authenResult);*/
                 //认证成功且是未成年的用户提示
                 if (limitStatue.getNs() == 1 && uAge < 18) {
-                    showNotiDialog(uAge);
+                    showNotiDialog(uAge, result, isLogin, authenResult);
+                } else {
+                    handleAuthenLogin(result, isLogin, authenResult);
                 }
-                popFloatView();
+//                popFloatView();
             }
         });
         authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
@@ -1296,14 +1319,16 @@ public class StartESAccountCenter {
                 //关闭认证回调
                 //未认证过的且不是自动注册的用户的提示
                 if (limitStatue.getNs() == 1) {
-                    showNotiDialog(0);
+                    showNotiDialog(0, result, isLogin, null);
+                } else {
+                    handleAuthenLogin(result, isLogin, null);
                 }
-                if (isLogin) {
+             /*   if (isLogin) {
                     Starter.mCallback.onLogin(result);
                 } else {
                     Starter.mCallback.onRegister(result);
-                }
-                popFloatView();
+                }*/
+//                popFloatView();
             }
         });
     }
@@ -1311,7 +1336,8 @@ public class StartESAccountCenter {
     /**
      * 公告提醒框
      */
-    public static void showNotiDialog(int age) {
+    public static void showNotiDialog(int age, final Map<String, String> result, final boolean isLogin
+            , final Map<String, String> authenResult) {
         String text = "";
         if (age == 0 || TextUtils.isEmpty(String.valueOf(age))) {
             text = Constant.guestLimitNoti;
@@ -1327,7 +1353,27 @@ public class StartESAccountCenter {
         NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
                 0.8f, 0, false, "", text, "");
         authenDialog.show();
-        uploadTime(false);
+        authenDialog.setOnCloseListener(new NotiDialog.OnCloseListener() {
+            @Override
+            public void close() {
+                uploadTime(false, result, isLogin, authenResult);
+            }
+        });
+    }
+
+    public static void handleAuthenLogin(Map<String, String> result, boolean isLogin, Map<String, String> authenResult) {
+        if (result == null) {
+            return;
+        }
+        if (isLogin) {
+            Starter.mCallback.onLogin(result);
+        } else {
+            Starter.mCallback.onRegister(result);
+        }
+        if (authenResult != null) {
+            Starter.mCallback.onUserCert(authenResult);
+        }
+        popFloatView();
     }
 
     public static void startTimer() {

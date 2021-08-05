@@ -366,6 +366,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Starter.getInstance().onGismExitApp();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         /** GISM SDK 退出游戏回调 */

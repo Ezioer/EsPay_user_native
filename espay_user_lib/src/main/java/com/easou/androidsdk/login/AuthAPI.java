@@ -411,12 +411,10 @@ public class AuthAPI {
             throws EucAPIException {
         EucApiResult<LogoutInfo> result = new EucApiResult<LogoutInfo>(jbean);
         if (CodeConstant.OK.equals(result.getResultCode())) {
-            String cancellationReminder = jbean.getBody().getObject("cancellationReminder", String.class);
             String cancellationAgreement = jbean.getBody().getObject("cancellationAgreement", String.class);
             String cancellationCondition = jbean.getBody().getObject("cancellationCondition", String.class);
             String cancellationNotice = jbean.getBody().getObject("cancellationNotice", String.class);
-            LogoutInfo info = new LogoutInfo(URLDecoder.decode(cancellationReminder),
-                    URLDecoder.decode(cancellationCondition), URLDecoder.decode(cancellationAgreement),
+            LogoutInfo info = new LogoutInfo(URLDecoder.decode(cancellationCondition), URLDecoder.decode(cancellationAgreement),
                     URLDecoder.decode(cancellationNotice));
             result.setResult(info);
         }
