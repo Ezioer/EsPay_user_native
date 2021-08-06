@@ -10,8 +10,10 @@ import android.widget.Toast;
 import com.easou.androidsdk.callback.AppTimeWatcher;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
+import com.easou.androidsdk.dialog.DeleteAccountStatusDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
 import com.easou.androidsdk.login.MoneyDataCallBack;
+import com.easou.androidsdk.login.service.AccountStatusInfo;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.CheckBindInfo;
@@ -797,7 +799,7 @@ public class StartESAccountCenter {
         });
     }
 
-    //获取注销协议
+    //提交注销
     public static void submitLogout(final LoginCallBack callBack, final String idName, final String idNum, final String phone
             , final String code, final String name, final Context mContext) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
@@ -809,13 +811,34 @@ public class StartESAccountCenter {
                     if (result.getResultCode().equals(CodeConstant.OK)) {
                         callBack.loginSuccess();
                     } else {
-                        callBack.loginFail("网络出错了");
+                        if (result.getDescList().size() > 0) {
+                            callBack.loginFail(result.getDescList().get(0).getD());
+                        } else {
+                            callBack.loginFail("登录失败");
+                        }
                     }
                 } catch (EucAPIException e) {
                     callBack.loginFail("网络出错了");
                 }
             }
         });
+    }
+
+    //获取注销账号状态
+    public static void getAccountStatus(final MoneyDataCallBack<AccountStatusInfo> callBack,
+                                        final String name, final Context mContext) {
+        try {
+            EucApiResult<AccountStatusInfo> result = AuthAPI.getAccountStatus(mContext, Constant.ESDK_TOKEN,
+                    name, RegisterAPI.getRequestInfo(Starter.mActivity));
+            if (result.getResultCode().equals(CodeConstant.OK)) {
+                callBack.success(result.getResult());
+            } else {
+                callBack.fail("网络出错了");
+            }
+        } catch (EucAPIException e) {
+            callBack.fail("网络出错了");
+        }
+
     }
 
     //获取当前用户的游玩时长
@@ -906,6 +929,28 @@ public class StartESAccountCenter {
                                     ESToast.getInstance().ToastShow(mContext, "认证失败");
                                 }
                                 popAuthenDialog(mContext, limitStatue, result, true);
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                }
+            }
+        });
+    }
+
+    private static void queryNationIdentify(final Context mContext, final String userId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
+                            , RegisterAPI.getRequestInfo(mContext), mContext);
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
+                                //国家实名认证成功，开启账号注销功能
+                                Constant.mNationAuthen = 1;
                             }
                         }
                     });
@@ -1019,7 +1064,88 @@ public class StartESAccountCenter {
         CommonUtils.saveUInfo(userInfo.getResult().getU().getU(), mContext);
     }
 
-    public static void handleLoginBean(boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
+    public static void handleLoginBean(final boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, final String pw) {
+        final String userId = String.valueOf(userInfo.getResult().getEsid());
+        final String userName = String.valueOf(userInfo.getResult().getUser().getName());
+        String token = String.valueOf(userInfo.getResult().getToken().token);
+        Constant.ESDK_TOKEN = token;
+        getAccountStatus(new MoneyDataCallBack<AccountStatusInfo>() {
+            @Override
+            public void success(final AccountStatusInfo accountStatusInfo) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Constant.mIsCanReply = accountStatusInfo.getCanApply();
+                        if (accountStatusInfo.getAccountStatus() == 5) {
+                            ESToast.getInstance().ToastShow(mContext, "该账号已注销!");
+                            logout(mContext);
+                        } else if (accountStatusInfo.getAccountStatus() == 2 || accountStatusInfo.getAccountStatus() == 3) {
+                            //弹窗提醒用户该账号处于注销申请期状态，是否继续等待注销活着确认取消注销
+                            DeleteAccountStatusDialog dialog = new DeleteAccountStatusDialog(mContext, R.style.easou_dialog, Gravity.CENTER,
+                                    0.8f, 0, "注销申请取消", Constant.AccountCancelNoti, true);
+                            dialog.show();
+                            dialog.setOnCloseListener(new DeleteAccountStatusDialog.OnCloseListener() {
+                                @Override
+                                public void close(int type) {
+                                    if (type == 1) {
+                                        //继续等待注销,回到登录状态
+                                        logout(mContext);
+                                    } else if (type == 2) {
+                                        //确认取消注销，正常登录
+                                        handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                    }
+                                }
+                            });
+                        } else if (accountStatusInfo.getAccountStatus() == 4) {
+                            if (accountStatusInfo.getIsRemind() == 0) {
+                                //注销驳回状态，弹窗提醒
+                                DeleteAccountStatusDialog dialog = new DeleteAccountStatusDialog(mContext, R.style.easou_dialog, Gravity.CENTER,
+                                        0.8f, 0, "账号注销申请状态提醒", accountStatusInfo.getRemarks(), false);
+                                dialog.show();
+                                dialog.setOnCloseListener(new DeleteAccountStatusDialog.OnCloseListener() {
+                                    @Override
+                                    public void close(int type) {
+                                        if (type == 3) {
+                                            //账号注销被驳回,正常登录
+                                            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            } else {
+                                //正常登录
+                                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                    }
+                                });
+                            }
+                        } else {
+                            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                @Override
+                                public void run() {
+                                    handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void fail(String msg) {
+                //正常登录
+                logout(mContext);
+            }
+        }, userName, mContext);
+    }
+
+    public static void handleDeleteAccount(boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
         final String userId = String.valueOf(userInfo.getResult().getEsid());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
@@ -1053,7 +1179,7 @@ public class StartESAccountCenter {
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
         String isAdult = "0";
         int age = 0;
-
+        queryNationIdentify(mContext, userId);
         final int identityStatus = userInfo.getResult().getUser().getIdentityStatus();
         if (limitStatue.getRns() != 0) {
             //走国家实名认证

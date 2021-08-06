@@ -256,10 +256,17 @@ public class UserCenterDialog extends BaseDialog {
         final RelativeLayout rlAuthen = (RelativeLayout) includeMenu.findViewById(R.id.rl_authen);
         final RelativeLayout rlLogout = (RelativeLayout) includeMenu.findViewById(R.id.rl_logout);
         final RelativeLayout rlDeleteAccount = (RelativeLayout) includeMenu.findViewById(R.id.rl_deleteaccount);
+        if (Constant.mNationAuthen == 0) {
+            rlDeleteAccount.setVisibility(View.GONE);
+        }
         rlDeleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteAccount();
+                if (Constant.mIsCanReply == 1) {
+                    deleteAccount();
+                } else {
+                    ESToast.getInstance().ToastShow(mContext, "暂时不能申请注销账号哦，请过几天再试");
+                }
             }
         });
         //修改密码

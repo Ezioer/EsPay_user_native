@@ -291,6 +291,11 @@ public class Constant {
 			"            2、游戏时长每日不超过1.5小时，法定节假日不超过3小时；\n" +
 			"            3、充值额度每次不超过50元，每月不超过200元。";
 
+	public static final String AccountCancelNoti = "您正在申请账号注销，如果进行登录会自动取消账号注销申请，请问是否继续等待";
+
+	public static int mIsCanReply = 0;
+	public static int mNationAuthen = 0;
+
 	public static class SdcardPath {
 		/**
 		 * Easou根目录

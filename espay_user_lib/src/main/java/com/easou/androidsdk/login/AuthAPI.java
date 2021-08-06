@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.easou.androidsdk.login.para.AuthParametric;
 import com.easou.androidsdk.login.para.OAuthParametric;
+import com.easou.androidsdk.login.service.AccountStatusInfo;
 import com.easou.androidsdk.login.service.AuthBean;
 import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.CodeConstant;
@@ -24,6 +25,7 @@ import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.login.service.LogoutInfo;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
+import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.Tools;
 
 import java.net.URLDecoder;
@@ -286,6 +288,10 @@ public class AuthAPI {
                                                      String phone, String code, String idName, String idNum, RequestInfo info) throws EucAPIException {
         eucService = EucService.getInstance(activity);
         JBody jbody = new JBody();
+        String tempPhone = "";
+        if (!CommonUtils.isNotNullOrEmpty(phone)) {
+            phone = tempPhone;
+        }
         jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
         jbody.putContent("userId", userId);
         jbody.putContent("name", name);
@@ -294,6 +300,34 @@ public class AuthAPI {
         jbody.putContent("mobile", phone);
         jbody.putContent("veriCode", code);
         JBean jbean = eucService.getResult("/api2/saveUserDestoryCheck.json",
+                jbody, oAuthPara, info);
+        return buildBodyInt(jbean);
+    }
+
+    /**
+     * 获取用户注销状态
+     */
+    public static EucApiResult<AccountStatusInfo> getAccountStatus(Context activity, String token, String name,
+                                                                   RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("username", name);
+        JBean jbean = eucService.getResult("/api2/getUserDestoryCheckStatus.json",
+                jbody, oAuthPara, info);
+        return buildBodyAccountStatus(jbean);
+    }
+
+    /**
+     * 取消注销申请
+     */
+    public static EucApiResult<Integer> cancelDeleteAccount(Context activity, String token, String userid,
+                                                            RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("userId", userid);
+        JBean jbean = eucService.getResult("/api2/cancelUserDestoryCheck.json",
                 jbody, oAuthPara, info);
         return buildBodyInt(jbean);
     }
@@ -416,6 +450,23 @@ public class AuthAPI {
             String cancellationNotice = jbean.getBody().getObject("cancellationNotice", String.class);
             LogoutInfo info = new LogoutInfo(URLDecoder.decode(cancellationCondition), URLDecoder.decode(cancellationAgreement),
                     URLDecoder.decode(cancellationNotice));
+            result.setResult(info);
+        }
+        return result;
+    }
+
+    private static EucApiResult<AccountStatusInfo> buildBodyAccountStatus(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<AccountStatusInfo> result = new EucApiResult<AccountStatusInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String remark = jbean.getBody().getObject("remarks", String.class);
+            String canApply = jbean.getBody().getObject("canApply", String.class);
+            String isRemind = jbean.getBody().getObject("isRemind", String.class);
+            String createTime = jbean.getBody().getObject("createTime", String.class);
+            String status = jbean.getBody().getObject("status", String.class);
+            String accountStatus = jbean.getBody().getObject("accountStatus", String.class);
+            AccountStatusInfo info = new AccountStatusInfo(Integer.valueOf(canApply), remark, Integer.valueOf(isRemind)
+                    , Long.valueOf(createTime), Integer.valueOf(status), Integer.valueOf(accountStatus));
             result.setResult(info);
         }
         return result;
