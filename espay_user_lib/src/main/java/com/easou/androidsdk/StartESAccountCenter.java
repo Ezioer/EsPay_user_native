@@ -841,6 +841,16 @@ public class StartESAccountCenter {
 
     }
 
+    //设置驳回不再弹窗提醒
+    public static void setNotRemind(final Context mContext) {
+        try {
+            EucApiResult<Integer> result = AuthAPI.setNotRemind(mContext, Constant.ESDK_TOKEN,
+                    Constant.ESDK_USERID, RegisterAPI.getRequestInfo(Starter.mActivity));
+        } catch (EucAPIException e) {
+        }
+
+    }
+
     //获取当前用户的游玩时长
     public static void uploadTime(final boolean isAdd, final Map<String, String> result, final boolean isLogin
             , final Map<String, String> authenResult) {
@@ -1097,7 +1107,7 @@ public class StartESAccountCenter {
                                 }
                             });
                         } else if (accountStatusInfo.getAccountStatus() == 4) {
-                            if (accountStatusInfo.getIsRemind() == 0) {
+                            if (accountStatusInfo.getIsRemind() == 1) {
                                 //注销驳回状态，弹窗提醒
                                 DeleteAccountStatusDialog dialog = new DeleteAccountStatusDialog(mContext, R.style.easou_dialog, Gravity.CENTER,
                                         0.8f, 0, "账号注销申请状态提醒", accountStatusInfo.getRemarks(), false);
@@ -1110,6 +1120,7 @@ public class StartESAccountCenter {
                                             ThreadPoolManager.getInstance().addTask(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    StartESAccountCenter.setNotRemind(mContext);
                                                     handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
                                                 }
                                             });

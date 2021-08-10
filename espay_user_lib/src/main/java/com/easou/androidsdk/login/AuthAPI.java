@@ -332,6 +332,20 @@ public class AuthAPI {
         return buildBodyInt(jbean);
     }
 
+    /**
+     * 驳回弹窗状态置为0
+     */
+    public static EucApiResult<Integer> setNotRemind(Context activity, String token, String userid,
+                                                     RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("userId", userid);
+        JBean jbean = eucService.getResult("/api2/remindedUser.json",
+                jbody, oAuthPara, info);
+        return buildBodyInt(jbean);
+    }
+
 
     /**
      * 绑定第三方账号
