@@ -59,9 +59,7 @@ public class DeleteAccountStatusDialog extends BaseDialog {
 
         title.setText(mTitle);
         content.setText(mContent);
-        if (mIsTwoButton) {
-
-        } else {
+        if (!mIsTwoButton) {
             cancel.setVisibility(View.GONE);
             submit.setVisibility(View.GONE);
             know.setVisibility(View.VISIBLE);
@@ -124,8 +122,6 @@ public class DeleteAccountStatusDialog extends BaseDialog {
                 dismiss();
             }
         });
-
-        content.setText(mContent);
     }
 
     private OnCloseListener closeListener = null;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="260dp"
     android:background="@drawable/icon_loginbg"
@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
         android:text="注销申请取消"
         android:textColor="@color/payeco_textColorWhite"
         android:textSize="22sp"
@@ -32,17 +33,18 @@
         android:layout_below="@id/tv_accountstatus_type"
         android:layout_marginTop="20dp"
         android:lineSpacingExtra="6dp"
-        android:text="您当前登录的账号是游客账号，游戏体验时长累计不能超过一小时，并且无法进行充值，建议您尽快完善实名信息。"
+        android:text="尊敬的用户您好，
+检测到您还有条件未满足注销要求，
+请您联系客服进行咨询."
         android:textColor="@color/easou_thin1_color"
         android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/ll_accountstatus"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -84,4 +86,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

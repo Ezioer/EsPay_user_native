@@ -5,7 +5,7 @@ public class AccountStatusInfo {
     //是否能申请,0不能,1能
     private String remarks;
     private int isRemind;
-    //是否提醒过用户,0没有提醒过(默认)，1提醒过用户,当注销工单状态被驳回时，
+    //是否提醒过用户,1没有提醒过(默认)，0提醒过用户,当注销工单状态被驳回时，
     //第一次登需要提醒用户
     private Long createTime;
     private int status;

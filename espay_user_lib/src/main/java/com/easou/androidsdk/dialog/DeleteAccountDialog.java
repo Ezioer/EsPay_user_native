@@ -72,6 +72,9 @@ public class DeleteAccountDialog extends BaseDialog {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (timer != null) {
+                    timer.cancel();
+                }
                 dismiss();
             }
         });
@@ -87,7 +90,7 @@ public class DeleteAccountDialog extends BaseDialog {
         final EditText etName = mView.findViewById(R.id.et_da_name);
         final EditText etIdNum = mView.findViewById(R.id.et_da_idnum);
         final EditText etVerCode = mView.findViewById(R.id.et_da_vercode);
-        TextView etGetCode = mView.findViewById(R.id.tv_da_getcode);
+        final TextView etGetCode = mView.findViewById(R.id.tv_da_getcode);
         mCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,11 +133,37 @@ public class DeleteAccountDialog extends BaseDialog {
         mLlInfo = mView.findViewById(R.id.ll_da_info);
         TextView etAccount = mView.findViewById(R.id.et_da_account);
         etAccount.setText(Starter.loginBean.getUser().getName());
+        final CountDownTimer timer = new CountDownTimer(60 * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                etGetCode.setText(millisUntilFinished / 1000 + "");
+                etGetCode.setEnabled(false);
+            }
+
+            @Override
+            public void onFinish() {
+                etGetCode.setText("获取");
+                etGetCode.setEnabled(true);
+            }
+        };
         etGetCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //获取验证码
-                StartESAccountCenter.getLogoutCode(phone, mContext);
+                StartESAccountCenter.getLogoutCode(new LoginCallBack() {
+                    @Override
+                    public void loginSuccess() {
+                        timer.start();
+                    }
+
+                    @Override
+                    public void loginFail(String msg) {
+                        if (timer != null) {
+                            timer.cancel();
+                            timer.onFinish();
+                        }
+                    }
+                }, phone, mContext);
             }
         });
         LinearLayout llBindPhone = mView.findViewById(R.id.ll_da_bindphone);
@@ -157,31 +186,45 @@ public class DeleteAccountDialog extends BaseDialog {
                     }
                 } else {
                     //验证短信验证码
-                    if (!etName.getText().toString().isEmpty() || CommonUtils.isIDNumber(etIdNum.getText().toString())) {
+                    final String name = etName.getText().toString();
+                    final String idNum = etIdNum.getText().toString();
+                    if (CommonUtils.isNotNullOrEmpty(name) && CommonUtils.isIDNumber(idNum)) {
                         if (CommonUtils.isNotNullOrEmpty(phone)) {
-                            StartESAccountCenter.veriLogoutCode(phone, etVerCode.getText().toString(), new LoginCallBack() {
-                                @Override
-                                public void loginSuccess() {
-                                    ((Activity) mContext).runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            switchPage(mCurrentPageType);
-                                        }
-                                    });
-                                }
+                            if (CommonUtils.isNotNullOrEmpty(etVerCode.getText().toString())) {
+                                StartESAccountCenter.veriLogoutCode(phone, etVerCode.getText().toString(), new LoginCallBack() {
+                                    @Override
+                                    public void loginSuccess() {
+                                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (verNameAndId(name, idNum)) {
+                                                    switchPage(mCurrentPageType);
+                                                } else {
+                                                    ESToast.getInstance().ToastShow(mContext, "请填写正确的个人信息");
+                                                }
+                                            }
+                                        });
+                                    }
 
-                                @Override
-                                public void loginFail(final String msg) {
-                                    ((Activity) mContext).runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ESToast.getInstance().ToastShow(mContext, msg);
-                                        }
-                                    });
-                                }
-                            }, mContext);
+                                    @Override
+                                    public void loginFail(final String msg) {
+                                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                ESToast.getInstance().ToastShow(mContext, msg);
+                                            }
+                                        });
+                                    }
+                                }, mContext);
+                            } else {
+                                ESToast.getInstance().ToastShow(mContext, "请填写有效的验证码");
+                            }
                         } else {
-                            switchPage(mCurrentPageType);
+                            if (verNameAndId(name, idNum)) {
+                                switchPage(mCurrentPageType);
+                            } else {
+                                ESToast.getInstance().ToastShow(mContext, "请填写正确的个人信息");
+                            }
                         }
                     } else {
                         ESToast.getInstance().ToastShow(mContext, "请填写正确的个人信息");
@@ -189,6 +232,14 @@ public class DeleteAccountDialog extends BaseDialog {
                 }
             }
         });
+    }
+
+    private boolean verNameAndId(String name, String idNum) {
+        if (name.equals(Starter.loginBean.getUser().getIdentityName()) &&
+                idNum.equals(Starter.loginBean.getUser().getIdentityNum())) {
+            return true;
+        }
+        return false;
     }
 
     private void switchPage(int pageType) {

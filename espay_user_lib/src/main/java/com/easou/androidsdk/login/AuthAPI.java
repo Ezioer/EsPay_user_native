@@ -23,6 +23,7 @@ import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LimitTimesInfo;
 import com.easou.androidsdk.login.service.LoginBean;
 import com.easou.androidsdk.login.service.LogoutInfo;
+import com.easou.androidsdk.login.service.NationAuthenInfo;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
 import com.easou.androidsdk.util.CommonUtils;
@@ -212,15 +213,14 @@ public class AuthAPI {
     }
 
     //查询国家实名认证状态
-    public static EucApiResult<String> queryNationIdentify(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+    public static EucApiResult<NationAuthenInfo> queryNationIdentify(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
         jbody.put("userId", userId);
         jbody.put("deviceId", deviceId);
         JBean jbean = eucService.getResult("/api2/queryUserIdentity2.json",
                 jbody, oAuthPara, info);
-        EucApiResult<String> result = new EucApiResult<String>(jbean);
-        return result;
+        return buildNationAuthen(jbean);
     }
 
     /**
@@ -482,6 +482,20 @@ public class AuthAPI {
             AccountStatusInfo info = new AccountStatusInfo(Integer.valueOf(canApply), remark, Integer.valueOf(isRemind)
                     , Long.valueOf(createTime), Integer.valueOf(status), Integer.valueOf(accountStatus));
             result.setResult(info);
+        }
+        return result;
+    }
+
+    private static EucApiResult<NationAuthenInfo> buildNationAuthen(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<NationAuthenInfo> result = new EucApiResult<NationAuthenInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String identityNum = jbean.getBody().getObject("identityNum", String.class);
+            String identityName = jbean.getBody().getObject("identityName", String.class);
+            String status = jbean.getBody().getObject("identityStatus", String.class);
+            NationAuthenInfo eucAuthResult = new NationAuthenInfo(identityNum, identityName,
+                    Integer.valueOf(status));
+            result.setResult(eucAuthResult);
         }
         return result;
     }

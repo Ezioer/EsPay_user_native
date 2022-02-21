@@ -148,7 +148,7 @@ public class LoginWayDialog extends BaseDialog {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CommonWebViewActivity.class);
-                intent.putExtra("url", Constant.user_service);
+                intent.putExtra("url", Constant.game_private);
                 mContext.startActivity(intent);
             }
         });

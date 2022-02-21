@@ -258,6 +258,8 @@ public class UserCenterDialog extends BaseDialog {
         final RelativeLayout rlDeleteAccount = (RelativeLayout) includeMenu.findViewById(R.id.rl_deleteaccount);
         if (Constant.mNationAuthen == 0) {
             rlDeleteAccount.setVisibility(View.GONE);
+        } else {
+            rlDeleteAccount.setVisibility(View.VISIBLE);
         }
         rlDeleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override

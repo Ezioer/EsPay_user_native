@@ -12,9 +12,19 @@ public class LimitStatusInfo {
     private int ns = 0;
     private int rns = 0;//国家实名认证开关
     private int lus = 0;//用户上下线日志上报开关
+    private int cs = 0;//注销功能开关
 
     public int getRns() {
         return rns;
+    }
+
+
+    public int getCs() {
+        return cs;
+    }
+
+    public void setCs(int cs) {
+        this.cs = cs;
     }
 
     public void setRns(int rns) {

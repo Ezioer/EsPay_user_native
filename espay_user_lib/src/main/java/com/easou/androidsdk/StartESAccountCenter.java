@@ -25,6 +25,7 @@ import com.easou.androidsdk.login.service.LoginNameInfo;
 import com.easou.androidsdk.login.service.LogoutInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.login.service.MoneyListInfo;
+import com.easou.androidsdk.login.service.NationAuthenInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
 import com.easou.androidsdk.dialog.AccountInfoDialog;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
@@ -734,7 +735,7 @@ public class StartESAccountCenter {
                     if (result.getResultCode().equals(CodeConstant.OK) && result.getResult() == 1) {
                         callBack.loginSuccess();
                     } else {
-                        callBack.loginFail("网络出错了");
+                        callBack.loginFail("验证码不正确，请重新获取");
                     }
                 } catch (EucAPIException e) {
                     callBack.loginFail("网络出错了");
@@ -744,7 +745,7 @@ public class StartESAccountCenter {
     }
 
     //获取注销账号验证码
-    public static void getLogoutCode(final String mobile, final Context mContext) {
+    public static void getLogoutCode(final LoginCallBack callBack, final String mobile, final Context mContext) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
@@ -755,6 +756,7 @@ public class StartESAccountCenter {
                         ((Activity) mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                callBack.loginSuccess();
                                 ESToast.getInstance().ToastShow(mContext, "验证码发送成功，请留意短信提醒");
                             }
                         });
@@ -762,6 +764,7 @@ public class StartESAccountCenter {
                         ((Activity) mContext).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                callBack.loginFail("");
                                 ESToast.getInstance().ToastShow(mContext, "网络出错，请重试");
                             }
                         });
@@ -770,6 +773,7 @@ public class StartESAccountCenter {
                     ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            callBack.loginFail("");
                             ESToast.getInstance().ToastShow(mContext, "网络出错，请重试");
                         }
                     });
@@ -876,7 +880,7 @@ public class StartESAccountCenter {
                                     if (times.getResult().getTotalTimes() * 5 >= 60) {
                                         //弹出强制退出框
                                         NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
-                                                0.8f, 0, false, "", Constant.guestLimitNoti, "");
+                                                0.8f, 0, true, "", Constant.guestLimitNoti, "");
                                         authenDialog.show();
                                     } else {
                                         handleAuthenLogin(result, isLogin, authenResult);
@@ -888,7 +892,7 @@ public class StartESAccountCenter {
                                                 && Constant.isHoliday) || (times.getResult().getTodayTimes() * 5 >= 90 && !Constant.isHoliday)) {
                                             //弹出强制退出框
                                             NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
-                                                    0.8f, 0, false, "", Constant.teeLimitNoti, "");
+                                                    0.8f, 0, true, "", Constant.teeLimitNoti, "");
                                             authenDialog.show();
                                         } else {
                                             handleAuthenLogin(result, isLogin, authenResult);
@@ -920,12 +924,12 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
+                    final EucApiResult<NationAuthenInfo> nationResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
                             , RegisterAPI.getRequestInfo(mContext), mContext);
                     ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
+                            if (nationResult.getResultCode() != null && nationResult.getResultCode().equals(CodeConstant.OK)) {
                                 if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
                                     showNotiDialog(mAge, result, true, null);
                                 } else {
@@ -953,14 +957,16 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
+                    final EucApiResult<NationAuthenInfo> result = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
                             , RegisterAPI.getRequestInfo(mContext), mContext);
                     ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
+                            if (result.getResultCode() != null && result.getResultCode().equals(CodeConstant.OK)) {
                                 //国家实名认证成功，开启账号注销功能
-                                Constant.mNationAuthen = 1;
+                                if (result.getResult() != null && result.getResult().getIdentityStatus() == 1) {
+//                                    Constant.mNationAuthen = 1;
+                                }
                             }
                         }
                     });
@@ -1017,6 +1023,9 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_IS_ADULT, "0");
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
+        if (limitStatue != null) {
+            Constant.mNationAuthen = limitStatue.getCs();
+        }
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1079,6 +1088,7 @@ public class StartESAccountCenter {
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
         Constant.ESDK_TOKEN = token;
+        Constant.ESDK_USERID = userId;
         getAccountStatus(new MoneyDataCallBack<AccountStatusInfo>() {
             @Override
             public void success(final AccountStatusInfo accountStatusInfo) {
@@ -1110,7 +1120,7 @@ public class StartESAccountCenter {
                             if (accountStatusInfo.getIsRemind() == 1) {
                                 //注销驳回状态，弹窗提醒
                                 DeleteAccountStatusDialog dialog = new DeleteAccountStatusDialog(mContext, R.style.easou_dialog, Gravity.CENTER,
-                                        0.8f, 0, "账号注销申请状态提醒", accountStatusInfo.getRemarks(), false);
+                                        0.8f, 0, "账号注销申请状态提醒", Constant.DeleteAccountRefuse, false);
                                 dialog.show();
                                 dialog.setOnCloseListener(new DeleteAccountStatusDialog.OnCloseListener() {
                                     @Override
@@ -1151,7 +1161,7 @@ public class StartESAccountCenter {
             @Override
             public void fail(String msg) {
                 //正常登录
-                logout(mContext);
+                handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
             }
         }, userName, mContext);
     }
@@ -1188,11 +1198,14 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
+        if (limitStatue != null) {
+            Constant.mNationAuthen = limitStatue.getCs();
+        }
         String isAdult = "0";
         int age = 0;
-        queryNationIdentify(mContext, userId);
+//        queryNationIdentify(mContext, userId);
         final int identityStatus = userInfo.getResult().getUser().getIdentityStatus();
-        if (limitStatue.getRns() != 0) {
+        if (limitStatue != null && limitStatue.getRns() != 0) {
             //走国家实名认证
             if (identityStatus == 1) {
                 //已经实名认证过
@@ -1227,7 +1240,7 @@ public class StartESAccountCenter {
                 startTimer();
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-                if (limitStatue.getRns() == 0) {
+                if (limitStatue != null && limitStatue.getRns() == 0) {
                     if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
                         //没有认证过的并且不是自动注册的用户需要去检查是否需要弹出实名验证框
                         if (limitStatue != null && limitStatue.getUs() != 0) {
@@ -1338,6 +1351,9 @@ public class StartESAccountCenter {
      */
     public static void getPayLimitInfo(Context mContext, int age, String idNum, String isAdult) {
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
+        if (limitStatue != null) {
+            Constant.mNationAuthen = limitStatue.getCs();
+        }
         Map<String, String> limitInfo = new HashMap<String, String>();
         PayLimitInfo payLimitInfo = PayAPI.getPayLimitInfo(mContext, age);
         if (payLimitInfo == null) {
@@ -1383,12 +1399,15 @@ public class StartESAccountCenter {
         CommonUtils.savePlayerId(mContext, "");
         CommonUtils.saveLogState(Starter.mActivity, 0);
         CommonUtils.saveNationIdentity(Starter.mActivity, 0);
-        ((Activity) mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                FloatView.setNormalIcon();
-            }
-        });
+        try {
+            ((Activity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    FloatView.setNormalIcon();
+                }
+            });
+        } catch (Exception e) {
+        }
         StartESUserPlugin.showLoginDialog();
         StartOtherPlugin.logOutTT();
         StartOtherPlugin.logTTActionLogin("");
