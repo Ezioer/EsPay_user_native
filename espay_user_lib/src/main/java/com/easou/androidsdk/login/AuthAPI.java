@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.easou.androidsdk.login.para.AuthParametric;
 import com.easou.androidsdk.login.para.OAuthParametric;
+import com.easou.androidsdk.login.service.AccountStatusInfo;
 import com.easou.androidsdk.login.service.AuthBean;
 import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.CodeConstant;
@@ -21,9 +22,14 @@ import com.easou.androidsdk.login.service.LUser;
 import com.easou.androidsdk.login.service.LimitStatusInfo;
 import com.easou.androidsdk.login.service.LimitTimesInfo;
 import com.easou.androidsdk.login.service.LoginBean;
+import com.easou.androidsdk.login.service.LogoutInfo;
+import com.easou.androidsdk.login.service.NationAuthenInfo;
 import com.easou.androidsdk.login.service.RequestInfo;
 import com.easou.androidsdk.login.util.CookieUtil;
+import com.easou.androidsdk.util.CommonUtils;
 import com.easou.androidsdk.util.Tools;
+
+import java.net.URLDecoder;
 
 public class AuthAPI {
 
@@ -207,15 +213,14 @@ public class AuthAPI {
     }
 
     //查询国家实名认证状态
-    public static EucApiResult<String> queryNationIdentify(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
+    public static EucApiResult<NationAuthenInfo> queryNationIdentify(String userId, String deviceId, RequestInfo info, Context _activity) throws EucAPIException {
         eucService = EucService.getInstance(_activity);
         JBody jbody = new JBody();
         jbody.put("userId", userId);
         jbody.put("deviceId", deviceId);
         JBean jbean = eucService.getResult("/api2/queryUserIdentity2.json",
                 jbody, oAuthPara, info);
-        EucApiResult<String> result = new EucApiResult<String>(jbean);
-        return result;
+        return buildNationAuthen(jbean);
     }
 
     /**
@@ -233,6 +238,114 @@ public class AuthAPI {
                 jbody, oAuthPara, info);
         return buildCheckBindResult(jbean);
     }
+
+    /**
+     * 验证注销验证码
+     */
+    public static EucApiResult<Integer> verifyDestoryCode(Context activity, String mobile, String token,
+                                                          String veriCode, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.put("mobile", mobile);
+        jbody.put("veriCode", veriCode);
+        JBean jbean = eucService.getResult("/api2/verifyDestoryCode.json",
+                jbody, oAuthPara, info);
+        return buildBodyInt(jbean);
+    }
+
+    /**
+     * 获取注销验证码
+     */
+    public static EucApiResult<String> getDestoryCode(Context activity, String mobile, String token,
+                                                      RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.put("mobile", mobile);
+        JBean jbean = eucService.getResult("/api2/requestDestoryCode.json",
+                jbody, oAuthPara, info);
+        return buildBodyString(jbean);
+    }
+
+    /**
+     * 获取注销相关协议
+     */
+    public static EucApiResult<LogoutInfo> getLogoutProtocol(Context activity, String token,
+                                                             RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        JBean jbean = eucService.getResult("/api2/getDestoryAgreement.json",
+                jbody, oAuthPara, info);
+        return buildBodyLogout(jbean);
+    }
+
+    /**
+     * 提交注销账号申请
+     */
+    public static EucApiResult<Integer> submitLogout(Context activity, String token, String userId, String name,
+                                                     String phone, String code, String idName, String idNum, RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        String tempPhone = "";
+        if (!CommonUtils.isNotNullOrEmpty(phone)) {
+            phone = tempPhone;
+        }
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("userId", userId);
+        jbody.putContent("name", name);
+        jbody.putContent("identityName", idName);
+        jbody.putContent("identityNum", idNum);
+        jbody.putContent("mobile", phone);
+        jbody.putContent("veriCode", code);
+        JBean jbean = eucService.getResult("/api2/saveUserDestoryCheck.json",
+                jbody, oAuthPara, info);
+        return buildBodyInt(jbean);
+    }
+
+    /**
+     * 获取用户注销状态
+     */
+    public static EucApiResult<AccountStatusInfo> getAccountStatus(Context activity, String token, String name,
+                                                                   RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("username", name);
+        JBean jbean = eucService.getResult("/api2/getUserDestoryCheckStatus.json",
+                jbody, oAuthPara, info);
+        return buildBodyAccountStatus(jbean);
+    }
+
+    /**
+     * 取消注销申请
+     */
+    public static EucApiResult<Integer> cancelDeleteAccount(Context activity, String token, String userid,
+                                                            RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("userId", userid);
+        JBean jbean = eucService.getResult("/api2/cancelUserDestoryCheck.json",
+                jbody, oAuthPara, info);
+        return buildBodyInt(jbean);
+    }
+
+    /**
+     * 驳回弹窗状态置为0
+     */
+    public static EucApiResult<Integer> setNotRemind(Context activity, String token, String userid,
+                                                     RequestInfo info) throws EucAPIException {
+        eucService = EucService.getInstance(activity);
+        JBody jbody = new JBody();
+        jbody.putContent(CookieUtil.COOKIE_TOKEN, token);
+        jbody.putContent("userId", userid);
+        JBean jbean = eucService.getResult("/api2/remindedUser.json",
+                jbody, oAuthPara, info);
+        return buildBodyInt(jbean);
+    }
+
 
     /**
      * 绑定第三方账号
@@ -315,6 +428,74 @@ public class AuthAPI {
             String u = jbean.getBody().getObject("U", String.class);
             CheckBindInfo bindInfo = new CheckBindInfo(userId, status, u);
             result.setResult(bindInfo);
+        }
+        return result;
+    }
+
+    //返回通用body响应（body总result为1）
+    private static EucApiResult<Integer> buildBodyInt(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<Integer> result = new EucApiResult<Integer>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String u = jbean.getBody().getObject("result", String.class);
+            result.setResult(Integer.valueOf(u));
+        }
+        return result;
+    }
+
+    //返回通用body响应（body总result为1）
+    private static EucApiResult<String> buildBodyString(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<String> result = new EucApiResult<String>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String u = jbean.getBody().getObject("veriCode", String.class);
+            result.setResult(u);
+        }
+        return result;
+    }
+
+    //返回通用body响应（body总result为1）
+    private static EucApiResult<LogoutInfo> buildBodyLogout(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<LogoutInfo> result = new EucApiResult<LogoutInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String cancellationAgreement = jbean.getBody().getObject("cancellationAgreement", String.class);
+            String cancellationCondition = jbean.getBody().getObject("cancellationCondition", String.class);
+            String cancellationNotice = jbean.getBody().getObject("cancellationNotice", String.class);
+            LogoutInfo info = new LogoutInfo(URLDecoder.decode(cancellationCondition), URLDecoder.decode(cancellationAgreement),
+                    URLDecoder.decode(cancellationNotice));
+            result.setResult(info);
+        }
+        return result;
+    }
+
+    private static EucApiResult<AccountStatusInfo> buildBodyAccountStatus(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<AccountStatusInfo> result = new EucApiResult<AccountStatusInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String remark = jbean.getBody().getObject("remarks", String.class);
+            String canApply = jbean.getBody().getObject("canApply", String.class);
+            String isRemind = jbean.getBody().getObject("isRemind", String.class);
+            String createTime = jbean.getBody().getObject("createTime", String.class);
+            String status = jbean.getBody().getObject("status", String.class);
+            String accountStatus = jbean.getBody().getObject("accountStatus", String.class);
+            AccountStatusInfo info = new AccountStatusInfo(Integer.valueOf(canApply), remark, Integer.valueOf(isRemind)
+                    , Long.valueOf(createTime), Integer.valueOf(status), Integer.valueOf(accountStatus));
+            result.setResult(info);
+        }
+        return result;
+    }
+
+    private static EucApiResult<NationAuthenInfo> buildNationAuthen(JBean jbean)
+            throws EucAPIException {
+        EucApiResult<NationAuthenInfo> result = new EucApiResult<NationAuthenInfo>(jbean);
+        if (CodeConstant.OK.equals(result.getResultCode())) {
+            String identityNum = jbean.getBody().getObject("identityNum", String.class);
+            String identityName = jbean.getBody().getObject("identityName", String.class);
+            String status = jbean.getBody().getObject("identityStatus", String.class);
+            NationAuthenInfo eucAuthResult = new NationAuthenInfo(identityNum, identityName,
+                    Integer.valueOf(status));
+            result.setResult(eucAuthResult);
         }
         return result;
     }

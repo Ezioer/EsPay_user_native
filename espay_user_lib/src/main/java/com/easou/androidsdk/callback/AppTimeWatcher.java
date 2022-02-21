@@ -55,7 +55,7 @@ public class AppTimeWatcher {
                 ESdkLog.d("计时进行中.......");
                 if (!isCancel && mBeginWork && CommonUtils.getIsAutoCount(Starter.mActivity).equals("0")) {
                     ESdkLog.d("发送网络请求");
-                    StartESAccountCenter.uploadTime(true);
+                    StartESAccountCenter.uploadTime(true, null, false, null);
                 }
                 mHasTime = 0;
                 mCurrentTime = System.currentTimeMillis();

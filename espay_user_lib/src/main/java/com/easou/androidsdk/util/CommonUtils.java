@@ -519,10 +519,10 @@ public class CommonUtils {
         long timeMillis = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("HH");
         String formatTime = format.format(new Date(timeMillis));
-        if (Integer.valueOf(formatTime) >= 22 || Integer.valueOf(formatTime) <= 8) {
+        if (Integer.valueOf(formatTime) >= 22 && Integer.valueOf(formatTime) <= 8) {
             return true;
         } else {
-            return true;
+            return false;
         }
     }
 

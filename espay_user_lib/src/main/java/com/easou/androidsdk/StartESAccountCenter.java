@@ -10,17 +10,22 @@ import android.widget.Toast;
 import com.easou.androidsdk.callback.AppTimeWatcher;
 import com.easou.androidsdk.data.Constant;
 import com.easou.androidsdk.data.ESConstant;
+import com.easou.androidsdk.dialog.DeleteAccountStatusDialog;
 import com.easou.androidsdk.dialog.NotiDialog;
 import com.easou.androidsdk.login.MoneyDataCallBack;
+import com.easou.androidsdk.login.service.AccountStatusInfo;
 import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.CheckBindInfo;
 import com.easou.androidsdk.login.service.DrawResultInfo;
+import com.easou.androidsdk.login.service.EucAPIException;
 import com.easou.androidsdk.login.service.EucService;
 import com.easou.androidsdk.login.service.LimitTimesInfo;
 import com.easou.androidsdk.login.service.LoginNameInfo;
+import com.easou.androidsdk.login.service.LogoutInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.login.service.MoneyListInfo;
+import com.easou.androidsdk.login.service.NationAuthenInfo;
 import com.easou.androidsdk.login.service.PayLimitInfo;
 import com.easou.androidsdk.dialog.AccountInfoDialog;
 import com.easou.androidsdk.dialog.AuthenNotiDialog;
@@ -718,8 +723,141 @@ public class StartESAccountCenter {
         }
     }
 
+    //验证注销账号验证码
+    public static void veriLogoutCode(final String mobile, final String code, final LoginCallBack callBack
+            , final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<Integer> result = AuthAPI.verifyDestoryCode(mContext, mobile,
+                            Constant.ESDK_TOKEN, code, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK) && result.getResult() == 1) {
+                        callBack.loginSuccess();
+                    } else {
+                        callBack.loginFail("验证码不正确，请重新获取");
+                    }
+                } catch (EucAPIException e) {
+                    callBack.loginFail("网络出错了");
+                }
+            }
+        });
+    }
+
+    //获取注销账号验证码
+    public static void getLogoutCode(final LoginCallBack callBack, final String mobile, final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<String> result = AuthAPI.getDestoryCode(mContext, mobile,
+                            Constant.ESDK_TOKEN, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK)) {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callBack.loginSuccess();
+                                ESToast.getInstance().ToastShow(mContext, "验证码发送成功，请留意短信提醒");
+                            }
+                        });
+                    } else {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callBack.loginFail("");
+                                ESToast.getInstance().ToastShow(mContext, "网络出错，请重试");
+                            }
+                        });
+                    }
+                } catch (EucAPIException e) {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callBack.loginFail("");
+                            ESToast.getInstance().ToastShow(mContext, "网络出错，请重试");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    //获取注销协议
+    public static void getLogoutInfo(final MoneyDataCallBack<LogoutInfo> callBack
+            , final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<LogoutInfo> result = AuthAPI.getLogoutProtocol(mContext,
+                            Constant.ESDK_TOKEN, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK)) {
+                        callBack.success(result.getResult());
+                    } else {
+                        callBack.fail("网络出错了");
+                    }
+                } catch (EucAPIException e) {
+                    callBack.fail("网络出错了");
+                }
+            }
+        });
+    }
+
+    //提交注销
+    public static void submitLogout(final LoginCallBack callBack, final String idName, final String idNum, final String phone
+            , final String code, final String name, final Context mContext) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    EucApiResult<Integer> result = AuthAPI.submitLogout(mContext, Constant.ESDK_TOKEN,
+                            Constant.ESDK_USERID, name, phone, code, idName, idNum, RegisterAPI.getRequestInfo(Starter.mActivity));
+                    if (result.getResultCode().equals(CodeConstant.OK)) {
+                        callBack.loginSuccess();
+                    } else {
+                        if (result.getDescList().size() > 0) {
+                            callBack.loginFail(result.getDescList().get(0).getD());
+                        } else {
+                            callBack.loginFail("登录失败");
+                        }
+                    }
+                } catch (EucAPIException e) {
+                    callBack.loginFail("网络出错了");
+                }
+            }
+        });
+    }
+
+    //获取注销账号状态
+    public static void getAccountStatus(final MoneyDataCallBack<AccountStatusInfo> callBack,
+                                        final String name, final Context mContext) {
+        try {
+            EucApiResult<AccountStatusInfo> result = AuthAPI.getAccountStatus(mContext, Constant.ESDK_TOKEN,
+                    name, RegisterAPI.getRequestInfo(Starter.mActivity));
+            if (result.getResultCode().equals(CodeConstant.OK)) {
+                callBack.success(result.getResult());
+            } else {
+                callBack.fail("网络出错了");
+            }
+        } catch (EucAPIException e) {
+            callBack.fail("网络出错了");
+        }
+
+    }
+
+    //设置驳回不再弹窗提醒
+    public static void setNotRemind(final Context mContext) {
+        try {
+            EucApiResult<Integer> result = AuthAPI.setNotRemind(mContext, Constant.ESDK_TOKEN,
+                    Constant.ESDK_USERID, RegisterAPI.getRequestInfo(Starter.mActivity));
+        } catch (EucAPIException e) {
+        }
+
+    }
+
     //获取当前用户的游玩时长
-    public static void uploadTime(final boolean isAdd) {
+    public static void uploadTime(final boolean isAdd, final Map<String, String> result, final boolean isLogin
+            , final Map<String, String> authenResult) {
         ThreadPoolManager.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
@@ -742,8 +880,10 @@ public class StartESAccountCenter {
                                     if (times.getResult().getTotalTimes() * 5 >= 60) {
                                         //弹出强制退出框
                                         NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
-                                                0.8f, 0, false, "", Constant.guestLimitNoti, "");
+                                                0.8f, 0, true, "", Constant.guestLimitNoti, "");
                                         authenDialog.show();
+                                    } else {
+                                        handleAuthenLogin(result, isLogin, authenResult);
                                     }
                                 } else {
                                     if (CommonUtils.getAge(user.getIdentityNum()) < 18) {
@@ -752,9 +892,13 @@ public class StartESAccountCenter {
                                                 && Constant.isHoliday) || (times.getResult().getTodayTimes() * 5 >= 90 && !Constant.isHoliday)) {
                                             //弹出强制退出框
                                             NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
-                                                    0.8f, 0, false, "", Constant.teeLimitNoti, "");
+                                                    0.8f, 0, true, "", Constant.teeLimitNoti, "");
                                             authenDialog.show();
+                                        } else {
+                                            handleAuthenLogin(result, isLogin, authenResult);
                                         }
+                                    } else {
+                                        handleAuthenLogin(result, isLogin, authenResult);
                                     }
                                     //成年人不做任何处理
                                 }
@@ -762,6 +906,13 @@ public class StartESAccountCenter {
                         }
                     });
                 } catch (Exception e) {
+                    //查询次数异常不影响登录
+                    Starter.mActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handleAuthenLogin(result, isLogin, authenResult);
+                        }
+                    });
                 }
             }
         });
@@ -773,17 +924,18 @@ public class StartESAccountCenter {
             @Override
             public void run() {
                 try {
-                    final EucApiResult<String> stringEucApiResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
+                    final EucApiResult<NationAuthenInfo> nationResult = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
                             , RegisterAPI.getRequestInfo(mContext), mContext);
                     ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (stringEucApiResult.getResultCode().equals(CodeConstant.OK)) {
+                            if (nationResult.getResultCode() != null && nationResult.getResultCode().equals(CodeConstant.OK)) {
                                 if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                                    showNotiDialog(mAge);
+                                    showNotiDialog(mAge, result, true, null);
+                                } else {
+                                    handleAuthenLogin(result, true, null);
                                 }
-                                Starter.mCallback.onLogin(result);
-                                popFloatView();
+//                                handleResult(result);
                             } else {
                                 if (userInfo.getDescList().size() > 0 && userInfo.getDescList().get(0).getC().equals("8")) {
                                     ESToast.getInstance().ToastShow(mContext, userInfo.getDescList().get(0).getD());
@@ -791,6 +943,30 @@ public class StartESAccountCenter {
                                     ESToast.getInstance().ToastShow(mContext, "认证失败");
                                 }
                                 popAuthenDialog(mContext, limitStatue, result, true);
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                }
+            }
+        });
+    }
+
+    private static void queryNationIdentify(final Context mContext, final String userId) {
+        ThreadPoolManager.getInstance().addTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final EucApiResult<NationAuthenInfo> result = AuthAPI.queryNationIdentify(userId, Tools.getDeviceImei(mContext)
+                            , RegisterAPI.getRequestInfo(mContext), mContext);
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (result.getResultCode() != null && result.getResultCode().equals(CodeConstant.OK)) {
+                                //国家实名认证成功，开启账号注销功能
+                                if (result.getResult() != null && result.getResult().getIdentityStatus() == 1) {
+//                                    Constant.mNationAuthen = 1;
+                                }
                             }
                         }
                     });
@@ -847,6 +1023,9 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_IS_ADULT, "0");
         result.put(ESConstant.SDK_IS_HOLIDAY, "0");
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
+        if (limitStatue != null) {
+            Constant.mNationAuthen = limitStatue.getCs();
+        }
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -877,13 +1056,14 @@ public class StartESAccountCenter {
                     infoDialog.setCloseListener(new AccountInfoDialog.OnCloseDialogListener() {
                         @Override
                         public void dialogClose() {
-                            Starter.mCallback.onLogin(result);
-                            postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                             //游客登录提示
                             if (limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                                showNotiDialog(0);
+                                showNotiDialog(0, result, true, null);
+                            } else {
+                                handleAuthenLogin(result, true, null);
                             }
-                            popFloatView();
+//                            handleResult(result);
+//                            postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
                         }
                     });
                 }
@@ -903,7 +1083,90 @@ public class StartESAccountCenter {
         CommonUtils.saveUInfo(userInfo.getResult().getU().getU(), mContext);
     }
 
-    public static void handleLoginBean(boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
+    public static void handleLoginBean(final boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, final String pw) {
+        final String userId = String.valueOf(userInfo.getResult().getEsid());
+        final String userName = String.valueOf(userInfo.getResult().getUser().getName());
+        String token = String.valueOf(userInfo.getResult().getToken().token);
+        Constant.ESDK_TOKEN = token;
+        Constant.ESDK_USERID = userId;
+        getAccountStatus(new MoneyDataCallBack<AccountStatusInfo>() {
+            @Override
+            public void success(final AccountStatusInfo accountStatusInfo) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Constant.mIsCanReply = accountStatusInfo.getCanApply();
+                        if (accountStatusInfo.getAccountStatus() == 5) {
+                            ESToast.getInstance().ToastShow(mContext, "该账号已注销!");
+                            logout(mContext);
+                        } else if (accountStatusInfo.getAccountStatus() == 2 || accountStatusInfo.getAccountStatus() == 3) {
+                            //弹窗提醒用户该账号处于注销申请期状态，是否继续等待注销活着确认取消注销
+                            DeleteAccountStatusDialog dialog = new DeleteAccountStatusDialog(mContext, R.style.easou_dialog, Gravity.CENTER,
+                                    0.8f, 0, "注销申请取消", Constant.AccountCancelNoti, true);
+                            dialog.show();
+                            dialog.setOnCloseListener(new DeleteAccountStatusDialog.OnCloseListener() {
+                                @Override
+                                public void close(int type) {
+                                    if (type == 1) {
+                                        //继续等待注销,回到登录状态
+                                        logout(mContext);
+                                    } else if (type == 2) {
+                                        //确认取消注销，正常登录
+                                        handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                    }
+                                }
+                            });
+                        } else if (accountStatusInfo.getAccountStatus() == 4) {
+                            if (accountStatusInfo.getIsRemind() == 1) {
+                                //注销驳回状态，弹窗提醒
+                                DeleteAccountStatusDialog dialog = new DeleteAccountStatusDialog(mContext, R.style.easou_dialog, Gravity.CENTER,
+                                        0.8f, 0, "账号注销申请状态提醒", Constant.DeleteAccountRefuse, false);
+                                dialog.show();
+                                dialog.setOnCloseListener(new DeleteAccountStatusDialog.OnCloseListener() {
+                                    @Override
+                                    public void close(int type) {
+                                        if (type == 3) {
+                                            //账号注销被驳回,正常登录
+                                            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    StartESAccountCenter.setNotRemind(mContext);
+                                                    handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            } else {
+                                //正常登录
+                                ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                    }
+                                });
+                            }
+                        } else {
+                            ThreadPoolManager.getInstance().addTask(new Runnable() {
+                                @Override
+                                public void run() {
+                                    handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void fail(String msg) {
+                //正常登录
+                handleDeleteAccount(isSaveInfo, userInfo, mContext, pw);
+            }
+        }, userName, mContext);
+    }
+
+    public static void handleDeleteAccount(boolean isSaveInfo, final EucApiResult<LoginBean> userInfo, final Context mContext, String pw) {
         final String userId = String.valueOf(userInfo.getResult().getEsid());
         final String userName = String.valueOf(userInfo.getResult().getUser().getName());
         String token = String.valueOf(userInfo.getResult().getToken().token);
@@ -935,11 +1198,14 @@ public class StartESAccountCenter {
         result.put(ESConstant.SDK_USER_NAME, userName);
         result.put(ESConstant.SDK_USER_TOKEN, token);
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
+        if (limitStatue != null) {
+            Constant.mNationAuthen = limitStatue.getCs();
+        }
         String isAdult = "0";
         int age = 0;
-
+//        queryNationIdentify(mContext, userId);
         final int identityStatus = userInfo.getResult().getUser().getIdentityStatus();
-        if (limitStatue.getRns() != 0) {
+        if (limitStatue != null && limitStatue.getRns() != 0) {
             //走国家实名认证
             if (identityStatus == 1) {
                 //已经实名认证过
@@ -974,7 +1240,7 @@ public class StartESAccountCenter {
                 startTimer();
                 StartLogPlugin.startSdkLoginLog(userId, userName);
                 postShowMsg(mContext, "欢迎回来, " + userName + "!", Gravity.TOP);
-                if (limitStatue.getRns() == 0) {
+                if (limitStatue != null && limitStatue.getRns() == 0) {
                     if (TextUtils.isEmpty(userInfo.getResult().getUser().getIdentityNum()) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
                         //没有认证过的并且不是自动注册的用户需要去检查是否需要弹出实名验证框
                         if (limitStatue != null && limitStatue.getUs() != 0) {
@@ -986,9 +1252,11 @@ public class StartESAccountCenter {
                     } else {
                         //未认证过的自动注册用户或者认证过但是未成年的提示
                         if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                            showNotiDialog(mAge);
+                            showNotiDialog(mAge, result, true, null);
+                        } else {
+                            handleAuthenLogin(result, true, null);
                         }
-                        handleResult(result);
+//                        handleResult(result);
                     }
                 } else {
                     if ((identityStatus == 0 || identityStatus == 2 || identityStatus == 3) && userInfo.getResult().getUser().getIsAutoRegist() != 1) {
@@ -1005,9 +1273,11 @@ public class StartESAccountCenter {
                     } else {
                         //未认证过的自动注册用户或者认证过但是未成年的提示
                         if (mAge < 18 && limitStatue != null && limitStatue.getNs() == 1 && limitStatue.getUs() != 0) {
-                            showNotiDialog(mAge);
+                            showNotiDialog(mAge, result, true, null);
+                        } else {
+                            handleAuthenLogin(result, true, null);
                         }
-                        handleResult(result);
+//                        handleResult(result);
                     }
                 }
             }
@@ -1081,6 +1351,9 @@ public class StartESAccountCenter {
      */
     public static void getPayLimitInfo(Context mContext, int age, String idNum, String isAdult) {
         final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(mContext);
+        if (limitStatue != null) {
+            Constant.mNationAuthen = limitStatue.getCs();
+        }
         Map<String, String> limitInfo = new HashMap<String, String>();
         PayLimitInfo payLimitInfo = PayAPI.getPayLimitInfo(mContext, age);
         if (payLimitInfo == null) {
@@ -1118,6 +1391,7 @@ public class StartESAccountCenter {
         StartESUserPlugin.hideFloatView();
         StartESUserPlugin.isShowUser = false;
         FloatView.isSetHalf = false;
+        Starter.loginBean = null;
         CommonUtils.saveLoginInfo("", mContext);
         CommonUtils.saveUInfo("", mContext);
         CommonUtils.saveShowMoney(mContext, 0);
@@ -1125,12 +1399,15 @@ public class StartESAccountCenter {
         CommonUtils.savePlayerId(mContext, "");
         CommonUtils.saveLogState(Starter.mActivity, 0);
         CommonUtils.saveNationIdentity(Starter.mActivity, 0);
-        ((Activity) mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                FloatView.setNormalIcon();
-            }
-        });
+        try {
+            ((Activity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    FloatView.setNormalIcon();
+                }
+            });
+        } catch (Exception e) {
+        }
         StartESUserPlugin.showLoginDialog();
         StartOtherPlugin.logOutTT();
         StartOtherPlugin.logTTActionLogin("");
@@ -1175,19 +1452,21 @@ public class StartESAccountCenter {
                 authenResult.put(ESConstant.SDK_USER_BIRTH_DATE, userBirthdate);
                 //更新当前用户的身份证信息
                 Starter.loginBean.getUser().setIdentityNum(idNum);
-                if (isLogin) {
+                int uAge = CommonUtils.getAge(idNum);
+                /*if (isLogin) {
                     Starter.mCallback.onLogin(result);
                 } else {
                     Starter.mCallback.onRegister(result);
                 }
                 //回调认证结果
-                Starter.mCallback.onUserCert(authenResult);
-                int uAge = CommonUtils.getAge(idNum);
+                Starter.mCallback.onUserCert(authenResult);*/
                 //认证成功且是未成年的用户提示
                 if (limitStatue.getNs() == 1 && uAge < 18) {
-                    showNotiDialog(uAge);
+                    showNotiDialog(uAge, result, isLogin, authenResult);
+                } else {
+                    handleAuthenLogin(result, isLogin, authenResult);
                 }
-                popFloatView();
+//                popFloatView();
             }
         });
         authenNotiDialog.setCloseListener(new AuthenNotiDialog.setCloseListener() {
@@ -1196,14 +1475,16 @@ public class StartESAccountCenter {
                 //关闭认证回调
                 //未认证过的且不是自动注册的用户的提示
                 if (limitStatue.getNs() == 1) {
-                    showNotiDialog(0);
+                    showNotiDialog(0, result, isLogin, null);
+                } else {
+                    handleAuthenLogin(result, isLogin, null);
                 }
-                if (isLogin) {
+             /*   if (isLogin) {
                     Starter.mCallback.onLogin(result);
                 } else {
                     Starter.mCallback.onRegister(result);
-                }
-                popFloatView();
+                }*/
+//                popFloatView();
             }
         });
     }
@@ -1211,7 +1492,8 @@ public class StartESAccountCenter {
     /**
      * 公告提醒框
      */
-    public static void showNotiDialog(int age) {
+    public static void showNotiDialog(int age, final Map<String, String> result, final boolean isLogin
+            , final Map<String, String> authenResult) {
         String text = "";
         if (age == 0 || TextUtils.isEmpty(String.valueOf(age))) {
             text = Constant.guestLimitNoti;
@@ -1227,7 +1509,27 @@ public class StartESAccountCenter {
         NotiDialog authenDialog = new NotiDialog(Starter.mActivity, R.style.easou_dialog, Gravity.CENTER,
                 0.8f, 0, false, "", text, "");
         authenDialog.show();
-        uploadTime(false);
+        authenDialog.setOnCloseListener(new NotiDialog.OnCloseListener() {
+            @Override
+            public void close() {
+                uploadTime(false, result, isLogin, authenResult);
+            }
+        });
+    }
+
+    public static void handleAuthenLogin(Map<String, String> result, boolean isLogin, Map<String, String> authenResult) {
+        if (result == null) {
+            return;
+        }
+        if (isLogin) {
+            Starter.mCallback.onLogin(result);
+        } else {
+            Starter.mCallback.onRegister(result);
+        }
+        if (authenResult != null) {
+            Starter.mCallback.onUserCert(authenResult);
+        }
+        popFloatView();
     }
 
     public static void startTimer() {

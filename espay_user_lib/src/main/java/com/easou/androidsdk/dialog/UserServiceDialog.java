@@ -20,7 +20,7 @@ public class UserServiceDialog extends BaseDialog {
 
     public UserServiceDialog(@NonNull Context context, int animation, int gravity, float mWidth, int mHeight,
                              boolean isShowAgree, String title, String content) {
-        super(context, animation, gravity, mWidth, mHeight, true);
+        super(context, animation, gravity, mWidth, mHeight, false);
         mContext = context;
         mTitle = title;
         mContent = content;
@@ -82,7 +82,7 @@ public class UserServiceDialog extends BaseDialog {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, CommonWebViewActivity.class);
-                intent.putExtra("url", Constant.user_service);
+                intent.putExtra("url", Constant.game_private);
                 mContext.startActivity(intent);
             }
         });

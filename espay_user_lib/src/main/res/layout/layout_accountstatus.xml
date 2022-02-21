@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="260dp"
+    android:background="@drawable/icon_loginbg"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_accountstatus_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:text="注销申请取消"
+        android:textColor="@color/payeco_textColorWhite"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:padding="10dp"
+        android:src="@drawable/icon_close"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_accountstatus_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_accountstatus_type"
+        android:layout_marginTop="20dp"
+        android:lineSpacingExtra="6dp"
+        android:text="尊敬的用户您好，
+检测到您还有条件未满足注销要求，
+请您联系客服进行咨询."
+        android:textColor="@color/easou_thin1_color"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/ll_accountstatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_accountstatus_submit"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_submit"
+            android:gravity="center"
+            android:text="确认取消注销"
+            android:textColor="@color/payeco_textColorBlack"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_accountstatus_cancel"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_submit"
+            android:gravity="center"
+            android:text="继续等待注销"
+            android:textColor="@color/payeco_textColorBlack"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_accountstatus_know"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_submit"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="我知道了"
+            android:textColor="@color/payeco_textColorBlack"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -233,6 +233,7 @@ public class StartESUserPlugin {
             //获取登陆限制信息
             final LimitStatusInfo limitStatue = AuthAPI.getLimitStatue(Starter.mActivity);
             if (limitStatue != null) {
+                Constant.mNationAuthen = limitStatue.getCs();
                 CommonUtils.saveNationIdentity(Starter.mActivity, limitStatue.getRns());
                 CommonUtils.saveLogState(Starter.mActivity, limitStatue.getLus());
             }

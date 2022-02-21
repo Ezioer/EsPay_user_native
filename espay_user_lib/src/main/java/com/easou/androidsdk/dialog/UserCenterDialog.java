@@ -34,6 +34,7 @@ import com.easou.androidsdk.login.service.CashHistoryInfo;
 import com.easou.androidsdk.login.service.CashLevelInfo;
 import com.easou.androidsdk.login.service.GiftBean;
 import com.easou.androidsdk.login.service.GiftInfo;
+import com.easou.androidsdk.login.service.LogoutInfo;
 import com.easou.androidsdk.login.service.MoneyBaseInfo;
 import com.easou.androidsdk.login.service.MoneyListInfo;
 import com.easou.androidsdk.plugin.StartESUserPlugin;
@@ -254,6 +255,22 @@ public class UserCenterDialog extends BaseDialog {
         final TextView mBindPhoneType = (TextView) includeMenu.findViewById(R.id.tv_bindphone);
         final RelativeLayout rlAuthen = (RelativeLayout) includeMenu.findViewById(R.id.rl_authen);
         final RelativeLayout rlLogout = (RelativeLayout) includeMenu.findViewById(R.id.rl_logout);
+        final RelativeLayout rlDeleteAccount = (RelativeLayout) includeMenu.findViewById(R.id.rl_deleteaccount);
+        if (Constant.mNationAuthen == 0) {
+            rlDeleteAccount.setVisibility(View.GONE);
+        } else {
+            rlDeleteAccount.setVisibility(View.VISIBLE);
+        }
+        rlDeleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Constant.mIsCanReply == 1) {
+                    deleteAccount();
+                } else {
+                    ESToast.getInstance().ToastShow(mContext, "暂时不能申请注销账号哦，请过几天再试");
+                }
+            }
+        });
         //修改密码
         final ImageView ivBack = (ImageView) includeChangePw.findViewById(R.id.iv_back);
         final EditText etNewPw = (EditText) includeChangePw.findViewById(R.id.et_newpw);
@@ -804,4 +821,24 @@ public class UserCenterDialog extends BaseDialog {
         });
     }
 
+    private void deleteAccount() {
+        StartESAccountCenter.getLogoutInfo(new MoneyDataCallBack<LogoutInfo>() {
+            @Override
+            public void success(final LogoutInfo logoutInfo) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DeleteAccountDialog dialog = new DeleteAccountDialog(mContext, R.style.easou_dialog,
+                                Gravity.CENTER, 1f, 1, logoutInfo);
+                        dialog.show();
+                    }
+                });
+            }
+
+            @Override
+            public void fail(String msg) {
+
+            }
+        }, mContext);
+    }
 }
